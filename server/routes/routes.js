@@ -1,0 +1,11 @@
+const express=require("express")
+const authRouter = require("./authRouter")
+const documentRouter = require("./documentRouter")
+const summaryRouter = require("./summaryRouter")
+const quizRouter = require("./quizRouter")
+const router=express.Router()
+router.use('/user-auth',authRouter)
+router.use('/document',documentRouter)
+router.use('/summary',summaryRouter)
+router.use('/quiz',quizRouter)
+module.exports=router
