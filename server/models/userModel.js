@@ -30,12 +30,13 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  quizHistory:[
+  //TODO Remove Quiz History
+  quizHistory: [
     {
-      quizId:{type:mongoose.Schema.ObjectId,ref:"QuizModel"},
-      score:Number,
-      takenAt:{type:Date,default:Date.now}
+      quizId: { type: mongoose.Schema.ObjectId, ref: "QuizModel" },
+      score: Number,
+      takenAt: { type: Date, default: Date.now }
     }
   ]
 });
-module.exports=mongoose.model("UserModel",userSchema)
+module.exports = mongoose.model("UserModel", userSchema)
