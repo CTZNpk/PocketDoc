@@ -14,10 +14,10 @@ const feebackSchema = new mongoose.Schema({
     ref: "QuizModel",
     allowNull:true
   },
-  feedbackType: {
+  feedbackType: { 
     type: String,
     required: true,
-  },
+ ww  },
   content: {
     type: String,
     required: true,
