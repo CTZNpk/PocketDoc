@@ -23,7 +23,8 @@ function IntroScreen() {
             <p className="text-sm font-normal tracking-widest text-gray-300 uppercase">
               A Hub for Students, Teachers & Researchers
             </p>
-            <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
+            <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
+              text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">
               Pocket Doc
             </h1>
             <h2 className="text-xl sm:text-2xl mt-2 lg:mt-3">
@@ -38,8 +39,8 @@ function IntroScreen() {
               <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r 
                   from-cyan-500 to-purple-500 group-hover:shadow-lg group-hover:shadow-cyan-500/50"></div>
               <button
-                className="relative inline-flex items-center justify-center px-8 py-3 text-base font-normal text-white bg-black border border-transparent rounded-full"
-
+                className="relative inline-flex items-center justify-center px-8 py-3 text-base font-normal 
+                text-white bg-black border border-transparent rounded-full"
               >
                 Start Exploring Inspiration
               </button>
@@ -145,24 +146,23 @@ function SummarizeDocuments() {
             <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r 
                   from-cyan-500 to-purple-500 group-hover:shadow-lg group-hover:shadow-cyan-500/50"></div>
             <button
-              className="relative inline-flex items-center justify-center px-8 py-3 text-base font-normal text-white bg-black border border-transparent rounded-full"
+              className="relative inline-flex items-center justify-center px-8 py-3 text-base font-normal 
+              text-white bg-black border border-transparent rounded-full"
 
             >
               Summarize Documents
             </button>
           </div>
         </div>
-        <div >
-          <div
-            className="-mt-4 mb-0 lg:mt-0 lg:ml-8"
-          >
-            <video ref={videoRef} autoPlay muted >
-              <source src="/book_search.mp4" type="video/mp4"
-                className="w-full max-w-xs mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
-              />
-              Your browser does not support video
-            </video>
-          </div>
+        <div
+          className="-mt-4 mb-0 lg:mt-0 lg:ml-8"
+        >
+          <video ref={videoRef} autoPlay muted >
+            <source src="/book_search.mp4" type="video/mp4"
+              className="w-full max-w-xs mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
+            />
+            Your browser does not support video
+          </video>
         </div>
       </div>
     </section>
@@ -198,7 +198,8 @@ function GenerateQuiz() {
             <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r 
                   from-cyan-500 to-purple-500 group-hover:shadow-lg group-hover:shadow-cyan-500/50"></div>
             <button
-              className="relative inline-flex items-center justify-center px-8 py-3 text-base font-normal text-white bg-black border border-transparent rounded-full"
+              className="relative inline-flex items-center justify-center px-8 py-3 text-base 
+              font-normal text-white bg-black border border-transparent rounded-full"
 
             >
               Generate Quiz
@@ -227,13 +228,11 @@ function MultipleSelection() {
   return (
     <section className="min-h-[75vh]">
       <div className="flex bg-cyan-600 my-[20vh] min-h-[15vh] items-center justify-center">
-        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold ">
+        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-center">
           Explore our tools and become more productive
         </h1>
-
-
       </div>
-      <div className="flex flex-col-reverse lg:flex-row px-0 mx-auto sm:px-6 lg:px-8 max-w-7xl items-center justify-evenly">
+      <div className="flex flex-col-reverse my-0 py-0 lg:flex-row  px-0 mx-auto sm:px-0 lg:px-8 max-w-7xl items-center justify-evenly">
         <Card text="Summarize Documents" />
         <Card text="Query Based Summary" />
         <Card text="Generate Quiz" />
@@ -248,7 +247,7 @@ function MultipleSelection() {
 const Card = ({ text }) => {
   return (
     <StyledWrapper>
-      <div className="card ">{text}</div>
+      <div className="card my-5 lg:my-0">{text}</div>
     </StyledWrapper>
   );
 }
@@ -305,7 +304,7 @@ const StyledWrapper = styled.div`
   }
 
   .card:hover:after {
-    content: "HELLO";
+    content: "Explore";
   }`;
 
 
