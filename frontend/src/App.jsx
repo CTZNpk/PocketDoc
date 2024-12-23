@@ -7,6 +7,9 @@ import LoginForm from './components/Login';
 import Signup from './components/Signup';
 import MyDocumentsPage from './components/MyDocumentsPage';
 import DocumentUploadPage from './components/DocumentUploadPage';
+import Documents from './components/Documents';
+
+
 
 function App() {
 
@@ -18,6 +21,8 @@ function App() {
           <Route index element={<Homepage />} />
           <Route path="contact" element={<Contact />} />
         </Route>
+        <Route path='/checkFileRender' element={<Documents />}
+        />
         <Route path="/myDocuments" element={<MyDocumentsPage />}></Route>
         <Route path="/documentUpload" element={<DocumentUploadPage />}></Route>
         <Route path="/login" element={<LoginForm />}></Route>
