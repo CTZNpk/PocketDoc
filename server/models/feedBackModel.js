@@ -7,17 +7,17 @@ const feebackSchema = new mongoose.Schema({
   summaryId: {
     type: mongoose.Schema.ObjectId,
     ref: "SummaryModel",
-    allowNull:true
+    allowNull: true
   },
   quizId: {
     type: mongoose.Schema.ObjectId,
     ref: "QuizModel",
-    allowNull:true
+    allowNull: true
   },
-  feedbackType: { 
+  feedbackType: {
     type: String,
     required: true,
- ww  },
+  },
   content: {
     type: String,
     required: true,
