@@ -87,12 +87,14 @@ function SummarizeDocumentSection() {
 
 function GenerateQuizSection() {
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js";
-    script.async = true;
-    document.body.appendChild(script);
+    const existingScript = document.querySelector('script[src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"]');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = "https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
   }, []);
-
   return (
     <HomepageSection
       title="Generate Quiz"
