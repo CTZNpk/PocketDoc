@@ -1,0 +1,45 @@
+###
+# ****************************************************************** TEST RUNNING ***************************************************************************
+# Get("/pocketdoc/user-auth")
+
+GET http://localhost:3000/pocketdoc/user-auth/
+
+
+###
+#******************************************************* SIGN UP *******************************************
+# Post("/pocketdoc/user-auth/signup")
+POST http://localhost:3000/pocketdoc/user-auth/signup
+accept: application/json
+content-type: application/json
+
+{
+  "username": "TestUser",
+  "email": "test12@gmail.com",
+  "password": "test123"
+}
+
+###
+#******************************************************* SIGN IN *******************************************
+# "_id": "676b8a4fe61f6f99a2050c82",
+# Post("/pocketdoc/user-auth/signin")
+
+POST http://localhost:3000/pocketdoc/user-auth/signin
+accept: application/json
+content-type: application/json
+
+{
+  "email": "test123@gmail.com",
+  "password": "test123"
+}
+
+###
+# GET ("/pocketdoc/document/")
+#******************************************************* CHECK ALL DOCUMENTS*******************************************
+# token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMTY2Mn0.3C8gpQhPOyF5_4cJLmMgAGTh9AtduhhqT4DO74q81Ok"
+
+GET http://localhost:3000/pocketdoc/document/
+accept: application/json
+content-type: application/json
+auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
+
+
