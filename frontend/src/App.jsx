@@ -1,7 +1,7 @@
 import './App.css'
 import { Routes, Route } from "react-router";
 import Navbar from './components/Navbar';
-import Homepage from './components/Homepage';
+
 import Contact from './components/Contact';
 
 import MyDocumentsPage from './components/MyDocumentsPage';
@@ -9,6 +9,7 @@ import DocumentUploadPage from './components/DocumentUploadPage';
 import Documents from './components/Documents';
 import SignupForm from './components/auth/SignupForm';
 import LoginForm from './components/auth/LoginForm';
+import LandingPage from './components/landing/LandingPage';
 
 
 
@@ -17,7 +18,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Navbar />}>
-          <Route index element={<Homepage />} />
+          <Route index element={<LandingPage />} />
           <Route path="contact" element={<Contact />} />
         </Route>
         <Route path='/checkFileRender' element={<Documents />}
