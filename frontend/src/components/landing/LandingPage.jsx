@@ -5,11 +5,13 @@ import HomepageSection from "./HomepageSection";
 
 export default function LandingPage() {
   return (
-    <div className="bg-black text-white ">
+    <div className="bg-black text-white">
+      <div className="lg:h-[15vh] h-[10vh] "></div>
       <IntroScreen />
       <SummarizeDocumentSection />
       <GenerateQuizSection />
       <MultipleSelection />
+      <div className="lg:h-[15vh] h-[10vh] "></div>
     </div>
   );
 }
@@ -55,7 +57,7 @@ function SummarizeDocumentSection() {
           }
         });
       },
-      { threshold: 0.75 }
+      { threshold: 0.40 }
     );
 
     observer.observe(video);

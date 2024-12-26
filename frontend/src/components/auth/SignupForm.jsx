@@ -3,7 +3,7 @@ import axios from "axios";
 import FormContainer from "./FormContainer";
 import InputField from "../shared/InputField"
 import Button from "../shared/Button";
-
+import { Link } from "react-router-dom";
 export default function SignupForm() {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState("Please Sign Up");
@@ -33,9 +33,9 @@ export default function SignupForm() {
       footer={
         <p className="text-sm text-gray-400">
           Already have an account?{" "}
-          <a href="#" className="text-purple-400 hover:underline">
+          <Link to="/login" className="text-purple-400 hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       }
     >

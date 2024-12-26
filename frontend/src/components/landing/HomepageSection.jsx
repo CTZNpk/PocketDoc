@@ -17,7 +17,9 @@ export default function HomepageSection({ topText, title, subHeading, text, butt
                   {topText}
                 </p>
               }
-              <Title text={title} />
+              <Title >
+                {title}
+              </Title>
               <h2 className="text-xl sm:text-2xl mt-2 lg:mt-3">
                 {subHeading}
               </h2>
