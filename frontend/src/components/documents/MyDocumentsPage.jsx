@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import AnimateBox from "./shared/AnimateBox";
+import AnimateBox from "../shared/AnimateBox";
 
 export default function MyDocumentsPage() {
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AnimateBox from "./shared/AnimateBox";
+import AnimateBox from "../shared/AnimateBox";
 
 export default function Contact() {
   const [formData, setFormData] = useState({

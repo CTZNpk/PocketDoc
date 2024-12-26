@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useRef } from "react";
 import styled from 'styled-components';
 import HomepageSection from "./HomepageSection";
+import Footer from "../shared/Footer";
 
 export default function LandingPage() {
   return (
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <GenerateQuizSection />
       <MultipleSelection />
       <div className="lg:h-[15vh] h-[10vh] "></div>
+      <Footer />
     </div>
   );
 }
