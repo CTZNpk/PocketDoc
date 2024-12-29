@@ -43,3 +43,35 @@ content-type: application/json
 auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
 
 
+###
+# POST("/pocketdoc/document/upload")
+POST http://localhost:3000/pocketdoc/document/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryxyz123
+auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTQ2ODgxMX0.ZnxBhTysHTOJ6bOiAaKQ55Ml8DB-q6B4Eo5CxudT4bM
+
+
+curl -X POST "http://localhost:3000/pocketdoc/document/upload" \
+  -H "auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTQ2ODgxMX0.ZnxBhTysHTOJ6bOiAaKQ55Ml8DB-q6B4Eo5CxudT4bM" \
+  -F "file=@./pdf_to_use.pdf" \
+  -F "title=My Document Title" \
+  -F "content=This is the document content" \
+  -F "uploadedByUserId=676b8a4fe61f6f99a2050c82"
+------WebKitFormBoundaryxyz123
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./pdf_to_use.pdf
+------WebKitFormBoundaryxyz123
+Content-Disposition: form-data; name="title"
+
+My Document Title
+------WebKitFormBoundaryxyz123
+Content-Disposition: form-data; name="content"
+
+This is the document content.
+------WebKitFormBoundaryxyz123
+Content-Disposition: form-data; name="uploadedByUserId"
+
+676b8a4fe61f6f99a2050c82
+------WebKitFormBoundaryxyz123--
+###

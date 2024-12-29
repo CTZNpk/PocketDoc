@@ -65,10 +65,8 @@ export default function DocumentUploadPage({ onClose }) {
             </div>
           </div>
         </div>
-
       </StyledWrapper>
-
-    </div >
+    </div>
 
   )
 }
