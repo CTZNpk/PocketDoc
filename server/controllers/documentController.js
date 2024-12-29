@@ -1,5 +1,7 @@
 const documentModel = require("../models/documentModel");
 const userModel = require("../models/userModel");
+const fs = require("fs")
+const path = require("path");
 
 exports.uploadDocumentController = async (req, res) => {
   const { title } = req.body;
@@ -29,13 +31,13 @@ exports.uploadDocumentController = async (req, res) => {
     res.status(500).json({ error: `Error in upload-doc-Controller ${error.message}` });
   }
 };
-exports.getAllDocuments = async (req, res) => {
-  const uploadedByUserId = req.user.id;
-  console.log(req.user);
+
+exports.getDocumentsByUserId = async (req, res) => {
+  const userId = req.user.id;
   try {
-    const user = await userModel.findById(uploadedByUserId);
+    const user = await userModel.findById(userId);
     if (user) {
-      const docs = await documentModel.find({ uploadedByUserId: uploadedByUserId }).populate('uploadedByUserId');
+      const docs = await documentModel.find({ userId: userId });
       res.status(200).json({ data: docs });
       if (docs.length == 0) {
         res.status(404).json({ error: "No Documents found for this user" })
@@ -50,4 +52,26 @@ exports.getAllDocuments = async (req, res) => {
   }
 }
 
+
+exports.getDocument = async (req, res) => {
+  const { documentId } = req.params;
+
+  try {
+    const document = await documentModel.findById(documentId);
+
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    const filePath = document.file;
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "File not found on server" });
+    }
+
+    res.sendFile(path.resolve(filePath));
+  } catch (error) {
+    res.status(500).json({ error: `Error in Get-File-By-DocumentId-Controller: ${error.message}` });
+  }
+}
 

@@ -33,17 +33,6 @@ content-type: application/json
 }
 
 ###
-# GET ("/pocketdoc/document/")
-#******************************************************* CHECK ALL DOCUMENTS*******************************************
-# token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMTY2Mn0.3C8gpQhPOyF5_4cJLmMgAGTh9AtduhhqT4DO74q81Ok"
-
-GET http://localhost:3000/pocketdoc/document/
-accept: application/json
-content-type: application/json
-auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
-
-
-###
 # POST("/pocketdoc/document/upload")
 POST http://localhost:3000/pocketdoc/document/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryxyz123
@@ -75,3 +64,17 @@ Content-Disposition: form-data; name="uploadedByUserId"
 676b8a4fe61f6f99a2050c82
 ------WebKitFormBoundaryxyz123--
 ###
+#
+# GET("/pocketdoc/document/")
+GET http://localhost:3000/pocketdoc/document/
+accept: application/json
+content-type: application/json
+auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
+
+###
+# GET("pocketdoc/document/:documentId")
+#67712e93ac6d3b5aa6bc164a
+GET http://localhost:3000/pocketdoc/document/67712e93ac6d3b5aa6bc164a
+accept: application/json
+content-type: application/json
+auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
