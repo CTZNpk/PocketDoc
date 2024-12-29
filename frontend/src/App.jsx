@@ -6,7 +6,7 @@ import LoginForm from './components/auth/LoginForm';
 import LandingPage from './components/landing/LandingPage';
 import Contact from './components/contact/Contact'
 import MyDocumentsPage from './components/documents/MyDocumentsPage';
-import DocumentUploadPage from './components/documents/DocumentUploadPage';
+import DocumentViewer from './components/documents/DocumentViewer';
 
 
 function App() {
@@ -17,10 +17,10 @@ function App() {
         <Route index element={<LandingPage />} />
         <Route path="contact" element={<Contact />} />
         <Route path="myDocuments" element={<MyDocumentsPage />} />
-        <Route path="docs" element={<DocumentUploadPage />} />
+        <Route path="documentViewer" element={<DocumentViewer />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
-      </Routes>
+      </Routes >
     </>
   );
 }

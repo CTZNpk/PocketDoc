@@ -4,8 +4,17 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+
+export default function DocumentViewer() {
+  return (
+    <div className='flex flex-col bg-black'>
+      <PdfViewer />
+    </div>
+  )
+}
+
+
 const PdfViewer = () => {
-  // Customize the default layout plugin
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     toolbarPlugin: {
       renderToolbar: (Toolbar) => (
@@ -39,25 +48,24 @@ const PdfViewer = () => {
   return (
     <div
       style={{
-        margin: '0 auto',
+        margin: '10vh 10vw 0vh',
         height: '100vh',
         border: '1px solid #ccc',
         padding: '10px',
         overflow: 'auto',
-        backgroundColor: '#121212', // Viewer background for dark mode
-        color: '#fff', // Text color for dark mode
+        backgroundColor: '#121212',
+        color: '#fff',
       }}
     >
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
         <Viewer
           fileUrl="/pdf/test.pdf"
           plugins={[defaultLayoutPluginInstance]}
-          theme="dark" // Set the Viewer theme to dark
+          theme="dark"
         />
       </Worker>
     </div>
   );
 };
 
-export default PdfViewer;
 

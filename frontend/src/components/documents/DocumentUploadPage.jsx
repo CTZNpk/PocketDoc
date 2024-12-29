@@ -4,11 +4,11 @@ import "./documentUpload.css"
 
 import { FileUploader } from "react-drag-drop-files";
 import Button from '../shared/Button';
+import { FaFilePdf } from "react-icons/fa";
 
 const fileTypes = ["PDF"];
 
-function DragDrop() {
-  const [file, setFile] = useState(null);
+function DragDrop({ setFile, file }) {
 
   const handleChange = (file) => {
     setFile(file);
@@ -16,7 +16,11 @@ function DragDrop() {
   return (
     <FileUploader handleChange={handleChange} name="file" types={fileTypes} classes="custom-drop-area"
       children={
-        <div><p>Click Here Or Drop Files To Upload</p></div>
+
+        file != null ?
+          <div className='text-white'><p>Document Uploaded</p></div>
+          :
+          <div><p>Click Here Or Drop Files To Upload</p></div>
       }
     />
 
@@ -24,6 +28,7 @@ function DragDrop() {
 }
 
 export default function DocumentUploadPage({ onClose }) {
+  const [file, setFile] = useState(null);
   return (
     <div className="flex justify-center items-center text-white bg-black">
       <StyledWrapper>
@@ -42,11 +47,16 @@ export default function DocumentUploadPage({ onClose }) {
               Upload Document
             </h1>
             <div className='flex flex-col lg:flex-row gap-6 w-full mt-6 p-8 h-full'>
-              <DragDrop />
+              <DragDrop setFile={setFile} file={file} />
               <div className='lg:flex-1 flex flex-col '>
                 <div className='flex-1 flex items-center justify-center '>
-                  Documents uploaded
+                  {
+                    file == null ?
+                      <p >Please Select a file</p>
+                      :
+                      <DocumentCard documentName={file.name} />
 
+                  }
                 </div>
                 <Button variant='secondary'>
                   Confirm Upload
@@ -61,6 +71,21 @@ export default function DocumentUploadPage({ onClose }) {
     </div >
 
   )
+}
+
+function DocumentCard({ documentName }) {
+  return (
+    <div className="flex items-center p-4 border rounded-lg 
+      w-full">
+      <div className="text-red-500 text-3xl flex-shrink-0">
+        <FaFilePdf />
+      </div>
+
+      <div className="ml-4">
+        <h3 className="text-lg font-medium text-white">{documentName}</h3>
+      </div>
+    </div>
+  );
 }
 const StyledWrapper = styled.div`
   .package2 {
