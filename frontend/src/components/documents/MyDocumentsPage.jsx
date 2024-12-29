@@ -1,19 +1,27 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import AnimateBox from "../shared/AnimateBox";
+import Button from "../shared/Button";
+import DocumentUploadPage from "./DocumentUploadPage";
+
 
 export default function MyDocumentsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
 
     <div className="bg-black text-white min-h-screen ">
       <AnimateBox className="flex flex-col items-center">
-        <h1 className="mt-[15vh] text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
+        <div className="flex flex-col mt-[15vh] items-center justify-center">
+          <h1 className=" text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
               text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500 min-h-[70px]
-          lg:min-h-[100px]">
-          My Documents
-        </h1>
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-10 mt-5">
-
+          lg:min-h-[100px] ">
+            My Documents
+          </h1>
+          <Button variant="secondary" onClick={() => setIsModalOpen(true)} wFull={false}>
+            Upload Document
+          </Button>
+        </div>
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-10 mt-10">
           <DocumentPreview />
           <DocumentPreview />
           <DocumentPreview />
@@ -23,9 +31,15 @@ export default function MyDocumentsPage() {
           <DocumentPreview />
           <DocumentPreview />
         </div>
-
-      </AnimateBox>
-    </div>
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+            <div className="relative z-10">
+              <DocumentUploadPage onClose={() => setIsModalOpen(false)} />
+            </div>
+          </div>
+        )}
+      </AnimateBox >
+    </div >
   );
 }
 
