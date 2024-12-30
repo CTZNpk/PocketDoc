@@ -12,7 +12,7 @@ exports.signupController = async (req, res) => {
     const { username, email, password } = req.body;
     const userExists = await userModel.findOne({ email: email });
     if (userExists) {
-      return res.status(400).json({ data: "User with this email already exists" }); // Return here to stop execution
+      return res.status(400).json({ error: "User with this email already exists" }); // Return here to stop execution
     }
 
     const hashedPassword = await bcryptjs.hash(password, 8); // Correct the spelling of "hashedPassword"
