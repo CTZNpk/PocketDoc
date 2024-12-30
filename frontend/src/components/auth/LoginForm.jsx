@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
 import FormContainer from "./FormContainer";
 import Button from "../shared/Button";
 import InputField from "../shared/InputField"
 import { Link } from "react-router";
+import useAuth from "../../hooks/useAuth";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("Please Sign In");
-
+  const { handleSignIn } = useAuth();
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
@@ -16,16 +15,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/pocketdoc/user-auth/signin",
-        formData
-      );
-      localStorage.setItem("token", response.data.token);
-      setMessage(`Login successful! Welcome, ${response.data.username}`);
-    } catch (err) {
-      setMessage(err.response?.data?.error || "Login failed");
-    }
+    handleSignIn(formData);
   };
 
   return (
@@ -61,7 +51,6 @@ export default function LoginForm() {
           variant="secondary"
         >Login</Button>
       </form>
-      <div className="mt-4 text-white">{message}</div>
     </FormContainer>
   );
 }

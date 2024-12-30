@@ -1,4 +1,3 @@
-import './App.css';
 import { Routes, Route } from "react-router";
 import Navbar from './components/Navbar';
 import SignupForm from './components/auth/SignupForm';
@@ -7,6 +6,7 @@ import LandingPage from './components/landing/LandingPage';
 import Contact from './components/contact/Contact'
 import MyDocumentsPage from './components/documents/MyDocumentsPage';
 import DocumentViewer from './components/documents/DocumentViewer';
+import { ToastContainer } from "react-toastify";
 
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
       </Routes >
+      <ToastContainer />
     </>
   );
 }

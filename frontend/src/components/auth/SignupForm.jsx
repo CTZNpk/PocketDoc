@@ -4,10 +4,10 @@ import FormContainer from "./FormContainer";
 import InputField from "../shared/InputField"
 import Button from "../shared/Button";
 import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 export default function SignupForm() {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
-  const [message, setMessage] = useState("Please Sign Up");
-
+  const { handleSignUp } = useAuth();
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
@@ -15,16 +15,7 @@ export default function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/pocketdoc/user-auth/signup",
-        formData
-      );
-      localStorage.setItem("token", response.data.token);
-      setMessage(`Signup successful! Welcome, ${response.data.username}`);
-    } catch (err) {
-      setMessage(err.response?.data?.error || "Signup failed");
-    }
+    handleSignUp(formData);
   };
 
   return (
@@ -68,7 +59,6 @@ export default function SignupForm() {
           variant="secondary"
         >SignUp</Button>
       </form>
-      <div className="mt-4 text-white">{message}</div>
     </FormContainer>
   );
 }
