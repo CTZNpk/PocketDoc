@@ -5,6 +5,8 @@ import "./documentUpload.css"
 import { FileUploader } from "react-drag-drop-files";
 import Button from '../shared/Button';
 import { FaFilePdf } from "react-icons/fa";
+import { emitToast } from '../../utils/emitToast';
+import useDocs from '../../hooks/useDocs';
 
 const fileTypes = ["PDF"];
 
@@ -29,6 +31,18 @@ function DragDrop({ setFile, file }) {
 
 export default function DocumentUploadPage({ onClose }) {
   const [file, setFile] = useState(null);
+  const { uploadDoc } = useDocs();
+
+  const confirmUpload = async () => {
+    if (!file) {
+      emitToast("Please Select a File")
+    }
+    await uploadDoc(file, file.name);
+
+    onClose()
+
+  };
+
   return (
     <div className="flex justify-center items-center text-white bg-black">
       <StyledWrapper>
@@ -58,7 +72,7 @@ export default function DocumentUploadPage({ onClose }) {
 
                   }
                 </div>
-                <Button variant='secondary'>
+                <Button variant='secondary' onClick={confirmUpload}>
                   Confirm Upload
                 </Button>
               </div>

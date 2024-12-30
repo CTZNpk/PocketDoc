@@ -13,7 +13,7 @@ export default function LoginForm() {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     handleSignIn(formData);
   };

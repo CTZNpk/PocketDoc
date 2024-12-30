@@ -11,6 +11,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
+    console.log(config)
     if (config.protected) {
       const token = localStorage.getItem('token');
       if (token) {

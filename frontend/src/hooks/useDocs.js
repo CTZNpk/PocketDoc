@@ -1,4 +1,4 @@
-import { getUserDocs } from "../api/documentService";
+import { getUserDocs, uploadUserDoc } from "../api/documentService";
 import docsStore from "../store/docsStore";
 import { emitToast } from "../utils/emitToast";
 
@@ -21,18 +21,18 @@ const useDocs = () => {
     }
   };
 
-  // const uploadDoc = async () => {
-  //   try {
-  //     const data = await getUserDocs();
-  //     setDocs({ username: data.username });
-  //     emitToast("Sign in Successful");
-  //   } catch (error) {
-  //     emitToast(`Error Signing In: ${error.response.data.error}`);
-  //   }
-  // };
+  const uploadDoc = async (file, title) => {
+    try {
+      const data = await uploadUserDoc(file, title);
+      addDoc({ id: data._id, title: data.title })
+      emitToast("Document Uploaded Successfully");
+    } catch (error) {
+      emitToast(`Error Signing In: ${error.response.data.error}`);
+    }
+  };
 
 
-  return { getMyDocs };
+  return { getMyDocs, uploadDoc };
 };
 
 export default useDocs

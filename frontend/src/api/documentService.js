@@ -6,7 +6,15 @@ export const getUserDocs = async () => {
 }
 
 //TODO
-export const uploadUserDoc = async (file) => {
-  const response = await apiClient.post("/document/upload", { protected: true })
-  return response.data
+export const uploadUserDoc = async (file, title) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("title", title);
+  const response = await apiClient.post("/document/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    protected: true,
+  });
+  return response.data.data;
 }
