@@ -12,10 +12,10 @@ exports.signupController = async (req, res) => {
     const { username, email, password } = req.body;
     const userExists = await userModel.findOne({ email: email });
     if (userExists) {
-      return res.status(400).json({ error: "User with this email already exists" }); // Return here to stop execution
+      return res.status(400).json({ error: "User with this email already exists" });
     }
 
-    const hashedPassword = await bcryptjs.hash(password, 8); // Correct the spelling of "hashedPassword"
+    const hashedPassword = await bcryptjs.hash(password, 8);
 
     let user = new userModel({
       username: username,
@@ -44,7 +44,7 @@ exports.signinController = async (req, res) => {
     if (user) {
       const passMatch = await bcryptjs.compare(password, user.password);
       if (passMatch) {
-        const token = jwt.sign({ id: user._id }, 'passKey')
+        let token = jwt.sign({ id: user._id }, 'passKey')
         const { password: _, ...userWithoutPassword } = user.toObject()
         res.status(200).json({ token, ...userWithoutPassword });
       }

@@ -38,10 +38,7 @@ exports.getDocumentsByUserId = async (req, res) => {
     const user = await userModel.findById(userId);
     if (user) {
       const docs = await documentModel.find({ userId: userId });
-      res.status(200).json({ data: docs });
-      if (docs.length == 0) {
-        res.status(404).json({ error: "No Documents found for this user" })
-      }
+      res.status(200).json({ docs });
     }
     else {
       res.status(404).json({ error: "User Not Found" })

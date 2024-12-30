@@ -1,14 +1,20 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import AnimateBox from "../shared/AnimateBox";
 import Button from "../shared/Button";
 import DocumentUploadPage from "./DocumentUploadPage";
+import useDocs from "../../hooks/useDocs";
 
 
 export default function MyDocumentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  return (
+  const { getMyDocs } = useDocs();
 
+  useEffect(() => {
+    getMyDocs();
+  }, [getMyDocs]);
+
+  return (
     <div className="bg-black text-white min-h-screen ">
       <AnimateBox className="flex flex-col items-center">
         <div className="flex flex-col mt-[15vh] items-center justify-center">
