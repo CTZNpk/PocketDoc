@@ -85,7 +85,6 @@ exports.getChaptersFromADocument = async (req, res) => {
       return res.status(200).json({ chapters });
     }
 
-    console.log(doc.file)
     const fastApiResponse = await axios.post('http://localhost:8000/extract-toc/',
       {},
       {
