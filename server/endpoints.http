@@ -61,8 +61,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZ
 
 ###
 # GET("pocketdoc/document/:documentId")
-#67712e93ac6d3b5aa6bc164a
-GET http://localhost:3000/pocketdoc/document/67712e93ac6d3b5aa6bc164a
+#67712e93ac6d3b5aa6bc
+GET http://localhost:3000/pocketdoc/document/6773aee4d9dc8839e5179966
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTEwMjM4NH0.mvU95COJgOtvHxwvQmBugY4y8AU-uM1hTlaIvPhTVR8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTYzNTA5Mn0.ELy1bSeV_lJlLyJgZM5YEs2NHiyb7wqDM_mo3PNykMo
+ 
+###
+# GET("pocketdoc/document/:documentId/toc")
+GET http://localhost:3000/pocketdoc/document/67712e93ac6d3b5aa6bc164a/toc
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTYzNTA5Mn0.ELy1bSeV_lJlLyJgZM5YEs2NHiyb7wqDM_mo3PNykMo
+
+###
+ 

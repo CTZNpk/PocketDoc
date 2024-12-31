@@ -34,11 +34,13 @@ async def extract_toc(filePath: str):
     document = fitz.open(pdf_path)
 
     toc = document.get_toc(simple=True)
+    num_pages = document.page_count
 
     filtered_toc = [
         {"Level": lvl, "Title": title, "Page": page}
         for lvl, title, page in (entry[:3] for entry in toc)
+        if lvl < 3
     ]
     document.close()
 
-    return {"TOC": filtered_toc}
+    return {"TOC": filtered_toc, "totalPages": num_pages}

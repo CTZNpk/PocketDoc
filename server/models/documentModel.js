@@ -13,6 +13,10 @@ const documentSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "UserModel",
   },
+  hasChaptersGenerated: {
+    type: Boolean,
+    default: false,
+  },
   uploadedDate: {
     type: Date,
     default: Date.now,
