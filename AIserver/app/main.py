@@ -69,7 +69,7 @@ async def summarize(request: SummarizeRequest):
             prompt.format(passage=request.passage)
         )
 
-        return {"summary": llm_output}
+        return {"summary": llm_output, "model_used": local_model}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -7,7 +7,7 @@ const feedbackRouter = require("./feedbackRouter")
 const router=express.Router()
 router.use('/user-auth',authRouter)
 router.use('/document',documentRouter)
-router.use('/summary',summaryRouter)
+router.use('/summarize',summaryRouter)
 router.use('/quiz',quizRouter)
 router.use('/feedback',feedbackRouter)
 module.exports=router

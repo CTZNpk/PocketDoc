@@ -17,14 +17,12 @@ if (!fs.existsSync(uploadsDir)) {
 
 app.use(cors())
 
-// Middleware to parse JSON bodies 
 app.use(express.json());
 app.use('/pocketdoc', router)
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 
-///MONGODB Connection
 mongoose.connect(process.env.MONGO_DB_URI).then(() => {
   console.log("MONGODB CONNECTION SUCCESSFULL")
 }).catch((e) => {
