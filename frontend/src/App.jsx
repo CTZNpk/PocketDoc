@@ -18,10 +18,10 @@ function App() {
         <Route index element={<LandingPage />} />
         <Route path="contact" element={<Contact />} />
         <Route path="myDocuments" element={<MyDocumentsPage />} />
-        <Route path="documentViewer" element={<DocumentViewer />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/docToc" element={<DocumentToc />} />
+        <Route path="/document/:docId" element={<DocumentViewer />} />
+        <Route path="/document/:docId/toc" element={<DocumentToc />} />
       </Routes >
       <ToastContainer />
     </>

@@ -1,4 +1,4 @@
-import { getUserDocs, uploadUserDoc } from "../api/documentService";
+import { getUserDocs, getUserDocToc, uploadUserDoc } from "../api/documentService";
 import docsStore from "../store/docsStore";
 import { emitToast } from "../utils/emitToast";
 
@@ -27,12 +27,49 @@ const useDocs = () => {
       addDoc({ id: data._id, title: data.title })
       emitToast("Document Uploaded Successfully");
     } catch (error) {
-      emitToast(`Error Signing In: ${error.response.data.error}`);
+      emitToast(`Error Uploading Document: ${error.response.error}`);
     }
   };
 
+  const getDocumentToc = async (docId) => {
+    try {
+      const data = await getUserDocToc(docId);
+      emitToast("Document Toc Retrieved Successfully");
+      let chapterIdCounter = 1;
+      const lvl1Chapters = data.chapters.filter((doc) => doc.level === 1)
+        .map((doc) => ({
+          id: chapterIdCounter++,
+          title: doc.title,
+          startPage: doc.startPageNum,
+          endPage: doc.endPageNum,
+          subChapters: []
+        }));
+      console.log(lvl1Chapters);
 
-  return { getMyDocs, uploadDoc };
+      const lvl2Chapters = data.chapters.filter((doc) => doc.level === 2)
+        .map((doc) => ({
+          id: chapterIdCounter++,
+          title: doc.title,
+          startPage: doc.startPageNum,
+          endPage: doc.endPageNum,
+        }));
+
+      console.log(lvl2Chapters);
+      const toc = lvl1Chapters.map((lvl1) => ({
+        ...lvl1,
+        subChapters: lvl2Chapters.filter(
+          (lvl2) => lvl2.startPage >= lvl1.startPage && lvl2.startPage <= lvl1.endPage
+        ),
+      }));
+      console.log(toc);
+      return toc
+    } catch (error) {
+      console.log(error)
+      emitToast(`Error Getting Document Toc : ${error}`);
+    }
+  }
+
+  return { getMyDocs, uploadDoc, getDocumentToc };
 };
 
 export default useDocs

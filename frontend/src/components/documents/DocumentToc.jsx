@@ -1,30 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import useDocs from "../../hooks/useDocs";
+import { emitToast } from "../../utils/emitToast";
+import { useParams } from "react-router";
 
 const DocumentToc = () => {
-  const toc = [
-    {
-      id: 1,
-      title: "Chapter 1: Introduction",
-      startPage: 1,
-      endPage: 5,
-      subChapters: [
-        { id: 11, title: "1.1 Background", startPage: 2, endPage: 3 },
-        { id: 12, title: "1.2 Objectives", startPage: 4, endPage: 5 },
-      ],
-    },
-    {
-      id: 2,
-      title: "Chapter 2: Literature Review",
-      startPage: 6,
-      endPage: 15,
-      subChapters: [
-        { id: 21, title: "2.1 Previous Studies", startPage: 7, endPage: 10 },
-        { id: 22, title: "2.2 Theoretical Framework", startPage: 11, endPage: 15 },
-      ],
-    },
-  ];
-
+  const { docId } = useParams();
+  const { getDocumentToc } = useDocs();
+  const [toc, setToc] = useState([]);
   const [expanded, setExpanded] = useState({});
+
+  useEffect(() => {
+    const fetchToc = async () => {
+      try {
+        const fetchedToc = await getDocumentToc(docId);
+        setToc(fetchedToc);
+      } catch (err) {
+        emitToast(`Failed to load Toc: ${err}`)
+      }
+    };
+    fetchToc();
+    console.log(toc)
+  }, []);
 
   const toggleExpand = (id) => {
     setExpanded((prev) => ({
@@ -33,7 +29,6 @@ const DocumentToc = () => {
     }));
   };
 
-  // Placeholder function for generating summary
   const handleGenerateSummary = (chapter) => {
     alert(`Generating summary for ${chapter.title}`);
   };
@@ -41,7 +36,7 @@ const DocumentToc = () => {
   return (
     <div className="bg-black text-white min-h-screen m-0">
       <div className="p-5 max-w-2xl mx-auto ">
-        <h1 className="text-2xl font-bold mb-6">Document Table of Contents</h1>
+        <h1 className="text-2xl font-bold mb-6 mt-20">Document Table of Contents</h1>
         <ul className="list-none p-0">
           {toc.map((chapter) => (
             <li
@@ -49,13 +44,13 @@ const DocumentToc = () => {
               className="border-b border-gray-300 pb-3 mb-4"
             >
               <div className="flex justify-between items-center">
-                <div>
+                <div className="flex-1">
                   <strong className="text-lg">{chapter.title}</strong>
                   <p className="text-gray-600">
                     Pages: {chapter.startPage} - {chapter.endPage}
                   </p>
                 </div>
-                <div>
+                <div className="flex-1">
                   <button
                     className={`px-4 py-2 rounded text-white ${expanded[chapter.id]
                       ? "bg-yellow-500 hover:bg-yellow-600"
@@ -73,14 +68,13 @@ const DocumentToc = () => {
                   </button>
                 </div>
               </div>
-              {/* Show Level 2 headings if expanded */}
               {expanded[chapter.id] && chapter.subChapters.length > 0 && (
                 <ul className="list-none pl-5 mt-3">
                   {chapter.subChapters.map((subChapter) => (
                     <li key={subChapter.id} className="mb-2">
                       <div className="flex justify-between items-center">
-                        <div>
-                          <strong className="text-base text-gray-800">
+                        <div className="flex-1">
+                          <strong className="text-base ">
                             {subChapter.title}
                           </strong>
                           <p className="text-gray-600">

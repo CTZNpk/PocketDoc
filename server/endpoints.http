@@ -61,8 +61,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZ
 
 ###
 # GET("pocketdoc/document/:documentId")
-#67712e93ac6d3b5aa6bc
-GET http://localhost:3000/pocketdoc/document/6773aee4d9dc8839e5179966
+#6773b0ea2ae94ae24d707f74#
+GET http://localhost:3000/pocketdoc/document/6773b0ea2ae94ae24d707f74/
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTYzNTA5Mn0.ELy1bSeV_lJlLyJgZM5YEs2NHiyb7wqDM_mo3PNykMo

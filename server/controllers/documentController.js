@@ -74,6 +74,7 @@ exports.getDocument = async (req, res) => {
 
 exports.getChaptersFromADocument = async (req, res) => {
   const { documentId } = req.params;
+  console.log(documentId);
   try {
     const doc = await documentModel.findById(documentId);
     if (!doc) {

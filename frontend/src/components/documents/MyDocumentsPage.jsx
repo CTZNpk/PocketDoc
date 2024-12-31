@@ -3,11 +3,14 @@ import styled from "styled-components";
 import AnimateBox from "../shared/AnimateBox";
 import Button from "../shared/Button";
 import DocumentUploadPage from "./DocumentUploadPage";
+import docsStore from "../../store/docsStore";
 import useDocs from "../../hooks/useDocs";
+import { useNavigate } from "react-router";
 
 
 export default function MyDocumentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { docs } = docsStore();
   const { getMyDocs } = useDocs();
 
   useEffect(() => {
@@ -28,14 +31,9 @@ export default function MyDocumentsPage() {
           </Button>
         </div>
         <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-10 mt-10">
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
-          <DocumentPreview />
+          {docs.map((doc) => (
+            <DocumentPreview doc={doc} />
+          ))}
         </div>
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
@@ -49,9 +47,12 @@ export default function MyDocumentsPage() {
   );
 }
 
-function DocumentPreview() {
+function DocumentPreview({ doc }) {
   const videoRef = useRef(null);
-
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/document/${doc.id}/toc`);
+  };
 
   const stopAtHalf = () => {
     const video = videoRef.current;
@@ -79,7 +80,10 @@ function DocumentPreview() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center m-5">
+    <div className="flex flex-col items-center justify-center m-5"
+      onClick={handleClick}
+
+    >
       <StyledWrapper>
         <div className="package">
           <div
@@ -100,8 +104,8 @@ function DocumentPreview() {
 
         </div>
       </StyledWrapper>
-      <h2 className="text-xl sm:text-2xl mt-2 lg:mt-3">
-        Computer Networks
+      <h2 className="text-l sm:text-xl mt-2 lg:mt-3 text-center">
+        {doc.title}
       </h2>
 
     </div>);

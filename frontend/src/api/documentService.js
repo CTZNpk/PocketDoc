@@ -5,7 +5,6 @@ export const getUserDocs = async () => {
   return response.data;
 }
 
-//TODO
 export const uploadUserDoc = async (file, title) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -17,4 +16,10 @@ export const uploadUserDoc = async (file, title) => {
     protected: true,
   });
   return response.data.data;
+}
+
+export const getUserDocToc = async (docId) => {
+  const response = await apiClient.get(`/document/${docId}/toc`, { protected: true })
+  console.log(response.data)
+  return response.data
 }
