@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import fitz
 import os
+from pydantic import BaseModel
+from langchain.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 
 
 def get_application():
@@ -44,3 +47,29 @@ async def extract_toc(filePath: str):
     document.close()
 
     return {"TOC": filtered_toc, "totalPages": num_pages}
+
+
+class SummarizeRequest(BaseModel):
+    passage: str
+
+
+local_model = "llama3.2"
+llm = ChatOllama(model=local_model)
+
+
+@app.post("/summarize/")
+async def summarize(request: SummarizeRequest):
+    try:
+        template = """Please Summarize this passage :
+        Passage: {passage}
+        """
+        prompt = ChatPromptTemplate.from_template(template)
+
+        llm_output = llm.invoke(
+            prompt.format(passage=request.passage)
+        )
+
+        return {"summary": llm_output}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

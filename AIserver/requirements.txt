@@ -1,3 +1,5 @@
 fastapi
 uvicorn
 pymupdf
+langchain
+langchain-ollama
