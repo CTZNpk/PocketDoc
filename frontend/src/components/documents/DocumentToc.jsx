@@ -46,8 +46,8 @@ const DocumentToc = () => {
       <div className="p-5 max-w-2xl mx-auto ">
         <div className="flex justify-center items-center mt-20 mb-6">
           <h1 className="text-2xl font-bold ">Document Table of Contents</h1>
-          <Button variant="secondary" className=" w-auto ml-20"
-            onClick={ navigateToDocViewer}
+          <Button variant="secondary" className="flex-1 ml-20"
+            onClick={navigateToDocViewer}
           > Read Document</Button>
         </div>
         <ul className="list-none p-0">

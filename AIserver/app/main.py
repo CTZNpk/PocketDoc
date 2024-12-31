@@ -53,7 +53,7 @@ class SummarizeRequest(BaseModel):
     passage: str
 
 
-local_model = "llama3.2"
+local_model = "llama3.2:1b"
 llm = ChatOllama(model=local_model)
 
 

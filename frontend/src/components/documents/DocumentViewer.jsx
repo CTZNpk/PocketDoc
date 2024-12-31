@@ -5,16 +5,46 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import useDocs from '../../hooks/useDocs';
 import { useParams } from 'react-router';
+import Button from '../shared/Button';
+import useSummary from '../../hooks/useSummary';
 
 
 export default function DocumentViewer() {
-  return (
-    <div className='flex flex-col bg-black'>
-      <PdfViewer />
-    </div>
-  )
-}
+  const [summaryText, setSummaryText] = useState("");
+  const { generatePassageSummary } = useSummary();
 
+  const handleButtonClick = async () => {
+    const selected = window.getSelection().toString();
+    const summary = await generatePassageSummary(selected);
+    console.log(summary)
+    setSummaryText(summary);
+  };
+
+  return (
+    <div className='flex flex-col lg:flex-row bg-black justify-center'>
+      <div className='flex-1'>
+        <PdfViewer />
+      </div>
+      <div className='h-20 w-auto mr-20 mt-20 flex flex-col items-center justify-center min-h-screen'>
+        <Button
+          variant='secondary'
+          className='mb-5 w-[10vw]'
+          onClick={handleButtonClick}
+        >
+          Generate Summary
+        </Button>
+        <div className='border min-h-[70vh] w-[30vw] flex flex-col p-4 overflow-y-auto'>
+          <h3 className='text-lg font-bold mb-4'>Selected Text:</h3>
+          {summaryText ? (
+            <p className='text-left text-white'>{summaryText}</p>
+          ) : (
+            <p className='text-gray-500 text-center'>No text selected.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const PdfViewer = () => {
   const { docId } = useParams();
@@ -68,7 +98,7 @@ const PdfViewer = () => {
     file != null && (
       <div
         style={{
-          margin: '10vh 10vw 0vh',
+          margin: '10vh 5vw 0vh',
           height: '100vh',
           border: '1px solid #ccc',
           padding: '10px',
