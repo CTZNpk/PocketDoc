@@ -1,4 +1,4 @@
-import { getUserDocs, getUserDocToc, uploadUserDoc } from "../api/documentService";
+import { getUserDocFromId, getUserDocs, getUserDocToc, uploadUserDoc } from "../api/documentService";
 import docsStore from "../store/docsStore";
 import { emitToast } from "../utils/emitToast";
 
@@ -61,15 +61,24 @@ const useDocs = () => {
           (lvl2) => lvl2.startPage >= lvl1.startPage && lvl2.startPage <= lvl1.endPage
         ),
       }));
-      console.log(toc);
       return toc
     } catch (error) {
-      console.log(error)
       emitToast(`Error Getting Document Toc : ${error}`);
     }
   }
 
-  return { getMyDocs, uploadDoc, getDocumentToc };
+  const getDocumentFromId = async (docId) => {
+    try {
+      const blob = getUserDocFromId(docId);
+      return blob
+    } catch (err) {
+      emitToast(`Error Getting Document Toc : ${err}`);
+    }
+  }
+
+
+
+  return { getMyDocs, uploadDoc, getDocumentToc, getDocumentFromId };
 };
 
 export default useDocs

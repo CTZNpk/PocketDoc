@@ -9,6 +9,7 @@ import { useNavigate } from "react-router";
 
 
 export default function MyDocumentsPage() {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { docs } = docsStore();
   const { getMyDocs } = useDocs();

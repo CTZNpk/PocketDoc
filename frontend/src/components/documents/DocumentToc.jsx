@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import useDocs from "../../hooks/useDocs";
 import { emitToast } from "../../utils/emitToast";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import Button from "../shared/Button";
 
 const DocumentToc = () => {
   const { docId } = useParams();
   const { getDocumentToc } = useDocs();
   const [toc, setToc] = useState([]);
   const [expanded, setExpanded] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchToc = async () => {
@@ -33,10 +35,21 @@ const DocumentToc = () => {
     alert(`Generating summary for ${chapter.title}`);
   };
 
+  const navigateToDocViewer = () => {
+    const currentPath = window.location.pathname;
+    const newPath = currentPath.replace('toc', '')
+    navigate(newPath)
+  }
+
   return (
     <div className="bg-black text-white min-h-screen m-0">
       <div className="p-5 max-w-2xl mx-auto ">
-        <h1 className="text-2xl font-bold mb-6 mt-20">Document Table of Contents</h1>
+        <div className="flex justify-center items-center mt-20 mb-6">
+          <h1 className="text-2xl font-bold ">Document Table of Contents</h1>
+          <Button variant="secondary" className=" w-auto ml-20"
+            onClick={ navigateToDocViewer}
+          > Read Document</Button>
+        </div>
         <ul className="list-none p-0">
           {toc.map((chapter) => (
             <li

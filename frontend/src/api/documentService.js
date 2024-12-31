@@ -19,7 +19,16 @@ export const uploadUserDoc = async (file, title) => {
 }
 
 export const getUserDocToc = async (docId) => {
-  const response = await apiClient.get(`/document/${docId}/toc`, { protected: true })
-  console.log(response.data)
+  const response = await apiClient.get(`/document/${docId}/toc`, {
+    protected: true,
+  })
   return response.data
+}
+
+export const getUserDocFromId = async (docId) => {
+  const response = await apiClient.get(`/document/${docId}`, {
+    protected: true,
+    responseType: 'blob',
+  })
+  return response.data.arrayBuffer();
 }
