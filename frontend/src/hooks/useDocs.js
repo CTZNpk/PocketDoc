@@ -35,10 +35,9 @@ const useDocs = () => {
     try {
       const data = await getUserDocToc(docId);
       emitToast("Document Toc Retrieved Successfully");
-      let chapterIdCounter = 1;
       const lvl1Chapters = data.chapters.filter((doc) => doc.level === 1)
         .map((doc) => ({
-          id: chapterIdCounter++,
+          id: doc.chapterId,
           title: doc.title,
           startPage: doc.startPageNum,
           endPage: doc.endPageNum,
@@ -48,7 +47,7 @@ const useDocs = () => {
 
       const lvl2Chapters = data.chapters.filter((doc) => doc.level === 2)
         .map((doc) => ({
-          id: chapterIdCounter++,
+          id: doc.chapterId,
           title: doc.title,
           startPage: doc.startPageNum,
           endPage: doc.endPageNum,

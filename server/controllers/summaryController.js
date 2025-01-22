@@ -31,29 +31,6 @@ exports.generateSummaryFromText = async (req, res) => {
   }
 }
 
-
-exports.queryBasedSummary = async (req, res) => {
-  const { id } = req.params;
-  const { query } = req.body;
-  try {
-    const doc = await documentModel.findById(id)
-    if (!doc) {
-      res.status(404).json({ error: "Document Not Found" })
-    }
-    const querySummary = generateQuerySummary(doc.content, query);
-
-    const newSummary = new summaryModel({
-      documentId: id,
-      content: querySummary,
-      queryBased: true
-
-    });
-    await newSummary.save()
-    res.status(201).json({ message: "Query-based summary created successfully", summary: newSummary });
-  } catch (error) {
-
-  }
-}
 exports.summarizeEntireDocController = async (req, res) => {
   const { id } = req.params;
 
@@ -80,6 +57,30 @@ exports.summarizeEntireDocController = async (req, res) => {
     return res.status(500).json({ error: `Error summarizing document: ${error.message}` });
   }
 };
+
+
+exports.queryBasedSummary = async (req, res) => {
+  const { id } = req.params;
+  const { query } = req.body;
+  try {
+    const doc = await documentModel.findById(id)
+    if (!doc) {
+      res.status(404).json({ error: "Document Not Found" })
+    }
+    const querySummary = generateQuerySummary(doc.content, query);
+
+    const newSummary = new summaryModel({
+      documentId: id,
+      content: querySummary,
+      queryBased: true
+
+    });
+    await newSummary.save()
+    res.status(201).json({ message: "Query-based summary created successfully", summary: newSummary });
+  } catch (error) {
+
+  }
+}
 
 function generateSummary(content) {
   // Add logic to create a summary based on content and type (e.g., using an NLP API)

@@ -21,6 +21,14 @@ const chapterSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  isProcessed: {
+    type: Boolean,
+    default: false,
+  },
+  summaryId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "textSummaryModel",
+  },
 });
 module.exports = mongoose.model("ChapterModel", chapterSchema);
 

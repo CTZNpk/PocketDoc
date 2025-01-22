@@ -15,6 +15,11 @@ const textSummarySchema = new mongoose.Schema({
   summary: {
     type: String,
     required: true,
+  },
+  path: {
+    type: String,
+    default: null,
   }
+
 })
 module.exports = mongoose.model("textSummaryModel", textSummarySchema)

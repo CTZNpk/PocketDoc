@@ -119,7 +119,13 @@ exports.getChaptersFromADocument = async (req, res) => {
       });
 
       const savedChapter = await newChapter.save();
-      chapters.push(savedChapter);
+      chapters.push({
+        chapterId: savedChapter._id,
+        title: savedChapter.title,
+        level: savedChapter.level,
+        startPageNum: savedChapter.startPageNum,
+        endPageNum: savedChapter.endPageNum,
+      });
     }
     doc.hasChaptersGenerated = true;
     await doc.save();

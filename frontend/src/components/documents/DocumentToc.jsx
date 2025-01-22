@@ -32,6 +32,7 @@ const DocumentToc = () => {
   };
 
   const handleGenerateSummary = (chapter) => {
+    console.log(chapter.id)
     alert(`Generating summary for ${chapter.title}`);
   };
 
