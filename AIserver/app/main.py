@@ -191,7 +191,7 @@ def save_markdown_to_pdf(md_content, pdf_file):
     pdf.output(pdf_file)
 
 
-def hierarchical_summarize(text: str, chunk_size: int = 15000, overlap: int = 4000) -> str:
+def hierarchical_summarize(text: str, chunk_size: int = 25000, overlap: int = 8000) -> str:
     """
     Summarizes long text using Gemini with hierarchical merging.
     """
@@ -267,6 +267,7 @@ def hierarchical_summarize(text: str, chunk_size: int = 15000, overlap: int = 40
 @app.post("/summarize-doc")
 async def summarize_pdf(file_path: str = Form(...), start_page: int = Form(...), end_page: int = Form(...)):
     # Read and extract text from the uploaded PDF
+    file_path = '../server/'+file_path
     if not os.path.exists(file_path):
         return JSONResponse(content={"error": "File not found."}, status_code=404)
 

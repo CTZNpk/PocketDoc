@@ -1,9 +1,9 @@
 const express = require("express")
 const auth = require("../middlewares/auth")
-const { queryBasedSummary, summarizeEntireDocController, generateSummaryFromText } = require("../controllers/summaryController")
+const { queryBasedSummary, summarizeChapters, generateSummaryFromText } = require("../controllers/summaryController")
 const summaryRouter = express.Router()
 summaryRouter.post('/', generateSummaryFromText)
 summaryRouter.post('/:id/query-based', auth, queryBasedSummary)
-summaryRouter.post('/:id/summarize', auth, summarizeEntireDocController)
+summaryRouter.get('/:id/', auth, summarizeChapters)
 
 module.exports = summaryRouter

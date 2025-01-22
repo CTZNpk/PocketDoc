@@ -1,5 +1,8 @@
 const { default: axios } = require("axios");
 const textSummaryModel = require("../models/summaryModel");
+const chapterModel = require("../models/chapterModel");
+const documentModel = require("../models/documentModel")
+const qs = require('qs');
 
 
 
@@ -31,25 +34,48 @@ exports.generateSummaryFromText = async (req, res) => {
   }
 }
 
-exports.summarizeEntireDocController = async (req, res) => {
+exports.summarizeChapters = async (req, res) => {
   const { id } = req.params;
 
-  console.log()
   try {
-    const document = await documentModel.findById(id);
+    const chapter = await chapterModel.findById(id);
+    if (!chapter) {
+      return res.status(404).json({ error: "Chapter not found" });
+    }
+    if (chapter.isProcessed) {
+      const summary = await textSummaryModel.findById(chapter.summaryId);
+      return res.status(200).json({ data: summary });
+    }
+    const document = await documentModel.findById(chapter.docId);
     if (!document) {
       return res.status(404).json({ error: "Document not found" });
     }
 
-    const summaryText = generateSummary(document.content)
+    const formData = qs.stringify({
+      file_path: document.file,
+      start_page: chapter.startPageNum,
+      end_page: chapter.endPageNum,
+    });
 
-    const newSummary = new summaryModel({
-      documentId: id,
-      content: summaryText
+    const fastApiResponse = await axios.post('http://localhost:8000/summarize-doc/',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
 
+
+    const newSummary = new textSummaryModel({
+      summary: fastApiResponse.data.summary,
+      modelUsed: "gemini",
+      path: fastApiResponse.data.pdf_path,
     });
     await newSummary.save();
 
+    chapter.isProcessed = true;
+    chapter.summaryId = newSummary._id;
+    await chapter.save();
 
     return res.status(200).json({ data: newSummary });
   } catch (error) {
@@ -82,18 +108,3 @@ exports.queryBasedSummary = async (req, res) => {
   }
 }
 
-function generateSummary(content) {
-  // Add logic to create a summary based on content and type (e.g., using an NLP API)
-  return "Generated summary based on the document content.";
-}
-
-// Example function to generate a query-based summary (replace with your own logic)
-function generateQuerySummary(documentContent, query) {
-  // Implement your search and summarization logic here
-  // This is a basic example that checks if the query is present in the document content
-  if (documentContent.includes(query)) {
-    return `Summary for query '${query}': ${documentContent}`;
-  } else {
-    return `No relevant content found for query '${query}'.`;
-  }
-}

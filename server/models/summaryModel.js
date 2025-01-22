@@ -2,7 +2,6 @@ const mongoose = require("mongoose")
 const textSummarySchema = new mongoose.Schema({
   passage: {
     type: String,
-    required: true,
   },
   createdAt: {
     type: Date,

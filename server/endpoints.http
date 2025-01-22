@@ -76,6 +76,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZ
 
 ###
 # summaryRouter.post('/', generateSummaryFromText)
+
 POST http://localhost:3000/pocketdoc/summarize/
 Accept: application/json
 Content-Type: application/json
@@ -85,4 +86,11 @@ Content-Type: application/json
   
 }
  
+###
+# summaryRouter.post('/:id/summarize', auth, summarizeChapters)
+
+GET http://localhost:3000/pocketdoc/summarize/67914e96c2255ec2f9e3f236/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmI4YTRmZTYxZjZmOTlhMjA1MGM4MiIsImlhdCI6MTczNTYzNTA5Mn0.ELy1bSeV_lJlLyJgZM5YEs2NHiyb7wqDM_mo3PNykMo
 

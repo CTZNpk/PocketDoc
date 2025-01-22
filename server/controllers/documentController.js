@@ -74,12 +74,12 @@ exports.getDocument = async (req, res) => {
 
 exports.getChaptersFromADocument = async (req, res) => {
   const { documentId } = req.params;
-  console.log(documentId);
   try {
     const doc = await documentModel.findById(documentId);
     if (!doc) {
       return res.status(404).json({ error: "Document Not Found" });
     }
+
     if (doc.hasChaptersGenerated) {
       const chapters = await chapterModel.find({ docId: documentId });
       return res.status(200).json({ chapters });
