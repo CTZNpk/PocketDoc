@@ -266,9 +266,6 @@ def hierarchical_summarize(text: str, chunk_size: int = 15000, overlap: int = 40
 
 @app.post("/summarize-doc")
 async def summarize_pdf(file_path: str = Form(...), start_page: int = Form(...), end_page: int = Form(...)):
-    """
-    Endpoint to upload a PDF, summarize its content, and return a summarized PDF.
-    """
     # Read and extract text from the uploaded PDF
     if not os.path.exists(file_path):
         return JSONResponse(content={"error": "File not found."}, status_code=404)
@@ -287,8 +284,9 @@ async def summarize_pdf(file_path: str = Form(...), start_page: int = Form(...),
         file_path).split('.')[0]}_summary.pdf"
     os.makedirs(os.path.dirname(output_pdf), exist_ok=True)
     save_markdown_to_pdf(summary, output_pdf)
+    summary_html = markdown2.markdown(summary)
 
     return {
-        "summary": summary,
+        "summary": summary_html,
         "pdf_path": output_pdf
     }
