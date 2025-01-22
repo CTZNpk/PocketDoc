@@ -1,4 +1,4 @@
-import { getSummaryFromPassage } from "../api/summaryService"
+import { getSummaryFromChapterId, getSummaryFromPassage } from "../api/summaryService"
 import { emitToast } from "../utils/emitToast"
 
 const useSummary = () => {
@@ -13,8 +13,18 @@ const useSummary = () => {
     }
   }
 
+  const generateChapterSummary = async (chapterId) => {
+    try {
+      const response = await getSummaryFromChapterId(chapterId)
+      return response.data.summary
 
-  return { generatePassageSummary }
+    } catch (e) {
+      emitToast(`Error getting Summary: ${e}`)
+    }
+  }
+
+
+  return { generatePassageSummary, generateChapterSummary }
 }
 
 export default useSummary
