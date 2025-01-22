@@ -3,3 +3,4 @@ uvicorn
 pymupdf
 langchain
 langchain-ollama
+google-generativeai

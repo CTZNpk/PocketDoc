@@ -16,7 +16,7 @@ exports.generateSummaryFromText = async (req, res) => {
         },
       });
 
-    const summary = fastApiResponse.data.summary.content
+    const summary = fastApiResponse.data.summary
     const newTextSummary = new textSummaryModel({
       passage: passage,
       modelUsed: fastApiResponse.data.model_used,

@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import fitz
 import os
 from pydantic import BaseModel
-from langchain.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
+import google.generativeai as genai
+from dotenv import load_dotenv
+from typing import List, Dict
+import numpy as np
 
 
 def get_application():
@@ -53,23 +55,90 @@ class SummarizeRequest(BaseModel):
     passage: str
 
 
-local_model = "llama3.2:1b"
-llm = ChatOllama(model=local_model)
+local_model = "gemini"
+
+load_dotenv()
+api_key = os.getenv("GEMINI_API")
+
+genai.configure(api_key=api_key)
+
+# Initialize model
+model = genai.GenerativeModel('gemini-pro')
 
 
 @app.post("/summarize/")
 async def summarize(request: SummarizeRequest):
     try:
-        template = """Please Summarize this passage :
-        Passage: {passage}
-        """
-        prompt = ChatPromptTemplate.from_template(template)
+        prompt = f"""Summarize the text below and return response parsable as markdown:
+            1. Include specific details from the text.
+            2. Ensure clarity and avoid vague statements.
+            3. Keep concise with 30%-40% of original length
+            4. Please make the summary relevant only to the passage provided please do not add any additional information
 
-        llm_output = llm.invoke(
-            prompt.format(passage=request.passage)
-        )
+        Text: {request.passage}"""
 
-        return {"summary": llm_output, "model_used": local_model}
+        # Get Gemini response
+        response = model.generate_content(prompt)
+
+        return {
+            "summary": response.text,
+            "model_used": "gemini-pro"
+        }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Gemini error: {str(e)}")
+
+
+def split_document_by_font_size(pdf_path: str, font_scale: float = 1.2) -> [Dict]:
+    """
+    Splits PDF into sections based on font size thresholds.
+    Returns list of {heading: str, content: str, page: int}.
+    """
+    doc = fitz.open(pdf_path)
+    sections = []
+    current_section = {"heading": "Introduction", "content": "", "page": 1}
+    all_font_sizes = []
+
+    # First pass: Collect all font sizes to determine thresholds
+    for page in doc:
+        blocks = page.get_text("dict")["blocks"]
+        for b in blocks:
+            if "lines" in b:
+                for line in b["lines"]:
+                    for span in line["spans"]:
+                        all_font_sizes.append(span["size"])
+
+    median_font_size = np.median(all_font_sizes)
+    heading_threshold = median_font_size * font_scale
+
+    for page_num, page in enumerate(doc, start=1):
+        blocks = page.get_text("dict")["blocks"]
+        for b in blocks:
+            if "lines" in b:
+                for line in b["lines"]:
+                    text = ""
+                    is_heading = False
+                    for span in line["spans"]:
+                        text += span["text"]
+                        # Check if any span in the line exceeds threshold
+                        if span["size"] > heading_threshold:
+                            is_heading = True
+
+                    if is_heading:
+                        # Save current section
+                        if current_section["content"].strip():
+                            sections.append(current_section)
+                        # Start new section
+                        current_section = {
+                            "heading": text.strip(),
+                            "content": "",
+                            "page": page_num
+                        }
+                    else:
+                        current_section["content"] += text + "\n"
+
+    # Add final section
+    if current_section["content"].strip():
+        sections.append(current_section)
+
+    return sections

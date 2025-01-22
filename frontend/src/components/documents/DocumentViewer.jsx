@@ -7,10 +7,16 @@ import useDocs from '../../hooks/useDocs';
 import { useParams } from 'react-router';
 import Button from '../shared/Button';
 import useSummary from '../../hooks/useSummary';
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm';
 
 
 export default function DocumentViewer() {
-  const [summaryText, setSummaryText] = useState("");
+  const [summaryText, setSummaryText] = useState(`
+ *Test Heading*
+  - ** This is bold text **
+  - Regular list item
+    `);
   const { generatePassageSummary } = useSummary();
 
   const handleButtonClick = async () => {
@@ -34,12 +40,11 @@ export default function DocumentViewer() {
           Generate Summary
         </Button>
         <div className='border min-h-[70vh] w-[30vw] flex flex-col p-4 overflow-y-auto'>
-          <h3 className='text-lg font-bold mb-4'>Selected Text:</h3>
-          {summaryText ? (
-            <p className='text-left text-white'>{summaryText}</p>
-          ) : (
-            <p className='text-gray-500 text-center'>No text selected.</p>
-          )}
+          <ReactMarkdown className='text-white text-justify'
+            remarkPlugins={[remarkGfm]}
+          >
+            {summaryText}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
