@@ -43,7 +43,6 @@ const useDocs = () => {
           endPage: doc.endPageNum,
           subChapters: []
         }));
-      console.log(lvl1Chapters);
 
       const lvl2Chapters = data.chapters.filter((doc) => doc.level === 2)
         .map((doc) => ({
@@ -53,7 +52,6 @@ const useDocs = () => {
           endPage: doc.endPageNum,
         }));
 
-      console.log(lvl2Chapters);
       const toc = lvl1Chapters.map((lvl1) => ({
         ...lvl1,
         subChapters: lvl2Chapters.filter(
