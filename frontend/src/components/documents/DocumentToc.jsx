@@ -8,7 +8,12 @@ const DocumentToc = () => {
   const { docId } = useParams();
   const { getDocumentToc } = useDocs();
   const [toc, setToc] = useState([]);
-  const [expanded, setExpanded] = useState({});
+  const [expanded, setExpanded] = useState(() =>
+    toc.reduce((acc, chapter) => {
+      acc[chapter.id] = false;
+      return acc;
+    }, {})
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,9 +27,10 @@ const DocumentToc = () => {
     };
     fetchToc();
     console.log(toc)
-  }, []);
+  }, [docId]);
 
   const toggleExpand = (id) => {
+    console.log(id)
     setExpanded((prev) => ({
       ...prev,
       [id]: !prev[id],

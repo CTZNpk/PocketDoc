@@ -82,7 +82,13 @@ exports.getChaptersFromADocument = async (req, res) => {
 
     if (doc.hasChaptersGenerated) {
       const chapters = await chapterModel.find({ docId: documentId });
-      return res.status(200).json({ chapters });
+
+      const formattedChapters = chapters.map((chapter) => ({
+        ...chapter.toObject(), 
+        chapterId: chapter._id,
+      }));
+
+      return res.status(200).json({ chapters: formattedChapters });
     }
 
     const fastApiResponse = await axios.post('http://localhost:8000/extract-toc/',
