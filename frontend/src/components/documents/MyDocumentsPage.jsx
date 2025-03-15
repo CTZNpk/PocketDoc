@@ -4,12 +4,10 @@ import AnimateBox from "../shared/AnimateBox";
 import Button from "../shared/Button";
 import DocumentUploadPage from "./DocumentUploadPage";
 import docsStore from "../../store/docsStore";
-import useDocs from "../../hooks/useDocs";
 import { useNavigate } from "react-router";
-
+import useDocs from "../../hooks/useDocs";
 
 export default function MyDocumentsPage() {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { docs } = docsStore();
   const { getMyDocs } = useDocs();
@@ -22,12 +20,18 @@ export default function MyDocumentsPage() {
     <div className="bg-black text-white min-h-screen ">
       <AnimateBox className="flex flex-col items-center">
         <div className="flex flex-col mt-[15vh] items-center justify-center">
-          <h1 className=" text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
+          <h1
+            className=" text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
               text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500 min-h-[70px]
-          lg:min-h-[100px] ">
+          lg:min-h-[100px] "
+          >
             My Documents
           </h1>
-          <Button variant="secondary" onClick={() => setIsModalOpen(true)} wFull={false}>
+          <Button
+            variant="secondary"
+            onClick={() => setIsModalOpen(true)}
+            wFull={false}
+          >
             Upload Document
           </Button>
         </div>
@@ -43,8 +47,8 @@ export default function MyDocumentsPage() {
             </div>
           </div>
         )}
-      </AnimateBox >
-    </div >
+      </AnimateBox>
+    </div>
   );
 }
 
@@ -62,7 +66,6 @@ function DocumentPreview({ doc }) {
         video.pause();
         video.removeEventListener("timeupdate", stopAtHalf);
       }
-
     }
   };
   const handleMouseEnter = () => {
@@ -75,15 +78,15 @@ function DocumentPreview({ doc }) {
   const handleMouseLeave = () => {
     const video = videoRef.current;
     if (!video) return;
-    video.currentTime = video.duration - video.currentTime
+    video.currentTime = video.duration - video.currentTime;
     video.removeEventListener("timeupdate", stopAtHalf);
     video.play();
   };
 
   return (
-    <div className="flex flex-col items-center justify-center m-5"
+    <div
+      className="flex flex-col items-center justify-center m-5"
       onClick={handleClick}
-
     >
       <StyledWrapper>
         <div className="package">
@@ -92,26 +95,19 @@ function DocumentPreview({ doc }) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <video
-              ref={videoRef}
-              muted
-              className="w-full h-full object-cover"
-            >
+            <video ref={videoRef} muted className="w-full h-full object-cover">
               <source src="/book_open.mp4" type="video/mp4" />
               Your browser does not support video.
             </video>
-
           </div>
-
         </div>
       </StyledWrapper>
       <h2 className="text-l sm:text-xl mt-2 lg:mt-3 text-center">
         {doc.title}
       </h2>
-
-    </div>);
+    </div>
+  );
 }
-
 
 const StyledWrapper = styled.div`
   .package {
@@ -144,4 +140,5 @@ const StyledWrapper = styled.div`
   .text {
     color: white;
     font-size: 17px;
-  }`;
+  }
+`;

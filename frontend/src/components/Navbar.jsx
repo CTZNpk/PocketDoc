@@ -6,10 +6,15 @@ import Button from "./shared/Button";
 export default function Navbar() {
   const navigate = useNavigate();
   return (
-    <nav className="bg-white dark:bg-black fixed w-full z-20 
-      top-0 left-0 border-gray-200 dark:border-gray-600">
+    <nav
+      className="bg-white dark:bg-black fixed w-full z-20 
+      top-0 left-0 border-gray-200 dark:border-gray-600"
+    >
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <Link
+          to="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse"
+        >
           <span className="self-center text-2xl font-bold whitespace-nowrap text-white">
             PocketDoc
           </span>
@@ -52,9 +57,11 @@ export default function Navbar() {
           className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
           id="navbar-sticky"
         >
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border 
+          <ul
+            className="flex flex-col p-4 md:p-0 mt-4 font-medium border 
             border-gray-700 rounded-lg bg-black 
-            md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 ">
+            md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 "
+          >
             <li>
               <Link
                 to="/"
@@ -102,11 +109,9 @@ export default function Navbar() {
                 Contact
               </Link>
             </li>
-
           </ul>
         </div>
       </div>
     </nav>
   );
 }
-

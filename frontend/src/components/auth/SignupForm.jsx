@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import axios from "axios";
 import FormContainer from "./FormContainer";
-import InputField from "../shared/InputField"
+import InputField from "../shared/InputField";
 import Button from "../shared/Button";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 export default function SignupForm() {
-  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const { handleSignUp } = useAuth();
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -55,11 +58,10 @@ export default function SignupForm() {
           onChange={handleChange}
           placeholder="Enter your password"
         />
-        <Button type="submit"
-          variant="secondary"
-        >SignUp</Button>
+        <Button type="submit" variant="secondary">
+          SignUp
+        </Button>
       </form>
     </FormContainer>
   );
 }
-

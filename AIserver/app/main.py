@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Form
+from langchain.document_loaders import PyPDFLoader
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import markdown2
@@ -70,7 +71,7 @@ api_key = os.getenv("GEMINI_API")
 genai.configure(api_key=api_key)
 
 # Initialize model
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 
 @app.post("/summarize/")
@@ -191,103 +192,60 @@ def save_markdown_to_pdf(md_content, pdf_file):
     pdf.output(pdf_file)
 
 
-def hierarchical_summarize(text: str, chunk_size: int = 25000, overlap: int = 8000) -> str:
-    """
-    Summarizes long text using Gemini with hierarchical merging.
-    """
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=overlap,
-        separators=["\n\n## ", "\n\n", "\n", ". "]
-    )
-
-    docs = text_splitter.create_documents([text])
-    llm = GoogleGenerativeAI(model="gemini-pro")
-    prompt_template = PromptTemplate(
-        template="""
-        **Summarize this text section** focusing on:
-        - Key concepts and entities
-        - Important examples and figures
-        - Relationships between ideas
-        - Make the summary about 40-50% of the original
-        - Please keep all the headings present in the text and summarize inside the headings
-        
-        Text: {text}
-        """,
-        input_variables=["text"]
-    )
-
-    summary_chain = load_summarize_chain(
-        llm=llm,
-        chain_type="map_reduce",
-        map_prompt=prompt_template,
-        combine_prompt=prompt_template,
-        verbose=False
-    )
-
-    initial_summaries = [summary_chain.run([doc]) for doc in docs]
-
-    def recursive_merge(summaries: list) -> str:
-        if len(summaries) == 1:
-            return summaries[0]
-
-        merged = []
-        for i in range(0, len(summaries), 2):
-            pair = summaries[i:i + 2]
-            if len(pair) == 1:
-                merged.append(pair[0])
-                continue
-
-            overlap_text = "\n".join([
-                text_splitter.split_text(pair[0])[-1],
-                text_splitter.split_text(pair[1])[0]
-            ])
-
-            overlap_prompt = f"""
-            **Summarize the overlap text below** while preserving key details and resolving ambiguities:
-
-            Overlap Text:
-            {overlap_text}
-
-            Summarized Overlap:
-            """
-            overlap_response = llm.invoke(overlap_prompt).strip()
-            merged_summary = f"""
-            {pair[0]}
-            {overlap_response}
-            {pair[1]}
-            """
-            merged.append(merged_summary.strip())
-
-        return recursive_merge(merged)
-
-    return recursive_merge(initial_summaries)
-
-
-@app.post("/summarize-doc")
-async def summarize_pdf(file_path: str = Form(...), start_page: int = Form(...), end_page: int = Form(...)):
-    # Read and extract text from the uploaded PDF
+def extract_text_from_pdf(file_path: str, start_page: int, end_page: int) -> str:
+    """Extracts text from a PDF file within a page range."""
     file_path = '../server/'+file_path
-    if not os.path.exists(file_path):
-        return JSONResponse(content={"error": "File not found."}, status_code=404)
+    loader = PyPDFLoader(file_path)
+    pages = loader.load()[start_page - 1:end_page]
+    return "\n\n".join([page.page_content for page in pages])
 
-    with fitz.open(file_path) as doc:
-        if start_page < 1 or end_page > len(doc) or start_page > end_page:
-            return JSONResponse(content={"error": "Invalid page range."}, status_code=400)
 
-        # Extract text between the specified pages
-        text = "".join([doc[page - 1].get_text()
-                       for page in range(start_page, end_page + 1)])
-    summary = hierarchical_summarize(text)
+def chunk_document(text: str, chunk_size: int = 10000) -> list:
+    """Splits text into manageable chunks."""
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size, chunk_overlap=500)
+    return splitter.split_text(text)
 
-    # Save summary as PDF
-    output_pdf = f"summaries/{os.path.basename(
-        file_path).split('.')[0]}_summary.pdf"
-    os.makedirs(os.path.dirname(output_pdf), exist_ok=True)
-    save_markdown_to_pdf(summary, output_pdf)
-    summary_html = markdown2.markdown(summary)
 
-    return {
-        "summary": summary_html,
-        "pdf_path": output_pdf
-    }
+def get_summary_gemini(chunks: list) -> str:
+    """Summarizes text using Gemini Pro with Markdown formatting."""
+    context = ""
+    summaries = []
+    print(len(chunks))
+    i = 0
+    for chunk in chunks:
+        prompt = f"""
+        Here is the summary of the document so far:
+        {context}
+
+        Please continue the summary with the new section below:
+        {chunk}
+
+        ### Important Instructions:
+        - **Do NOT repeat previous content.** Continue seamlessly from where the last summary ended.
+        - Extract **only the most essential information** (about 50% of key points) from this section.
+        - Preserve the original structure using **Markdown formatting**:
+          - Use `##` for main headings and `###` for subheadings.
+          - Highlight key terms and important points in **bold**.
+        - **Start immediately**—no introduction, no context recap, just continue the summary.
+        - Assume the reader has already read the previous summaries.
+
+        Your output will be appended directly to the previous summary.
+        """
+        response = model.generate_content(prompt)
+        summary = response.text
+        summaries.append(summary)
+        context = summary  # Carry forward previous summary
+        print(i)
+        i += 1
+        print(context)
+
+    return "".join(summaries)
+
+
+@app.post("/summarize-doc/")
+async def summarize_document(file_path: str = Form(...), start_page: int = Form(...), end_page: int = Form(...)):
+    text = extract_text_from_pdf(file_path, start_page, end_page)
+    chunks = chunk_document(text)
+    final_summary = get_summary_gemini(chunks)
+    return {"summary": final_summary}
