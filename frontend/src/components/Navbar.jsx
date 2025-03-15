@@ -1,116 +1,208 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import Button from "./shared/Button";
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, FileText } from "lucide-react";
+
+// Import shadcn components
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Check if a path is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
-    <nav
-      className="bg-white dark:bg-black fixed w-full z-20 
-      top-0 left-0 border-gray-200 dark:border-gray-600"
-    >
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link
-          to="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <span className="self-center text-2xl font-bold whitespace-nowrap text-white">
+    <nav className="bg-gray-900 border-b border-gray-800 fixed w-full z-20 top-0 left-0 shadow-lg shadow-black/20">
+      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-lg">
+            <FileText className="h-5 w-5 text-white" />
+          </div>
+          <span className="self-center text-xl font-bold whitespace-nowrap text-white">
             PocketDoc
           </span>
         </Link>
 
-        <div className="flex md:order-2 space-x-3 rtl:space-x-reverse">
-          <Button variant="secondary" onClick={() => navigate("/login")}>
-            Login
-          </Button>
-
-          <button
-            data-collapse-toggle="navbar-sticky"
-            type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 
-            rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 
-            dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            aria-controls="navbar-sticky"
-            aria-expanded="false"
+        {/* Mobile menu button */}
+        <div className="flex md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMenu}
+            className="text-gray-300 hover:text-white hover:bg-gray-800"
           >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-          </button>
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
         </div>
 
-        <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-          id="navbar-sticky"
-        >
-          <ul
-            className="flex flex-col p-4 md:p-0 mt-4 font-medium border 
-            border-gray-700 rounded-lg bg-black 
-            md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 "
+        {/* Desktop navigation */}
+        <div className="hidden md:flex md:items-center md:gap-6">
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Link to="/" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
+                      isActive("/") ? "text-purple-400" : "text-gray-300"
+                    }`}
+                  >
+                    Home
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/services" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
+                      isActive("/services")
+                        ? "text-purple-400"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    Services
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/myDocuments" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
+                      isActive("/myDocuments")
+                        ? "text-purple-400"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    Documents
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/about" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
+                      isActive("/about") ? "text-purple-400" : "text-gray-300"
+                    }`}
+                  >
+                    About
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/contact" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
+                      isActive("/contact") ? "text-purple-400" : "text-gray-300"
+                    }`}
+                  >
+                    Contact
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <Button
+            variant="default"
+            onClick={() => navigate("/login")}
+            className="bg-purple-600 hover:bg-purple-700 text-white ml-4"
           >
-            <li>
+            Login
+          </Button>
+        </div>
+
+        {/* Mobile menu dropdown */}
+        {isMenuOpen && (
+          <div className="md:hidden w-full mt-4 bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+            <div className="flex flex-col">
               <Link
                 to="/"
-                className="block py-2 px-3 text-gray-900 rounded 
-                 hover:text-purple-500 md:p-0  text-white border-gray-700"
-                aria-current="page"
+                className={`py-3 px-4 hover:bg-gray-700 ${
+                  isActive("/")
+                    ? "text-purple-400 bg-gray-700/70"
+                    : "text-gray-300"
+                }`}
+                onClick={toggleMenu}
               >
                 Home
               </Link>
-            </li>
-
-            <li>
               <Link
                 to="/services"
-                className="block py-2 px-3 text-gray-900 rounded 
-                 hover:text-purple-500 md:p-0  text-white border-gray-700"
+                className={`py-3 px-4 hover:bg-gray-700 ${
+                  isActive("/services")
+                    ? "text-purple-400 bg-gray-700/70"
+                    : "text-gray-300"
+                }`}
+                onClick={toggleMenu}
               >
                 Services
               </Link>
-            </li>
-            <li>
               <Link
                 to="/myDocuments"
-                className="block py-2 px-3 text-gray-900 rounded 
-                 hover:text-purple-500 md:p-0  text-white border-gray-700"
+                className={`py-3 px-4 hover:bg-gray-700 ${
+                  isActive("/myDocuments")
+                    ? "text-purple-400 bg-gray-700/70"
+                    : "text-gray-300"
+                }`}
+                onClick={toggleMenu}
               >
                 Documents
               </Link>
-            </li>
-            <li>
               <Link
                 to="/about"
-                className="block py-2 px-3 text-gray-900 rounded 
-                 hover:text-purple-500 md:p-0  text-white border-gray-700"
+                className={`py-3 px-4 hover:bg-gray-700 ${
+                  isActive("/about")
+                    ? "text-purple-400 bg-gray-700/70"
+                    : "text-gray-300"
+                }`}
+                onClick={toggleMenu}
               >
                 About
               </Link>
-            </li>
-            <li>
               <Link
                 to="/contact"
-                className="block py-2 px-3 text-gray-900 rounded 
-                 hover:text-purple-500 md:p-0  text-white border-gray-700"
+                className={`py-3 px-4 hover:bg-gray-700 ${
+                  isActive("/contact")
+                    ? "text-purple-400 bg-gray-700/70"
+                    : "text-gray-300"
+                }`}
+                onClick={toggleMenu}
               >
                 Contact
               </Link>
-            </li>
-          </ul>
-        </div>
+              <div className="py-3 px-4 border-t border-gray-700">
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    navigate("/login");
+                    toggleMenu();
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                >
+                  Login
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

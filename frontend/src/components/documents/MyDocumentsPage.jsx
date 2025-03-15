@@ -1,11 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { FileText, Upload, Plus } from "lucide-react";
 import AnimateBox from "../shared/AnimateBox";
-import Button from "../shared/Button";
 import DocumentUploadPage from "./DocumentUploadPage";
 import docsStore from "../../store/docsStore";
-import { useNavigate } from "react-router";
 import useDocs from "../../hooks/useDocs";
+
+// Import shadcn components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function MyDocumentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,128 +22,115 @@ export default function MyDocumentsPage() {
   }, [getMyDocs]);
 
   return (
-    <div className="bg-black text-white min-h-screen ">
-      <AnimateBox className="flex flex-col items-center">
-        <div className="flex flex-col mt-[15vh] items-center justify-center">
-          <h1
-            className=" text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold 
-              text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500 min-h-[70px]
-          lg:min-h-[100px] "
-          >
+    <div className="bg-gray-900 text-white min-h-screen">
+      <AnimateBox className="container mx-auto px-4 py-8">
+        <div className="flex flex-col items-center justify-center mt-8 mb-12">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600">
             My Documents
           </h1>
+
           <Button
-            variant="secondary"
+            variant="default"
             onClick={() => setIsModalOpen(true)}
-            wFull={false}
+            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+            size="lg"
           >
+            <Plus className="h-5 w-5" />
             Upload Document
           </Button>
         </div>
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-10 mt-10">
-          {docs.map((doc) => (
-            <DocumentPreview doc={doc} />
-          ))}
-        </div>
-        {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-            <div className="relative z-10">
-              <DocumentUploadPage onClose={() => setIsModalOpen(false)} />
-            </div>
+
+        {docs.length === 0 ? (
+          <EmptyDocumentsState setIsModalOpen={setIsModalOpen} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+            {docs.map((doc) => (
+              <DocumentCard key={doc.id} doc={doc} />
+            ))}
           </div>
+        )}
+
+        {isModalOpen && (
+          <DocumentUploadPage onClose={() => setIsModalOpen(false)} />
         )}
       </AnimateBox>
     </div>
   );
 }
 
-function DocumentPreview({ doc }) {
-  const videoRef = useRef(null);
+function EmptyDocumentsState({ setIsModalOpen }) {
+  return (
+    <div className="flex flex-col items-center justify-center p-8 rounded-lg border border-gray-700 bg-gray-800/50 mt-8">
+      <div className="bg-purple-900/20 p-4 rounded-full mb-4">
+        <FileText className="h-12 w-12 text-purple-400" />
+      </div>
+      <h2 className="text-xl font-medium text-white mb-2">No documents yet</h2>
+      <p className="text-gray-400 text-center mb-6">
+        Upload your first document to get started
+      </p>
+      <Button
+        variant="outline"
+        onClick={() => setIsModalOpen(true)}
+        className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+      >
+        <Upload className="h-4 w-4 mr-2" />
+        Upload a document
+      </Button>
+    </div>
+  );
+}
+
+function DocumentCard({ doc }) {
   const navigate = useNavigate();
   const handleClick = () => {
     navigate(`/document/${doc.id}/toc`);
   };
 
-  const stopAtHalf = () => {
-    const video = videoRef.current;
-    if (video) {
-      if (video.currentTime >= video.duration / 2) {
-        video.pause();
-        video.removeEventListener("timeupdate", stopAtHalf);
-      }
-    }
-  };
-  const handleMouseEnter = () => {
-    const video = videoRef.current;
-    video.currentTime = 0;
-    video.play();
-    video.addEventListener("timeupdate", stopAtHalf);
-  };
+  // Calculate a random number of pages between 1-100 for demonstration
+  const pageCount = Math.floor(Math.random() * 100) + 1;
 
-  const handleMouseLeave = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.currentTime = video.duration - video.currentTime;
-    video.removeEventListener("timeupdate", stopAtHalf);
-    video.play();
-  };
+  // Create a formatted date string
+  const uploadDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   return (
-    <div
-      className="flex flex-col items-center justify-center m-5"
+    <Card
+      className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-lg hover:shadow-purple-700/10 transition-all duration-300"
       onClick={handleClick}
     >
-      <StyledWrapper>
-        <div className="package">
-          <div
-            className="package2 relative w-64 h-40 rounded-lg overflow-hidden bg-gray-200 shadow-lg hover:shadow-xl transition-shadow"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <video ref={videoRef} muted className="w-full h-full object-cover">
-              <source src="/book_open.mp4" type="video/mp4" />
-              Your browser does not support video.
-            </video>
+      <div className="relative h-40 bg-gradient-to-br from-purple-900 to-indigo-900 flex items-center justify-center">
+        {/* Document preview - first page simulation */}
+        <div className="absolute inset-4 bg-white rounded-sm shadow-md flex flex-col p-2">
+          <div className="w-full h-4 bg-gray-200 rounded-sm mb-2"></div>
+          <div className="w-3/4 h-3 bg-gray-200 rounded-sm mb-2"></div>
+          <div className="w-full h-16 bg-gray-100 rounded-sm"></div>
+          <div className="mt-auto w-full flex justify-between">
+            <div className="w-1/4 h-2 bg-gray-200 rounded-sm"></div>
+            <div className="w-1/4 h-2 bg-gray-200 rounded-sm"></div>
           </div>
         </div>
-      </StyledWrapper>
-      <h2 className="text-l sm:text-xl mt-2 lg:mt-3 text-center">
-        {doc.title}
-      </h2>
-    </div>
+
+        {/* Document type indicator */}
+        <Badge className="absolute top-2 right-2 bg-purple-600 text-white border-none">
+          PDF
+        </Badge>
+      </div>
+
+      <CardContent className="p-4">
+        <ScrollArea className="h-12">
+          <h3 className="font-medium text-white text-lg line-clamp-2">
+            {doc.title}
+          </h3>
+        </ScrollArea>
+      </CardContent>
+
+      <CardFooter className="p-4 pt-0 border-t border-gray-700 flex justify-between items-center text-sm">
+        <span className="text-gray-400">{pageCount} pages</span>
+        <span className="text-gray-400">{uploadDate}</span>
+      </CardFooter>
+    </Card>
   );
 }
-
-const StyledWrapper = styled.div`
-  .package {
-    width: 300px;
-    height: 254px;
-    background-image: linear-gradient(163deg, #ff00ff 0%, #3700ff 100%);
-    border-radius: 20px;
-    text-align: center;
-    transition: all 0.25s cubic-bezier(0, 0, 0, 1);
-  }
-
-  .package:hover {
-    box-shadow: 0px 0px 30px 1px rgba(204, 0, 255, 0.3);
-  }
-
-  .package2 {
-    width: 300px;
-    height: 254px;
-    background-color: #1d1724;
-    border-radius: 10px;
-    transition: all 0.25s cubic-bezier(0, 0, 0, 1);
-    cursor: pointer;
-  }
-
-  .package2:hover {
-    transform: scale(0.98);
-    border-radius: 18px;
-  }
-
-  .text {
-    color: white;
-    font-size: 17px;
-  }
-`;

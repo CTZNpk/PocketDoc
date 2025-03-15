@@ -250,3 +250,7 @@ async def summarize_document(file_path: str = Form(...), start_page: int = Form(
     HTML(string=styled_html).write_pdf(
         f"./summaries/test_${start_page}_${end_page}_summary.pdf")
     return {"summary": final_summary}
+
+
+# @app.post("/generate_embedding/")
+# async def generate_embedding(file_path: str = Form(...)):
