@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, Form
+import markdown
 from langchain.document_loaders import PyPDFLoader
+from weasyprint import HTML
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import markdown2
@@ -152,58 +154,20 @@ def split_document_by_font_size(pdf_path: str, font_scale: float = 1.2) -> [Dict
     return sections
 
 
-class PDF(FPDF):
-    def add_markdown(self, md_content):
-        """
-        Parse Markdown content and add it to the PDF with proper formatting.
-        """
-        lines = markdown2.markdown(md_content).splitlines()
-
-        for line in lines:
-            if line.startswith("<h1>") and line.endswith("</h1>"):
-                self.set_font("Arial", "B", 16)
-                self.cell(0, 10, txt=line[4:-5], ln=True)
-                self.ln(5)
-            elif line.startswith("<h2>") and line.endswith("</h2>"):
-                self.set_font("Arial", "B", 14)
-                self.cell(0, 8, txt=line[4:-5], ln=True)
-                self.ln(4)
-            elif line.startswith("<ul>"):
-                self.ln(2)
-            elif line.startswith("<li>") and line.endswith("</li>"):
-                self.set_font("Arial", size=12)
-                self.cell(10)  # Indentation for bullet points
-                self.cell(0, 6, txt=f"- {line[4:-5]}", ln=True)
-            elif line.startswith("<p>") and line.endswith("</p>"):
-                self.set_font("Arial", size=12)
-                self.multi_cell(0, 8, txt=line[3:-4])
-                self.ln(2)
-
-
-def save_markdown_to_pdf(md_content, pdf_file):
-    pdf = PDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-
-    # Add Markdown content
-    pdf.add_markdown(md_content)
-
-    # Save to PDF
-    pdf.output(pdf_file)
-
-
 def extract_text_from_pdf(file_path: str, start_page: int, end_page: int) -> str:
     """Extracts text from a PDF file within a page range."""
+    print("HERE WE ARE BRO")
     file_path = '../server/'+file_path
     loader = PyPDFLoader(file_path)
     pages = loader.load()[start_page - 1:end_page]
+    print(pages)
     return "\n\n".join([page.page_content for page in pages])
 
 
-def chunk_document(text: str, chunk_size: int = 10000) -> list:
+def chunk_document(text: str, chunk_size: int = 7500) -> list:
     """Splits text into manageable chunks."""
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=500)
+        chunk_size=chunk_size, chunk_overlap=100)
     return splitter.split_text(text)
 
 
@@ -214,24 +178,39 @@ def get_summary_gemini(chunks: list) -> str:
     print(len(chunks))
     i = 0
     for chunk in chunks:
-        prompt = f"""
-        Here is the summary of the document so far:
-        {context}
+        if context != "":
+            prompt = f"""
+            Here is the summary of the document so far:
+            {context}
 
-        Please continue the summary with the new section below:
-        {chunk}
+            Please continue the summary with the new section below:
+            {chunk}
 
-        ### Important Instructions:
-        - **Do NOT repeat previous content.** Continue seamlessly from where the last summary ended.
-        - Extract **only the most essential information** (about 50% of key points) from this section.
-        - Preserve the original structure using **Markdown formatting**:
-          - Use `##` for main headings and `###` for subheadings.
-          - Highlight key terms and important points in **bold**.
-        - **Start immediately**—no introduction, no context recap, just continue the summary.
-        - Assume the reader has already read the previous summaries.
+            ### Important Instructions:
+            - **Do NOT repeat previous content.** Continue seamlessly from where the last summary ended.
+            - Extract **only the most essential information** (about 50% of key points) from this section.        - Preserve the original structure using **Markdown formatting**:
+            - Use `##` for main headings and `###` for subheadings.
+            - Highlight key terms and important points in **bold**.
+            - **Start immediately**—no introduction, no context recap, just continue the summary.
+            - This is a technical coding document Please keep the coding details
+            - Assume the reader has already read the previous summaries.
 
-        Your output will be appended directly to the previous summary.
-        """
+            Please continue forward from the summary donot repeat **THIS IS ESSENTIAL MUST FOLLOW***
+            Your output will be appended directly to the previous summary.
+            """
+        else:
+            prompt = f"""
+            Please summarize this section below:
+            {chunk}
+
+            ### Important Instructions:
+            - Extract **only the most essential information** (about 50% of key points) from this section.        - Preserve the original structure using **Markdown formatting**:
+            - Use `##` for main headings and `###` for subheadings.
+            - Highlight key terms and important points in **bold**.
+            - **Start immediately**—no introduction, no context recap, just continue the summary.
+
+            this output will be directly show the user as summary
+            """
         response = model.generate_content(prompt)
         summary = response.text
         summaries.append(summary)
@@ -248,4 +227,26 @@ async def summarize_document(file_path: str = Form(...), start_page: int = Form(
     text = extract_text_from_pdf(file_path, start_page, end_page)
     chunks = chunk_document(text)
     final_summary = get_summary_gemini(chunks)
+    html = markdown.markdown(final_summary)
+    styled_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{
+                font-family: "Times New Roman", Times, serif;
+                }}
+                strong {{font-weight: bold; }}
+                em {{font-style: italic; }}
+            </style>
+        </head>
+        <body>
+            {html}
+        </body>
+        </html>
+        """
+
+    HTML(string=styled_html).write_pdf(
+        f"./summaries/test_${start_page}_${end_page}_summary.pdf")
     return {"summary": final_summary}
