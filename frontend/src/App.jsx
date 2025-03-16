@@ -15,7 +15,6 @@ import SummaryDisplay from "./components/documents/SummaryDisplayComponents";
 function App() {
   return (
     <>
-      <Navbar />
       <Routes>
         <Route index element={<LandingPage />} />
         <Route path="contact" element={<Contact />} />

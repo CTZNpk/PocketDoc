@@ -1,148 +1,137 @@
 import React from "react";
+import {
+  Github,
+  Twitter,
+  Facebook,
+  Instagram,
+  Mail,
+  ExternalLink,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-gray-900">
-      <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
-        <div className="md:flex md:justify-between">
-          {/* Brand Section */}
-          <div className="mb-6 md:mb-0">
-            <a href="/" className="flex items-center">
-              <img
-                src="/your-logo.svg"
-                className="h-8 me-3"
-                alt="Your Website Logo"
+    <footer className="relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-gray-900"></div>
+
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-cyan-900/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-cyan-800/5 rounded-full blur-3xl"></div>
+
+      <div className="relative z-10 mx-auto w-full max-w-screen-xl p-6 py-12 lg:py-16">
+        {/* Top Section with Newsletter */}
+        <div className="mb-12 p-6 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-800 shadow-lg">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                Stay in the loop
+              </h3>
+              <p className="text-gray-300">
+                Get the latest updates and news from PocketDoc
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-cyan-600 focus:border-transparent outline-none text-white w-full sm:w-64"
               />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                YourWebsite
-              </span>
-            </a>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
-            <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
-                Resources
-              </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                <li className="mb-4">
-                  <a href="/docs" className="hover:underline">
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a href="/support" className="hover:underline">
-                    Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Follow Us */}
-            <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
-                Follow Us
-              </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                <li className="mb-4">
-                  <a
-                    href="https://github.com/your-repo"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    GitHub
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://discord.com/invite/your-invite"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    Discord
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
-                Legal
-              </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
-                <li className="mb-4">
-                  <a href="/privacy" className="hover:underline">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="/terms" className="hover:underline">
-                    Terms & Conditions
-                  </a>
-                </li>
-              </ul>
+              <Button className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white">
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <div className="md:flex md:justify-between">
+          {/* Brand Section */}
+          <div className="mb-10 md:mb-0">
+            <a href="/" className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center mr-3">
+                <span className="text-white font-bold text-lg">P</span>
+              </div>
+              <span className="self-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400">
+                PocketDoc
+              </span>
+            </a>
+            <p className="mt-4 text-gray-400 max-w-xs">
+              Your AI-powered document assistant for summarizing, querying, and
+              creating interactive learning materials.
+            </p>
+            <div className="mt-6 flex space-x-4">
+              <SocialLink icon={<Twitter size={18} />} label="Twitter" />
+              <SocialLink icon={<Github size={18} />} label="GitHub" />
+              <SocialLink icon={<Instagram size={18} />} label="Instagram" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-3">
+            <FooterLinkGroup
+              title="Product"
+              links={[
+                { name: "Features", href: "/features" },
+                { name: "Documentation", href: "/docs" },
+                { name: "Pricing", href: "/pricing" },
+                { name: "Updates", href: "/updates" },
+              ]}
+            />
+
+            <FooterLinkGroup
+              title="Resources"
+              links={[
+                { name: "Blog", href: "/blog" },
+                { name: "Community", href: "/community" },
+                { name: "Support", href: "/support" },
+                { name: "API", href: "/api" },
+              ]}
+            />
+
+            <FooterLinkGroup
+              title="Company"
+              links={[
+                { name: "About", href: "/about" },
+                { name: "Careers", href: "/careers" },
+                { name: "Privacy", href: "/privacy" },
+                { name: "Terms", href: "/terms" },
+              ]}
+            />
+          </div>
+        </div>
+
+        {/* Divider with gradient */}
+        <div className="my-10 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
 
         {/* Bottom Section */}
         <div className="sm:flex sm:items-center sm:justify-between">
-          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 2023{" "}
-            <a href="/" className="hover:underline">
-              YourWebsite™
+          <span className="text-sm text-gray-400">
+            © {currentYear}{" "}
+            <a href="/" className="hover:text-cyan-400 transition-colors">
+              PocketDoc
             </a>
             . All Rights Reserved.
           </span>
 
-          {/* Social Icons */}
-          <div className="flex mt-4 sm:justify-center sm:mt-0">
-            {/* Facebook */}
+          {/* Bottom Links */}
+          <div className="flex flex-wrap gap-4 mt-4 sm:mt-0 text-sm text-gray-400">
             <a
-              href="#"
-              className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+              href="/privacy"
+              className="hover:text-cyan-400 transition-colors"
             >
-              <svg
-                className="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 8 19"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M6.135 3H8V0H6.135a4.147 4.147 0 0 0-4.142 4.142V6H0v3h2v9.938h3V9h2.021l.592-3H5V3.591A.6.6 0 0 1 5.592 3h.543Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="sr-only">Facebook page</span>
+              Privacy Policy
             </a>
-
-            {/* Twitter */}
+            <span>•</span>
+            <a href="/terms" className="hover:text-cyan-400 transition-colors">
+              Terms of Service
+            </a>
+            <span>•</span>
             <a
-              href="#"
-              className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+              href="/cookies"
+              className="hover:text-cyan-400 transition-colors"
             >
-              <svg
-                className="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 17"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M20 1.892a8.178 8.178 0 0 1-2.355.635 4.074 4.074 0 0 0 1.8-2.235 8.344 8.344 0 0 1-2.605.98A4.13 4.13 0 0 0 13.85 0a4.068 4.068 0 0 0-4.1 4.038 4 4 0 0 0 .105.919A11.705 11.705 0 0 1 1.4.734a4.006 4.006 0 0 0 1.268 5.392 4.165 4.165 0 0 1-1.859-.5v.05A4.057 4.057 0 0 0 4.1 9.635a4.19 4.19 0 0 1-1.856.07 4.108 4.108 0 0 0 3.831 2.807A8.36 8.36 0 0 1 0 14.184 11.732 11.732 0 0 0 6.291 16 11.502 11.502 0 0 0 17.964 4.5c0-.177 0-.35-.012-.523A8.143 8.143 0 0 0 20 1.892Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="sr-only">Twitter page</span>
+              Cookie Policy
             </a>
           </div>
         </div>
@@ -151,3 +140,42 @@ export default function Footer() {
   );
 }
 
+// Helper Components
+function FooterLinkGroup({ title, links }) {
+  return (
+    <div>
+      <h2 className="mb-4 text-sm font-semibold text-white uppercase tracking-wider">
+        {title}
+      </h2>
+      <ul className="space-y-3">
+        {links.map((link) => (
+          <li key={link.name}>
+            <a
+              href={link.href}
+              className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center group"
+            >
+              {link.name}
+              <ExternalLink
+                size={14}
+                className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SocialLink({ icon, label }) {
+  return (
+    <a
+      href="#"
+      aria-label={label}
+      className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-cyan-400 transition-colors"
+    >
+      {icon}
+      <span className="sr-only">{label}</span>
+    </a>
+  );
+}

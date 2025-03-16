@@ -83,7 +83,7 @@ function EmptyDocumentsState({ setIsModalOpen }) {
 function DocumentCard({ doc }) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`/document/${doc.id}/toc`);
+    navigate(`/document/${doc.id}/`);
   };
 
   // Calculate a random number of pages between 1-100 for demonstration
