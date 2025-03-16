@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router";
-import Navbar from "./components/Navbar";
 import SignupForm from "./components/auth/SignupForm";
 import LoginForm from "./components/auth/LoginForm";
 import LandingPage from "./components/landing/LandingPage";
@@ -11,6 +10,7 @@ import DocumentToc from "./components/documents/DocumentToc";
 import ChapterSummaryViewer from "./components/documents/ChapterSummary";
 import "./index.css";
 import SummaryDisplay from "./components/documents/SummaryDisplayComponents";
+import TextSummarizer from "./components/TextSummarizer";
 
 function App() {
   return (
@@ -28,6 +28,8 @@ function App() {
           element={<ChapterSummaryViewer />}
         />
         <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
+        <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
+        <Route path="/summary" element={<TextSummarizer />} />
       </Routes>
       <ToastContainer />
     </>
