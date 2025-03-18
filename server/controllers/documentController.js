@@ -1,8 +1,8 @@
 const { default: axios } = require("axios");
 const documentModel = require("../models/documentModel");
-const chapterModel = require("../models/chapterModel")
+const chapterModel = require("../models/chapterModel");
 const userModel = require("../models/userModel");
-const fs = require("fs")
+const fs = require("fs");
 const path = require("path");
 
 exports.uploadDocumentController = async (req, res) => {
@@ -27,10 +27,10 @@ exports.uploadDocumentController = async (req, res) => {
     } else {
       res.status(404).json({ error: "USER NOT FOUND" });
     }
-
-
   } catch (error) {
-    res.status(500).json({ error: `Error in upload-doc-Controller ${error.message}` });
+    res
+      .status(500)
+      .json({ error: `Error in upload-doc-Controller ${error.message}` });
   }
 };
 
@@ -41,14 +41,15 @@ exports.getDocumentsByUserId = async (req, res) => {
     if (user) {
       const docs = await documentModel.find({ userId: userId });
       res.status(200).json({ docs });
-    }
-    else {
-      res.status(404).json({ error: "User Not Found" })
+    } else {
+      res.status(404).json({ error: "User Not Found" });
     }
   } catch (error) {
-    res.status(500).json({ error: `Error in Get-ALL-Docs-Controller ${error}` })
+    res
+      .status(500)
+      .json({ error: `Error in Get-ALL-Docs-Controller ${error}` });
   }
-}
+};
 
 exports.getDocument = async (req, res) => {
   const { documentId } = req.params;
@@ -68,9 +69,13 @@ exports.getDocument = async (req, res) => {
 
     res.sendFile(path.resolve(filePath));
   } catch (error) {
-    res.status(500).json({ error: `Error in Get-File-By-DocumentId-Controller: ${error.message}` });
+    res
+      .status(500)
+      .json({
+        error: `Error in Get-File-By-DocumentId-Controller: ${error.message}`,
+      });
   }
-}
+};
 
 exports.getChaptersFromADocument = async (req, res) => {
   const { documentId } = req.params;
@@ -84,21 +89,23 @@ exports.getChaptersFromADocument = async (req, res) => {
       const chapters = await chapterModel.find({ docId: documentId });
 
       const formattedChapters = chapters.map((chapter) => ({
-        ...chapter.toObject(), 
+        ...chapter.toObject(),
         chapterId: chapter._id,
       }));
 
       return res.status(200).json({ chapters: formattedChapters });
     }
 
-    const fastApiResponse = await axios.post('http://localhost:8000/extract-toc/',
+    const fastApiResponse = await axios.post(
+      "http://localhost:8000/extract-toc/",
       {},
       {
         params: { filePath: doc.file },
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      });
+      },
+    );
     const toc = fastApiResponse.data.TOC;
     const totalPageCount = fastApiResponse.data.totalPages;
 
@@ -137,7 +144,8 @@ exports.getChaptersFromADocument = async (req, res) => {
     await doc.save();
     res.status(200).json({ chapters });
   } catch (error) {
-    res.status(500).json({ error: `Error in Get-ALL-Docs-Controller ${error}` })
+    res
+      .status(500)
+      .json({ error: `Error in Get-ALL-Docs-Controller ${error}` });
   }
-}
-
+};

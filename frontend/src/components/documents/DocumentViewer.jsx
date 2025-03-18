@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { searchPlugin } from "@react-pdf-viewer/search";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -586,7 +587,8 @@ const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { getDocumentFromId } = useDocs();
-  const viewerRef = useRef(null);
+  const searchInstance = searchPlugin();
+  const { highlight } = searchInstance;
 
   useEffect(() => {
     const getFile = async () => {
@@ -602,6 +604,32 @@ const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
     };
     getFile();
   }, []);
+
+  useEffect(() => {
+    const fetchHighlights = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        const highlights = [
+          {
+            page: 1,
+            text: "Internet is a worldwide network",
+          },
+        ];
+
+        highlights.forEach(({ text }) => {
+          console.log(text);
+          highlight([text]);
+        });
+      } catch (error) {
+        console.error("Error fetching highlights:", error);
+      }
+    };
+
+    if (file) {
+      fetchHighlights();
+    }
+  }, [file]); // Runs when the file is loaded
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     toolbarPlugin: {
@@ -665,7 +693,7 @@ const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
           <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
             <Viewer
               fileUrl={file}
-              plugins={[defaultLayoutPluginInstance]}
+              plugins={[defaultLayoutPluginInstance, searchInstance]}
               theme="dark"
               renderLoader={(percentages) => (
                 <div className="flex items-center justify-center h-full">
@@ -674,7 +702,6 @@ const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
                   </p>
                 </div>
               )}
-              ref={viewerRef}
             />
           </Worker>
         </Card>
