@@ -1,22 +1,21 @@
-from fastapi import FastAPI, HTTPException, Form
+from fastapi import FastAPI, HTTPException, Form, Query
 import markdown
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from weasyprint import HTML
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import markdown2
-from typing import Dict
 import fitz
 import os
 from pydantic import BaseModel
 import google.generativeai as genai
 from dotenv import load_dotenv
-import numpy as np
-from fpdf import FPDF
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAI
-from langchain_core.prompts import PromptTemplate
-from langchain.chains.summarize import load_summarize_chain
+from sentence_transformers import SentenceTransformer
+import numpy as np
+from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain_chroma import Chroma
+from langchain_google_genai import ChatGoogleGenerativeAI
+import chromadb
+import re
 
 
 def get_application():
@@ -36,6 +35,7 @@ def get_application():
 
 
 app = get_application()
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 
 @app.get("/")
@@ -97,61 +97,6 @@ async def summarize(request: SummarizeRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gemini error: {str(e)}")
-
-
-def split_document_by_font_size(pdf_path: str, font_scale: float = 1.2) -> [Dict]:
-    """
-    Splits PDF into sections based on font size thresholds.
-    Returns list of {heading: str, content: str, page: int}.
-    """
-    doc = fitz.open(pdf_path)
-    sections = []
-    current_section = {"heading": "Introduction", "content": "", "page": 1}
-    all_font_sizes = []
-
-    # First pass: Collect all font sizes to determine thresholds
-    for page in doc:
-        blocks = page.get_text("dict")["blocks"]
-        for b in blocks:
-            if "lines" in b:
-                for line in b["lines"]:
-                    for span in line["spans"]:
-                        all_font_sizes.append(span["size"])
-
-    median_font_size = np.median(all_font_sizes)
-    heading_threshold = median_font_size * font_scale
-
-    for page_num, page in enumerate(doc, start=1):
-        blocks = page.get_text("dict")["blocks"]
-        for b in blocks:
-            if "lines" in b:
-                for line in b["lines"]:
-                    text = ""
-                    is_heading = False
-                    for span in line["spans"]:
-                        text += span["text"]
-                        # Check if any span in the line exceeds threshold
-                        if span["size"] > heading_threshold:
-                            is_heading = True
-
-                    if is_heading:
-                        # Save current section
-                        if current_section["content"].strip():
-                            sections.append(current_section)
-                        # Start new section
-                        current_section = {
-                            "heading": text.strip(),
-                            "content": "",
-                            "page": page_num
-                        }
-                    else:
-                        current_section["content"] += text + "\n"
-
-    # Add final section
-    if current_section["content"].strip():
-        sections.append(current_section)
-
-    return sections
 
 
 def extract_text_from_pdf(file_path: str, start_page: int, end_page: int) -> str:
@@ -251,6 +196,195 @@ async def summarize_document(file_path: str = Form(...), start_page: int = Form(
         f"./summaries/test_${start_page}_${end_page}_summary.pdf")
     return {"summary": final_summary}
 
+transformer_model = SentenceTransformer(
+    "nomic-ai/nomic-embed-text-v1", trust_remote_code=True)
 
-# @app.post("/generate_embedding/")
-# async def generate_embedding(file_path: str = Form(...)):
+metadata_store = {}
+
+
+def chunk_text(text, page_num, chunk_size=300):
+    words = text.split()
+    chunks = []
+    for i in range(0, len(words), chunk_size):
+        chunk = "search_document: " + " ".join(words[i:i + chunk_size])
+        chunks.append((chunk, page_num))
+    return chunks
+
+
+CHROMA_DIR = "chroma_dbs"
+os.makedirs(CHROMA_DIR, exist_ok=True)
+chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
+
+
+@app.post("/embed/")
+async def embed_document(file_path: str = Form(...), doc_id: str = Form(...)):
+    file_path = os.path.join("../server", file_path)
+
+    # Load document
+    loader = PyPDFLoader(file_path)
+    pages = loader.load()
+
+    all_chunks, page_nums = [], []
+    for page in pages:
+        text = page.page_content
+        page_num = page.metadata["page"] + 1
+        chunks = chunk_text(text, page_num)
+        for chunk, page_no in chunks:
+            all_chunks.append(chunk)
+            page_nums.append(page_no)
+
+    embeddings = transformer_model.encode(
+        all_chunks, convert_to_numpy=True).tolist()
+
+    collection_name = f"doc_{doc_id}"
+    collection = chroma_client.get_or_create_collection(collection_name)
+
+    collection.add(
+        ids=[f"{doc_id}_{i}" for i in range(len(all_chunks))],  # Unique IDs
+        embeddings=embeddings,
+        metadatas=[{"page_number": page_no, "text": chunk}
+                   for chunk, page_no in zip(all_chunks, page_nums)]
+    )
+
+    return {"message": "Document processed", "document_id": doc_id}
+
+
+@app.get("/search/")
+async def search(
+    document_id: str,
+    query: str,
+    top_k: int = 5,
+    start_page: int = Query(None),
+    end_page: int = Query(None)
+):
+    collection_name = f"doc_{document_id}"
+    collection = chroma_client.get_or_create_collection(collection_name)
+
+    # 1. Generate similar questions using Gemini
+    similar_questions_prompt = f"""Generate 5 different versions of the following question that ask for the same information but with different wording:
+
+    Original question: {query}
+
+    Return ONLY the 5 questions, one per line, with no additional text."""
+
+    similar_questions_response = llm.invoke(similar_questions_prompt)
+    # Extract content from AIMessage object
+    response_text = similar_questions_response.content
+
+    similar_questions = [query]  # Start with the original question
+
+    # Parse the Gemini response to extract the questions
+    for line in response_text.strip().split('\n'):
+        if line and not line.startswith("Original question:") and len(similar_questions) < 6:
+            clean_question = line
+            # Remove leading numbers/formatting if they exist
+            if re.match(r'^\d+[\.\)]\s+', clean_question):
+                clean_question = re.sub(r'^\d+[\.\)]\s+', '', clean_question)
+            similar_questions.append(clean_question)
+
+    # 2. Get embeddings and search for each question
+    all_results = []
+
+    for question in similar_questions:
+        # Format with prefix for embedding
+        formatted_question = "search_query: " + question
+
+        query_embedding = transformer_model.encode(
+            ["search_query: " + query], normalize_embeddings=True)[0].tolist()
+
+        # Build `where` clause for page range filtering
+        where_filter = None
+        if start_page is not None and end_page is not None:
+            where_filter = {
+                "$and": [
+                    {"page_number": {"$gte": start_page}},
+                    {"page_number": {"$lte": end_page}}
+                ]
+            }
+        elif start_page is not None:
+            where_filter = {"page_number": {"$gte": start_page}}
+        elif end_page is not None:
+            where_filter = {"page_number": {"$lte": end_page}}
+
+        # Search in ChromaDB
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k,
+            where=where_filter
+        )
+        print(results)
+
+        # Add results to our collection
+        for i in range(len(results["ids"][0])):
+            result_item = {
+                "id": results["ids"][0][i],
+                "text": results["metadatas"][0][i]['text'],
+                "distance": results["distances"][0][i],
+                "question": question
+            }
+            all_results.append(result_item)
+
+    print(all_results)
+    # Remove duplicates (same text chunks retrieved by different questions)
+    unique_results = []
+    seen_texts = set()
+
+    for result in all_results:
+        if result["text"] not in seen_texts:
+            seen_texts.add(result["text"])
+            unique_results.append(result)
+
+    # 3. Generate answer using combined context
+    context = "\n\n".join(
+        r['text'] for _, r in enumerate(unique_results))
+
+    answer_prompt = f"""Given the following context, please answer the question accurately and concisely.
+
+Question: {query}
+
+Context:
+{context}
+
+Answer:"""
+
+    answer_response = llm.invoke(answer_prompt)
+    answer = answer_response.content
+
+    # 4. Extract exact source text for the answer
+    extraction_prompt = f"""Given the answer to a question and the context that was used to generate that answer, identify the EXACT sentences or phrases from the context that directly answer the question.
+
+Question: {query}
+
+Context:
+{context}
+
+Answer: {answer}
+
+Return ONLY the exact text from the context (word for word) that contains the information used to answer the question. Follow these rules:
+1. Provide each source as plain text with no added formatting
+2. Do not add any explanations, numbering, or extra text
+3. The text must be EXACT, word-for-word from the context
+4. Include ONLY the specific sentences or phrases that directly answer the question
+5. Do not modify, summarize, or add to the original text in any way
+
+This is critically important for highlighting the exact text in the document.
+"""
+
+    exact_source_response = llm.invoke(extraction_prompt)
+    exact_source = exact_source_response.content
+
+    # 5. Return the complete response
+    return {
+        "query": query,
+        "similar_questions": similar_questions,
+        "answer": answer,
+        "exact_source": exact_source,
+        "context": [
+            {
+                "text": r["text"],
+                "distance": r["distance"],
+                "question": r["question"]
+            }
+            for r in unique_results
+        ]
+    }
