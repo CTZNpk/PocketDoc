@@ -16,6 +16,7 @@ from langchain_chroma import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI
 import chromadb
 import re
+import json
 
 
 def get_application():
@@ -41,24 +42,6 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 @app.get("/")
 def default():
     return "The Api is working"
-
-
-@app.post("/extract-toc/")
-async def extract_toc(filePath: str):
-    pdf_path = os.path.abspath(f"../server/{filePath}")
-    document = fitz.open(pdf_path)
-
-    toc = document.get_toc(simple=True)
-    num_pages = document.page_count
-
-    filtered_toc = [
-        {"Level": lvl, "Title": title, "Page": page}
-        for lvl, title, page in (entry[:3] for entry in toc)
-        if lvl < 3
-    ]
-    document.close()
-
-    return {"TOC": filtered_toc, "totalPages": num_pages}
 
 
 class SummarizeRequest(BaseModel):
@@ -388,3 +371,92 @@ This is critically important for highlighting the exact text in the document.
             for r in unique_results
         ]
     }
+
+
+def generate_quiz_structured(chunks: list) -> list:
+    """Generates MCQs one at a time with explicit structure."""
+    quiz = []
+
+    print("CHUNKS")
+    print(len(chunks))
+    for chunk in chunks:
+        prompt = f"""
+        Based on the following text, generate 3 multiple-choice questions (MCQs):
+        {chunk}
+
+        For each question:
+        1. Start with "QUESTION: " followed by the question text
+        2. Then list "OPTIONS: " with four options labeled A, B, C, D
+        3. End with "ANSWER: " followed by the letter of the correct option
+        4. Add "END" after each complete question
+
+        Example format:
+        QUESTION: What is the capital of France?
+        OPTIONS:
+        A. London
+        B. Paris
+        C. Rome
+        D. Berlin
+        ANSWER: B
+        END
+        """
+
+        try:
+            response = model.generate_content(prompt)
+            response_text = response.text.strip()
+
+            # Parse structured format
+            question_blocks = response_text.split("END")
+            for block in question_blocks:
+                if not block.strip():
+                    continue
+
+                parts = block.strip().split("OPTIONS:")
+                if len(parts) != 2:
+                    continue
+
+                question_part = parts[0].replace("QUESTION:", "").strip()
+
+                options_answer = parts[1].split("ANSWER:")
+                if len(options_answer) != 2:
+                    continue
+
+                options_text = options_answer[0].strip()
+                answer_letter = options_answer[1].strip()
+
+                # Parse options
+                options = []
+                option_lines = options_text.strip().split("\n")
+                for line in option_lines:
+                    if not line.strip():
+                        continue
+                    if line[0] in "ABCD" and line[1] in ".: ":
+                        options.append(line[2:].strip())
+
+                if len(options) != 4:
+                    continue
+
+                # Get the answer text based on the letter
+                letter_index = "ABCD".index(answer_letter)
+                if letter_index < len(options):
+                    answer = options[letter_index]
+
+                    quiz.append({
+                        "question": question_part,
+                        "options": options,
+                        "answer": answer
+                    })
+        except Exception as e:
+            print(f"Error processing chunk: {e}")
+            continue
+    print(len(quiz))
+    return quiz
+
+
+@app.post("/generate-quiz/")
+async def generate_quiz(file_path: str = Form(...), start_page: int = Form(...), end_page: int = Form(...)):
+    text = extract_text_from_pdf(file_path, start_page, end_page)
+    chunks = chunk_document(text)
+    quiz_data = generate_quiz_structured(chunks)
+
+    return {"quiz": quiz_data}
