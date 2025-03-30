@@ -10,6 +10,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 model = genai.GenerativeModel('gemini-2.0-flash')
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+
 embedding_model = SentenceTransformer(
     "nomic-ai/nomic-embed-text-v1", trust_remote_code=True)
 
