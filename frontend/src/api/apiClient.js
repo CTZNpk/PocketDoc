@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3000/pocketdoc/",
+  baseURL: "http://127.0.0.1:3000/pocketdoc",
+
   headers: {
     "accept": "application/json",
     "content-type": "application/json"

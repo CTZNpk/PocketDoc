@@ -6,6 +6,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API")
 
 
+
 def add_cors(app):
     app.add_middleware(
         CORSMiddleware,

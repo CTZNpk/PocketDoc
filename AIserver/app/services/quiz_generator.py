@@ -2,65 +2,85 @@ from app.core.model import model
 from app.prompts.quiz import get_quiz_prompt_from_chunk
 import re
 
-
 def generate_quiz_from_chunks(chunks: list, answer_formats: list[str], question_type: str = "mixed") -> list:
     quiz = []
-    for chunk in chunks:
-        prompt = get_quiz_prompt_from_chunk(
-            chunk, answer_formats, question_type)
-        try:
-            response = model.generate_content(prompt).text.strip()
+    
+    for chunk_idx, chunk in enumerate(chunks):
+        print(f"\nProcessing chunk {chunk_idx + 1}/{len(chunks)}")
+        print(f"Chunk size: {len(chunk)} characters")
+        print(f"First 100 chars: {chunk[:100]}...")
+        
+        prompt = get_quiz_prompt_from_chunk(chunk, answer_formats, question_type)
+        print(f"\nPrompt sent to model:\n{prompt[:500]}...")  # Print first 500 chars of prompt
 
-            if response.upper().strip() == "NO QUESTIONS":
+        try:
+            # Get raw response from model
+            response = model.generate_content(prompt).text.strip()
+            print(f"\nRaw model response:\n{response[:1000]}...")  # Print first 1000 chars
+            
+            if not response or response.upper().strip() == "NO QUESTIONS":
+                print("No questions generated for this chunk")
                 continue
 
-            question_blocks = response.split("END")
+            # Improved question block parsing
+            question_blocks = re.split(r'(?=\nQUESTION:|\n- [A-Za-z]+:)', response)
+            print(f"Found {len(question_blocks)} potential question blocks")
+            
             for block in question_blocks:
-                block = block.strip()
-                if not block:
+                if not block.strip():
                     continue
-                q_data = {}
-                lines = block.splitlines()
-                current_type = None
-                options_started = False
-                collecting_answer = False
-                answer_lines = []
+                    
+                print(f"\nProcessing block:\n{block[:200]}...")
+                
+                q_data = {
+                    "type": "multiple_choice",  # Default
+                    "question": "",
+                    "options": [],
+                    "answer": ""
+                }
 
-                for i, line in enumerate(lines):
-                    line = line.strip()
-                    # Detect type from first line if it matches our format: - Short:, - Long:, etc.
-                    if i == 0 and re.match(r"^- (MCQ|Short|Long|True/False):", line, re.IGNORECASE):
-                        current_type = re.findall(
-                            r"^- (.*?):", line)[0].strip().lower()
-                        q_data["type"] = current_type
-                    elif line.startswith("QUESTION:"):
-                        q_data["question"] = line.replace(
-                            "QUESTION:", "").strip()
-                    elif line.startswith("OPTIONS:"):
-                        q_data["options"] = []
-                        options_started = True
-                    elif options_started and line.startswith(tuple("ABCD")) and "." in line:
-                        q_data["options"].append(line[2:].strip())
-                    elif line.startswith("ANSWER:"):
-                        answer_text = line.replace("ANSWER:", "").strip()
-                        collecting_answer = True
-                        if "options" in q_data and answer_text in "ABCD":
-                            idx = "ABCD".index(answer_text)
-                            q_data["answer"] = q_data["options"][idx] if idx < len(
-                                q_data["options"]) else answer_text
-                            collecting_answer = False
-                        else:
-                            answer_lines = [answer_text] if answer_text else []
-                    elif collecting_answer:
-                        answer_lines.append(line)
-
-                if collecting_answer and answer_lines:
-                    q_data["answer"] = " ".join(answer_lines).strip()
-
-                if "question" in q_data and "answer" in q_data and "type" in q_data:
+                # Extract question type
+                type_match = re.search(r'- (MCQ|Short|Long|True/False):', block, re.IGNORECASE)
+                if type_match:
+                    q_data["type"] = type_match.group(1).lower()
+                
+                # Extract question text
+                question_match = re.search(r'QUESTION:\s*(.*?)(?=\nOPTIONS:|\nANSWER:|\n- |$)', block, re.DOTALL)
+                if question_match:
+                    q_data["question"] = question_match.group(1).strip()
+                
+                # Extract options (for MCQ/TrueFalse)
+                if q_data["type"] in ["mcq", "true/false"]:
+                    options_match = re.search(r'OPTIONS:\s*((?:[A-Z]\.\s*.*?\n)+)', block, re.DOTALL)
+                    if options_match:
+                        q_data["options"] = [
+                            opt.strip() 
+                            for opt in re.findall(r'[A-Z]\.\s*(.*?)(?=\n[A-Z]\.|\nANSWER:|$)', options_match.group(1))
+                        ]
+                
+                # Extract answer
+                answer_match = re.search(r'ANSWER:\s*(.*?)(?=\n- |\nQUESTION:|$)', block, re.DOTALL)
+                if answer_match:
+                    answer_text = answer_match.group(1).strip()
+                    if q_data["options"] and answer_text in "ABCD":
+                        idx = "ABCD".index(answer_text)
+                        q_data["answer"] = q_data["options"][idx] if idx < len(q_data["options"]) else answer_text
+                    else:
+                        q_data["answer"] = answer_text
+                
+                # Validate and add question
+                if q_data["question"] and q_data["answer"]:
+                    print(f"Valid question found: {q_data["question"][:50]}...")
                     quiz.append(q_data)
-        except Exception as e:
-            print(f"Error generating quiz: {e}")
-            continue
-    return quiz
+                else:
+                    print("Invalid question block - missing required fields")
+                    print(f"Question: {bool(q_data["question"])}")
+                    print(f"Answer: {bool(q_data["answer"])}")
+                    print(f"Block content:\n{block[:200]}...")
 
+        except Exception as e:
+            print(f"Error processing chunk {chunk_idx + 1}: {str(e)}")
+            continue
+    
+    print(f"\nTotal questions generated: {len(quiz)}")
+    return quiz

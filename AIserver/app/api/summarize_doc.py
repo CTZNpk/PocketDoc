@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.post("/summarize-doc/")
 async def summarize_document(
+    document_id: str = Form(...),
     file_path: str = Form(...),
     start_page: int = Form(...),
     end_page: int = Form(...),
@@ -26,4 +27,5 @@ async def summarize_document(
     )
     convert_summary_to_pdf(
         summary, f"./summaries/test_{start_page}_{end_page}_summary.pdf")
-    return {"summary": summary}
+    return {"summary": summary, "document_id": document_id, "start_page": start_page, "end_page": end_page}
+

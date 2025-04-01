@@ -1,5 +1,5 @@
 import re
-from app.core.model import llm, embedding_model, chroma_client
+from app.core.model import llm, embedding_model
 from app.prompts.search import get_similar_questions_prompt, get_answer_prompt, get_extraction_prompt
 
 

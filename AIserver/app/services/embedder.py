@@ -1,5 +1,5 @@
 import os
-from app.core.model import embedding_model, chroma_client
+from app.core.model import embedding_model
 from langchain_community.document_loaders import PyPDFLoader
 
 
