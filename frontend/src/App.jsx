@@ -7,7 +7,6 @@ import MyDocumentsPage from "./components/documents/MyDocumentsPage";
 import DocumentViewer from "./components/documents/DocumentViewer";
 import { ToastContainer } from "react-toastify";
 import DocumentToc from "./components/documents/DocumentToc";
-import ChapterSummaryViewer from "./components/documents/ChapterSummary";
 import "./index.css";
 import SummaryDisplay from "./components/documents/SummaryDisplayComponents";
 import TextSummarizer from "./components/TextSummarizer";
@@ -23,10 +22,6 @@ function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/document/:docId" element={<DocumentViewer />} />
         <Route path="/document/:docId/toc" element={<DocumentToc />} />
-        <Route
-          path="/document/chapter/:chapterId"
-          element={<ChapterSummaryViewer />}
-        />
         <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
         <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
         <Route path="/summary" element={<TextSummarizer />} />

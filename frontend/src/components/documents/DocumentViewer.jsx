@@ -1,9 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { Worker, Viewer } from "@react-pdf-viewer/core";
-import { searchPlugin } from "@react-pdf-viewer/search";
+import { useState, useEffect } from "react";
 import "@react-pdf-viewer/core/lib/styles/index.css";
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -38,19 +34,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import useDocs from "@/hooks/useDocs";
 import useSummary from "@/hooks/useSummary";
+import PdfViewer from "./PdfViewer";
 
 export default function DocumentViewer() {
   const { generatePassageSummary } = useSummary();
@@ -84,6 +70,7 @@ export default function DocumentViewer() {
   const [totalPages, setTotalPages] = useState(1);
   const [activeTab, setActiveTab] = useState("summary");
   const [showPanel, setShowPanel] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   // Sidebar width state (in pixels)
   const [panelWidth, setPanelWidth] = useState(384);
 
@@ -136,7 +123,12 @@ export default function DocumentViewer() {
         style: summaryStyle,
         includeKeyPoints,
       });
-      setSummaryText(summary);
+
+      console.log(summary);
+      const cleanedMarkdown = summary
+        .replace(/^```(?:\w+)?\n/, "")
+        .replace(/```$/, "");
+      setSummaryText(cleanedMarkdown);
     } catch (error) {
       console.error("Error generating summary:", error);
       setSummaryText("**Error generating summary. Please try again.**");
@@ -205,11 +197,10 @@ This comprehensive summary covers the key content from pages ${startPage} throug
 ### Connections
 This section connects to earlier content from the document by building on the foundation established previously, while setting up later discussions of related concepts.
 
-${
-  summaryStyle === "technical"
-    ? "### Technical Details\n- Specific methodology described\n- Quantitative results summarized\n- Statistical significance noted"
-    : ""
-}
+${summaryStyle === "technical"
+          ? "### Technical Details\n- Specific methodology described\n- Quantitative results summarized\n- Statistical significance noted"
+          : ""
+        }
       `);
     } catch (error) {
       console.error("Error generating page range summary:", error);
@@ -335,25 +326,24 @@ ${
                   </CardHeader>
                   <Separator className="bg-zinc-800" />
                   <CardContent className="pt-4">
-                    <Drawer>
-                      <DrawerTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
-                        >
-                          <Settings className="mr-2 h-4 w-4" /> Summary Settings
-                        </Button>
-                      </DrawerTrigger>
-                      <DrawerContent className="bg-zinc-900 border-zinc-800">
-                        <DrawerHeader>
-                          <DrawerTitle className="text-white">
+                    <div>
+                      <Button
+                        variant="outline"
+                        className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
+                        onClick={() => setShowSettings((prev) => !prev)}
+                      >
+                        <Settings className="mr-2 h-4 w-4" /> Summary Settings
+                      </Button>
+
+                      {showSettings && (
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
+                          <h2 className="text-white text-lg font-semibold">
                             Summary Settings
-                          </DrawerTitle>
-                          <DrawerDescription className="text-zinc-400">
+                          </h2>
+                          <p className="text-zinc-400 text-sm">
                             Customize how your summary is generated
-                          </DrawerDescription>
-                        </DrawerHeader>
-                        <div className="px-4 py-2 space-y-4">
+                          </p>
+
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
                               <Label className="text-zinc-300">
@@ -374,6 +364,7 @@ ${
                               className="w-full [&>span[role=slider]]:bg-cyan-600 [&>.range]:bg-cyan-600"
                             />
                           </div>
+
                           <div className="space-y-2">
                             <Label className="text-zinc-300">
                               Summary Style
@@ -401,6 +392,7 @@ ${
                               </SelectContent>
                             </Select>
                           </div>
+
                           <div className="flex items-center justify-between space-x-2">
                             <div className="space-y-0.5">
                               <Label className="text-zinc-300">
@@ -416,18 +408,8 @@ ${
                             />
                           </div>
                         </div>
-                        <DrawerFooter className="border-t border-zinc-800">
-                          <DrawerClose asChild>
-                            <Button
-                              variant="default"
-                              className="bg-cyan-600 hover:bg-cyan-700 text-white"
-                            >
-                              Save Settings
-                            </Button>
-                          </DrawerClose>
-                        </DrawerFooter>
-                      </DrawerContent>
-                    </Drawer>
+                      )}
+                    </div>
                     <Button
                       variant="default"
                       className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
@@ -436,11 +418,16 @@ ${
                     >
                       {isGenerating ? "Generating..." : "Generate Summary"}
                     </Button>
-                    <ScrollArea className="mt-4 h-64">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {summaryText}
-                      </ReactMarkdown>
-                    </ScrollArea>
+                    <h1 className="pt-5">
+                      Length: {summaryText.length} characters
+                    </h1>
+                    <div className="max-h-[500px] overflow-y-auto">
+                      <div className="prose prose-invert max-w-full w-full break-words">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {summaryText}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -581,131 +568,3 @@ ${
     </div>
   );
 }
-
-const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
-  const { docId } = useParams();
-  const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { getDocumentFromId } = useDocs();
-  const searchInstance = searchPlugin();
-  const { highlight } = searchInstance;
-
-  useEffect(() => {
-    const getFile = async () => {
-      try {
-        setIsLoading(true);
-        const arrayBuffer = await getDocumentFromId(docId);
-        setFile(new Uint8Array(arrayBuffer));
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getFile();
-  }, []);
-
-  useEffect(() => {
-    const fetchHighlights = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        const highlights = [
-          {
-            page: 1,
-            text: "Internet is a worldwide network",
-          },
-        ];
-
-        highlights.forEach(({ text }) => {
-          console.log(text);
-          highlight([text]);
-        });
-      } catch (error) {
-        console.error("Error fetching highlights:", error);
-      }
-    };
-
-    if (file) {
-      fetchHighlights();
-    }
-  }, [file]); // Runs when the file is loaded
-
-  const defaultLayoutPluginInstance = defaultLayoutPlugin({
-    toolbarPlugin: {
-      renderToolbar: (Toolbar) => (
-        <Toolbar>
-          {(slot) => (
-            <div className="flex items-center justify-between bg-zinc-800 rounded-t-lg text-white p-3">
-              <div className="flex items-center space-x-2">
-                {slot.zoomOutButton}
-                <span className="px-2 py-1 bg-zinc-700 rounded text-sm">
-                  {slot.currentPageLabel}
-                </span>
-                {slot.zoomInButton}
-              </div>
-              <div className="flex items-center space-x-2">
-                {slot.downloadButton}
-                {slot.fullScreenButton}
-                {slot.searchPopover}
-              </div>
-            </div>
-          )}
-        </Toolbar>
-      ),
-      searchPlugin: {
-        enableShortcuts: true,
-      },
-    },
-    sidebarPlugin: {
-      isOpen: true,
-      sidebarTab: {
-        thumbnailTabContent: {
-          thumbnailsTab: {
-            backgroundColor: "#2a2a2a",
-            color: "#fff",
-          },
-        },
-      },
-    },
-    onDocumentLoad: ({ doc }) => {
-      if (onTotalPagesChange) onTotalPagesChange(doc.numPages);
-    },
-    pageNavigationPlugin: {
-      onPageChange: (e) => {
-        if (onCurrentPageChange) onCurrentPageChange(e.currentPage);
-      },
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-zinc-900">
-        <div className="text-zinc-400">Loading document...</div>
-      </div>
-    );
-  }
-
-  return (
-    file != null && (
-      <div className="h-screen pt-6 pl-6 pb-6 pr-2">
-        <Card className="h-full overflow-hidden border-zinc-800 bg-zinc-900 shadow-xl">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-            <Viewer
-              fileUrl={file}
-              plugins={[defaultLayoutPluginInstance, searchInstance]}
-              theme="dark"
-              renderLoader={(percentages) => (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-zinc-400">
-                    Loading document... {Math.round(percentages)}%
-                  </p>
-                </div>
-              )}
-            />
-          </Worker>
-        </Card>
-      </div>
-    )
-  );
-};

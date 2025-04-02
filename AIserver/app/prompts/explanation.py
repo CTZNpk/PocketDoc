@@ -14,4 +14,12 @@ def get_explanation_prompt(passage: str, detail_level: str):
     - {detail_instruction}
     - Use plain language but keep it relevant to the original meaning.
     - Do not add unrelated information.
+    - Respond in **markdown format**:
+      - Use **bold** for key terms or important points.
+      - Use bullet points or numbered lists if the format is "bullet_points".
+      - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
+      - For "paragraph" format, use clear markdown-formatted paragraphs.
+
+    Start Explanation Immediately
+    Explanation:
     """

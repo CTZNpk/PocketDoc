@@ -13,22 +13,21 @@ def get_summary_intro_prompt(
     }.get(format_preference, "Write in natural flowing paragraphs.")
 
     return f"""
-Summarize the following {document_type} document.
+    Summarize the following {document_type} document.
 
-Instructions:
-- Focus on: {focus}
-- Summary length: approximately {summary_length}% of the original
-- Formatting style: {format_preference}
-- {format_instruction}
-- Include specific details from the text.
-- Ensure clarity and avoid vague statements.
-- Do NOT add any information not found in the text.
+    Instructions:
+    - Focus on: {focus}
+    - Summary length: approximately {summary_length}% of the original
+    - Formatting style: {format_preference}
+    - {format_instruction}
+    - Include specific details from the text.
+    - Ensure clarity and avoid vague statements.
+    - Do NOT add any information not found in the text.
 
-Text:
-{text}
-begin the summary imediately
-SUMMARY:
-"""
+    Text:
+    {text}
+    SUMMARY:
+    """
 
 
 def get_summary_continue_prompt(
@@ -81,22 +80,24 @@ def get_summarize_text_prompt(
         "paragraph": "Write in natural flowing paragraphs.",
         "outline": "Use an outline format with headings and subpoints."
     }.get(format_preference, "Write in natural flowing paragraphs.")
-
     return f"""
-Summarize the following {document_type} text.
+        Summarize the following {document_type} document.
 
-Instructions:
-- Focus on: {focus}
-- Summary length: approximately {summary_length}% of the original
-- Formatting style: {format_preference}
-- {format_instruction}
-- Include specific details from the text.
-- Ensure clarity and avoid vague statements.
-- Do NOT add any information not found in the text.
+        Instructions:
+        - Focus on: {focus}
+        - Summary length: approximately {summary_length}% of the original
+        - Formatting style: {format_preference}
+        - {format_instruction}
+        - Include specific details from the text.
+        - Ensure clarity and avoid vague statements.
+        - Do NOT add any information not found in the text.
+        - Respond in **markdown format**:
+          - Use **bold** for key terms or important points.
+          - Use bullet points or numbered lists if the format is "bullet_points".
+          - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
+          - For "paragraph" format, use clear markdown-formatted paragraphs.
 
-Text:
-{text}
-
-begin the summary imediately
-SUMMARY:
-"""
+        Text:
+        {text}
+        SUMMARY:
+        """

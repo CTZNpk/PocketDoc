@@ -8,8 +8,8 @@ router = APIRouter()
 async def summarize(
     passage: str = Form(...),
     document_type: str = Form("general"),
-    summary_length: int = Form(40),
-    format_preference: str = Form("paragraph"),
+    summary_length: int = Form(20),
+    format_preference: str = Form("outline"),
     focus: str = Form("main ideas")
 ):
     return summarize_text(passage, document_type, summary_length, format_preference, focus)

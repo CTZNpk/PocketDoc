@@ -6,6 +6,7 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const app = express();
+const cookieParser = require("cookie-parser");
 
 const port = 3000;
 dotenv.config();
@@ -15,7 +16,14 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // or your frontend's origin
+    credentials: true, // <-- allow cookies!
+  }),
+);
+
+app.use(cookieParser());
 
 app.use(express.json());
 app.use("/pocketdoc", router);

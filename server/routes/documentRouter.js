@@ -5,7 +5,6 @@ const {
   uploadDocumentController,
   getDocumentsByUserId,
   getDocument,
-  getChaptersFromADocument,
 } = require("../controllers/documentController");
 const documentRouter = express.Router();
 documentRouter.post(
@@ -16,6 +15,5 @@ documentRouter.post(
 );
 documentRouter.get("/", auth, getDocumentsByUserId);
 documentRouter.get("/:documentId", auth, getDocument);
-documentRouter.get("/:documentId/toc", auth, getChaptersFromADocument);
 
 module.exports = documentRouter;

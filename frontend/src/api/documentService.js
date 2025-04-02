@@ -1,9 +1,9 @@
-import apiClient from "./apiClient"
+import apiClient from "./apiClient";
 
 export const getUserDocs = async () => {
-  const response = await apiClient.get("/document/", { protected: true })
+  const response = await apiClient.get("/document/");
   return response.data;
-}
+};
 
 export const uploadUserDoc = async (file, title) => {
   const formData = new FormData();
@@ -13,22 +13,18 @@ export const uploadUserDoc = async (file, title) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    protected: true,
   });
   return response.data.data;
-}
+};
 
 export const getUserDocToc = async (docId) => {
-  const response = await apiClient.get(`/document/${docId}/toc`, {
-    protected: true,
-  })
-  return response.data
-}
+  const response = await apiClient.get(`/document/${docId}/toc`);
+  return response.data;
+};
 
 export const getUserDocFromId = async (docId) => {
   const response = await apiClient.get(`/document/${docId}`, {
-    protected: true,
-    responseType: 'blob',
-  })
+    responseType: "blob",
+  });
   return response.data.arrayBuffer();
-}
+};

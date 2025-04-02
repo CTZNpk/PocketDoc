@@ -1,31 +1,49 @@
 const jwt = require("jsonwebtoken");
+const setAuthCookies = require("../utils/setAuthCookies");
 
-const auth = async (req, res, next) => {
-  try {
-    let token = req.header("Authorization");
+const auth = (req, res, next) => {
+  const accessToken = req.cookies.access_token;
+  const refreshToken = req.cookies.refresh_token;
 
-    if (!token) {
-      return res.status(401).json({ error: "No Token, Access Denied" });
+  if (accessToken) {
+    try {
+      const verified = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+      req.user = { id: verified.id, email: verified.email };
+      return next();
+    } catch (err) {
+      if (err.name !== "TokenExpiredError") {
+        return res.status(401).json({ error: "Invalid access token" });
+      }
     }
-    if (!token.startsWith("Bearer ")) {
-      return res.status(400).json({ error: "Invalid Token Format" });
-    }
-    token = token.split(" ")[1];
-
-    const verified = jwt.verify(token, "passKey");
-
-    if (!verified) {
-      return res.status(401).json({ error: "Token Verification Failed, Access Denied" });
-    }
-
-
-    req.user = { id: verified.id };
-    req.token = token;
-
-    next();
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
   }
+
+  if (refreshToken) {
+    try {
+      const verified = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET,
+      );
+      const user = { id: verified.id, email: verified.email };
+
+      const newAccessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+      });
+      const newRefreshToken = jwt.sign(
+        { id: user.id },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" },
+      );
+
+      setAuthCookies(res, newAccessToken, newRefreshToken);
+
+      req.user = user;
+      return next();
+    } catch (err) {
+      return res.status(401).json({ error: "Invalid refresh token" });
+    }
+  }
+
+  return res.status(401).json({ error: "Not authenticated" });
 };
 
 module.exports = auth;

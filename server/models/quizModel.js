@@ -1,43 +1,43 @@
 const mongoose = require("mongoose");
-const questionsSchema = new mongoose.Schema({
-  question: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: [String],
-    required: true,
-  },
-  correctAnswer: {
-    type: String,
-    required: true,
-  },
-});
 
-//TODO: What about topic based quiz How will we handle that? Maybe by making documentID In quiz Schema nullable ? 
-// and maybe also make another field genre of the quiz. If the doc is not given we would know of topic to make the quiz of
+const quizSchema = new mongoose.Schema(
+  {
+    documentId: String,
+    filePath: { type: String, required: true },
+    startPage: { type: Number, default: 1 },
+    endPage: { type: Number, default: 1 },
+    quiz: [
+      {
+        question: String,
+        options: [String],
+        correctAnswer: String,
+        explanation: String,
+        type: String,
+      },
+    ],
+    metadata: {
+      answerFormats: {
+        type: [String],
+        enum: ["multiple_choice", "true_false", "short", "long"],
+        required: true,
+      },
+      questionType: {
+        type: String,
+        enum: ["mixed", "conceptual", "factual"],
+        default: "mixed",
+      },
+      generatedAt: { type: Date, default: Date.now },
+    },
+    submissions: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        score: Number,
+        responses: [{ questionId: Number, userAnswer: String }],
+        submittedAt: { type: Date, default: Date.now },
+      },
+    ],
+  },
+  { timestamps: true },
+);
 
-const quizSchema = new mongoose.Schema({
-  //TODO Add UserID in quiz Schema
-
-
-  //TODO Change to document ID 
-  summaryId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "SummaryModel",
-  },
-  questions: {
-    type: [questionsSchema],
-    required: true,
-  },
-  difficulty: {
-    type: String,
-    enum: ["Easy", "Medium", "Hard"],
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-module.exports = mongoose.model("QuizModel", quizSchema);
+module.exports = mongoose.model("Quiz", quizSchema);
