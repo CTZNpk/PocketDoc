@@ -20,6 +20,6 @@ def get_explanation_prompt(passage: str, detail_level: str):
       - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
       - For "paragraph" format, use clear markdown-formatted paragraphs.
 
-    Start Explanation Immediately
+    Start Explanation Immediately **No Intro sentence**
     Explanation:
     """

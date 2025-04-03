@@ -4,10 +4,17 @@ const textSummaryModel = require("../models/textSummaryModel");
 const DocSummary = require("../models/summaryModel");
 const qs = require("qs");
 
+const FormData = require("form-data");
+
 exports.generateSummaryFromText = async (req, res) => {
-  const { passage } = req.body;
+  const { passage, documentType, summaryLength, formatPreference, focus } =
+    req.body;
   const form = new FormData();
   form.append("passage", passage);
+  form.append("document_type", documentType);
+  form.append("summary_length", summaryLength);
+  form.append("format_preference", formatPreference);
+  form.append("focus", focus);
   try {
     const fastApiResponse = await axios.post(
       "http://localhost:8000/summarize/",
@@ -15,7 +22,6 @@ exports.generateSummaryFromText = async (req, res) => {
       { headers: form.getHeaders() },
     );
 
-    console.log(fastApiResponse);
     const summary = fastApiResponse.data.summary;
     const newTextSummary = new textSummaryModel({
       passage: passage,
@@ -95,10 +101,8 @@ exports.queryBasedSummary = async (req, res) => {
       message: "Query-based summary created successfully",
       summary: newSummary,
     });
-  } catch (error) { }
+  } catch (error) {}
 };
-
-const FormData = require("form-data");
 
 exports.storeSummaryDocument = async (req, res) => {
   try {

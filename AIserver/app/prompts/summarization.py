@@ -23,6 +23,11 @@ def get_summary_intro_prompt(
     - Include specific details from the text.
     - Ensure clarity and avoid vague statements.
     - Do NOT add any information not found in the text.
+    - Respond in **markdown format**:
+      - Use **bold** for key terms or important points.
+      - Use bullet points or numbered lists if the format is "bullet_points".
+      - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
+      - For "paragraph" format, use clear markdown-formatted paragraphs.
 
     Text:
     {text}
@@ -58,6 +63,12 @@ Continue the summary with the new section:
 - Target summary length: approximately {summary_length}% of the original
 - Formatting style: {format_preference}
 - {format_instruction}
+- Respond in **markdown format**:
+  - Use **bold** for key terms or important points.
+  - Use bullet points or numbered lists if the format is "bullet_points".
+  - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
+  - For "paragraph" format, use clear markdown-formatted paragraphs.
+
 - **Do NOT repeat previous content.**
 - Extract only essential information from this section.
 - Assume the reader has read previous summaries.
@@ -88,7 +99,6 @@ def get_summarize_text_prompt(
         - Summary length: approximately {summary_length}% of the original
         - Formatting style: {format_preference}
         - {format_instruction}
-        - Include specific details from the text.
         - Ensure clarity and avoid vague statements.
         - Do NOT add any information not found in the text.
         - Respond in **markdown format**:
@@ -96,6 +106,8 @@ def get_summarize_text_prompt(
           - Use bullet points or numbered lists if the format is "bullet_points".
           - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
           - For "paragraph" format, use clear markdown-formatted paragraphs.
+        **IMPORTANT**
+        GENERATE SUMMARY ADHERING TO THE SUMMARY LIMIT OF {summary_length}% OF THE ORIGINAL DOCUMENT
 
         Text:
         {text}

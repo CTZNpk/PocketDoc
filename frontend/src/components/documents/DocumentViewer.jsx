@@ -7,15 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Slider } from "@/components/ui/slider";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -39,7 +30,7 @@ import useSummary from "@/hooks/useSummary";
 import PdfViewer from "./PdfViewer";
 
 export default function DocumentViewer() {
-  const { generatePassageSummary } = useSummary();
+  const { generatePassageSummary, generatePassageExplanation } = useSummary();
   const [summaryText, setSummaryText] = useState(`
  *Summary will appear here*
   - Select text from the document
@@ -61,9 +52,6 @@ export default function DocumentViewer() {
   const [isGeneratingExplanation, setIsGeneratingExplanation] = useState(false);
   const [isGeneratingPageSummary, setIsGeneratingPageSummary] = useState(false);
 
-  const [summaryLength, setSummaryLength] = useState(75);
-  const [summaryStyle, setSummaryStyle] = useState("balanced");
-  const [includeKeyPoints, setIncludeKeyPoints] = useState(true);
   const [selectedText, setSelectedText] = useState("");
   const [startPage, setStartPage] = useState(1);
   const [endPage, setEndPage] = useState(1);
@@ -71,8 +59,16 @@ export default function DocumentViewer() {
   const [activeTab, setActiveTab] = useState("summary");
   const [showPanel, setShowPanel] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+
+  const [explanationLength, setExplanationLength] = useState("simple");
+  const [explanationQuery, setExplanationQuery] = useState("");
   // Sidebar width state (in pixels)
   const [panelWidth, setPanelWidth] = useState(384);
+  const [documentType, setDocumentType] = useState("general");
+  const [summaryLength, setSummaryLength] = useState(20);
+  const [formatPreference, setFormatPreference] = useState("outline");
+  const [focus, setFocus] = useState("main ideas");
+  const [showExplanationSettings, setShowExplanationSettings] = useState(false);
 
   // Monitor selection changes
   useEffect(() => {
@@ -86,13 +82,6 @@ export default function DocumentViewer() {
     return () =>
       document.removeEventListener("selectionchange", handleSelectionChange);
   }, []);
-
-  const getSummaryLengthLabel = (value) => {
-    if (value <= 25) return "Concise";
-    if (value <= 50) return "Brief";
-    if (value <= 75) return "Standard";
-    return "Detailed";
-  };
 
   // Draggable handle event handlers for adjusting the sidebar width
   const handleDragStart = (e) => {
@@ -118,10 +107,12 @@ export default function DocumentViewer() {
     if (!selectedText) return;
     try {
       setIsGenerating(true);
-      const summary = await generatePassageSummary(selectedText, {
-        length: summaryLength,
-        style: summaryStyle,
-        includeKeyPoints,
+      const summary = await generatePassageSummary({
+        passage: selectedText,
+        summaryLength,
+        formatPreference,
+        focus,
+        documentType,
       });
 
       console.log(summary);
@@ -137,31 +128,19 @@ export default function DocumentViewer() {
     }
   };
 
-  // Generate explanation handler
   const handleExplanationGeneration = async () => {
     if (!selectedText) return;
     try {
       setIsGeneratingExplanation(true);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setExplanationText(`
-## Explanation of "${selectedText.length > 30 ? selectedText.substring(0, 30) + "..." : selectedText}"
+      const explanation = await generatePassageExplanation({
+        passage: selectedText,
+        detailLevel: explanationLength,
+      });
 
-### What is this concept?
-This is a detailed explanation of the selected concept or term. It provides context, background information, and helps the reader understand complex ideas.
-
-### Why is it important?
-The explanation covers the significance of this concept and how it relates to other important ideas in the document.
-
-### Examples
-1. Example one demonstrating practical application
-2. Example two showing another perspective
-3. Example three illustrating edge cases
-
-### Further Reading
-- Related concept one
-- Connected theory two
-- Additional resource three
-      `);
+      const cleanedMarkdown = explanation
+        .replace(/^```(?:\w+)?\n/, "")
+        .replace(/```$/, "");
+      setExplanationText(cleanedMarkdown);
     } catch (error) {
       console.error("Error generating explanation:", error);
       setExplanationText("**Error generating explanation. Please try again.**");
@@ -179,29 +158,7 @@ The explanation covers the significance of this concept and how it relates to ot
     try {
       setIsGeneratingPageSummary(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      setPageRangeSummary(`
-## Summary of Pages ${startPage} to ${endPage}
-
-This comprehensive summary covers the key content from pages ${startPage} through ${endPage} of the document.
-
-### Main Topics
-1. **First major topic** - Brief overview of the first significant subject covered in these pages
-2. **Second major topic** - Summary of another important area discussed
-3. **Third major topic** - Overview of additional significant content
-
-### Key Findings
-- Important finding one with context and implications
-- Critical observation two with supporting details
-- Essential conclusion three with relevant context
-
-### Connections
-This section connects to earlier content from the document by building on the foundation established previously, while setting up later discussions of related concepts.
-
-${summaryStyle === "technical"
-          ? "### Technical Details\n- Specific methodology described\n- Quantitative results summarized\n- Statistical significance noted"
-          : ""
-        }
-      `);
+      setPageRangeSummary(``);
     } catch (error) {
       console.error("Error generating page range summary:", error);
       setPageRangeSummary(
@@ -216,12 +173,7 @@ ${summaryStyle === "technical"
     <div className="flex h-screen bg-black overflow-hidden relative">
       {/* PDF Viewer Area */}
       <div className="flex-1 transition-all duration-300">
-        <PdfViewer
-          onTotalPagesChange={setTotalPages}
-          onCurrentPageChange={(pageNumber) => {
-            if (endPage === 1) setEndPage(pageNumber);
-          }}
-        />
+        <PdfViewer />
       </div>
 
       {/* Toggle Button (always visible) */}
@@ -334,7 +286,6 @@ ${summaryStyle === "technical"
                       >
                         <Settings className="mr-2 h-4 w-4" /> Summary Settings
                       </Button>
-
                       {showSettings && (
                         <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
                           <h2 className="text-white text-lg font-semibold">
@@ -344,68 +295,70 @@ ${summaryStyle === "technical"
                             Customize how your summary is generated
                           </p>
 
+                          {/* Document Type */}
+                          <div className="space-y-2">
+                            <label className="text-zinc-300 block">
+                              Document Type
+                            </label>
+                            <select
+                              value={documentType}
+                              onChange={(e) => setDocumentType(e.target.value)}
+                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                            >
+                              <option value="general">General</option>
+                              <option value="technical">Technical</option>
+                            </select>
+                          </div>
+
+                          {/* Summary Length */}
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
-                              <Label className="text-zinc-300">
-                                Length: {getSummaryLengthLabel(summaryLength)}
-                              </Label>
-                              <span className="text-zinc-500 text-xs">
-                                {summaryLength}%
-                              </span>
+                              <label className="text-zinc-300">
+                                Summary Length: {summaryLength}%
+                              </label>
                             </div>
-                            <Slider
-                              value={[summaryLength]}
-                              min={1}
-                              max={100}
-                              step={1}
-                              onValueChange={(value) =>
-                                setSummaryLength(value[0])
+                            <input
+                              type="range"
+                              min={20}
+                              max={80}
+                              value={summaryLength}
+                              onChange={(e) =>
+                                setSummaryLength(parseInt(e.target.value))
                               }
-                              className="w-full [&>span[role=slider]]:bg-cyan-600 [&>.range]:bg-cyan-600"
+                              className="w-full accent-cyan-600"
                             />
                           </div>
 
+                          {/* Format Preference */}
                           <div className="space-y-2">
-                            <Label className="text-zinc-300">
-                              Summary Style
-                            </Label>
-                            <Select
-                              value={summaryStyle}
-                              onValueChange={setSummaryStyle}
+                            <label className="text-zinc-300 block">
+                              Format Preference
+                            </label>
+                            <select
+                              value={formatPreference}
+                              onChange={(e) =>
+                                setFormatPreference(e.target.value)
+                              }
+                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
                             >
-                              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-200">
-                                <SelectValue placeholder="Select style" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-200">
-                                <SelectItem value="balanced">
-                                  Balanced
-                                </SelectItem>
-                                <SelectItem value="technical">
-                                  Technical
-                                </SelectItem>
-                                <SelectItem value="simplified">
-                                  Simplified
-                                </SelectItem>
-                                <SelectItem value="creative">
-                                  Creative
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
+                              <option value="outline">Outline</option>
+                              <option value="bullet">Bullet</option>
+                              <option value="paragraph">Paragraph</option>
+                            </select>
                           </div>
 
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label className="text-zinc-300">
-                                Include Key Points
-                              </Label>
-                              <p className="text-zinc-500 text-xs">
-                                Highlight essential information
-                              </p>
-                            </div>
-                            <Switch
-                              checked={includeKeyPoints}
-                              onCheckedChange={setIncludeKeyPoints}
-                            />
+                          {/* Focus */}
+                          <div className="space-y-2">
+                            <label className="text-zinc-300 block">Focus</label>
+                            <select
+                              value={focus}
+                              onChange={(e) => setFocus(e.target.value)}
+                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                            >
+                              <option value="main ideas">Main Ideas</option>
+                              <option value="definitions">Definitions</option>
+                              <option value="concepts">Concepts</option>
+                            </select>
                           </div>
                         </div>
                       )}
@@ -456,8 +409,9 @@ ${summaryStyle === "technical"
                           </TooltipTrigger>
                           <TooltipContent className="max-w-sm">
                             <p>
-                              Select a term or concept from the document, then
-                              click Generate Explanation.
+                              Select a term or concept from the document, adjust
+                              the settings, or ask a question, then click
+                              Generate Explanation.
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -469,11 +423,78 @@ ${summaryStyle === "technical"
                         : "Select text from the document for explanation"}
                     </p>
                   </CardHeader>
+
                   <Separator className="bg-zinc-800" />
+
                   <CardContent className="pt-4">
+                    <div>
+                      <Button
+                        variant="outline"
+                        className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
+                        onClick={() =>
+                          setShowExplanationSettings((prev) => !prev)
+                        }
+                      >
+                        <Settings className="mr-2 h-4 w-4" /> Explanation
+                        Settings
+                      </Button>
+
+                      {showExplanationSettings && (
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
+                          <h2 className="text-white text-lg font-semibold">
+                            Explanation Settings
+                          </h2>
+                          <p className="text-zinc-400 text-sm">
+                            Customize how your explanation is generated
+                            (optional)
+                          </p>
+
+                          {/* Explanation Depth */}
+                          <div className="space-y-2">
+                            <label className="text-zinc-300 block">
+                              Explanation Depth
+                            </label>
+                            <select
+                              value={explanationLength}
+                              onChange={(e) =>
+                                setExplanationLength(e.target.value)
+                              }
+                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                            >
+                              <option value="simple">
+                                Simple – Very easy to understand
+                              </option>
+                              <option value="medium">
+                                Medium – For students
+                              </option>
+                              <option value="in-depth">
+                                In-Depth – With examples and technical depth
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {
+                        //       {/* Ask a Question */}
+                        //   <div className="space-y-2 mb-5">
+                        //     <label className="text-zinc-300 block">
+                        //       Ask a Question
+                        //     </label>
+                        //     <input
+                        //       type="text"
+                        //       placeholder="E.g. What does this concept mean in context?"
+                        //       value={explanationQuery}
+                        //       onChange={(e) => setExplanationQuery(e.target.value)}
+                        //       className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
+                        //     />
+                        //   </div>
+                      }
+                    </div>
+
                     <Button
                       variant="default"
-                      className="w-full mb-4 bg-cyan-600 hover:bg-cyan-700 text-white"
+                      className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
                       onClick={handleExplanationGeneration}
                       disabled={isGeneratingExplanation || !selectedText}
                     >
@@ -481,11 +502,18 @@ ${summaryStyle === "technical"
                         ? "Generating..."
                         : "Generate Explanation"}
                     </Button>
-                    <ScrollArea className="h-64">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {explanationText}
-                      </ReactMarkdown>
-                    </ScrollArea>
+
+                    <h1 className="pt-5">
+                      Length: {explanationText.length} characters
+                    </h1>
+
+                    <div className="max-h-[500px] overflow-y-auto">
+                      <div className="prose prose-invert max-w-full w-full break-words">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {explanationText}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
