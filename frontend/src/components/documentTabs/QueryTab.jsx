@@ -21,15 +21,13 @@ export default function QueryTab({ document, setDocument }) {
   const [questionQuery, setQuestionQuery] = useState();
 
   const handleQueryAnswer = async () => {
-    console.log("WE ARE HERE");
-    const answer = await generateQuerySummary({
+    const response = await generateQuerySummary({
       documentId: document._id,
       query: questionQuery,
       startPage,
       endPage,
     });
-    console.log("HELLO BROTHER");
-    console.log(answer);
+    const answer = response.answer;
 
     const cleanedMarkdown = answer
       .replace(/^```(?:\w+)?\n/, "")

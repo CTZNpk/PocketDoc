@@ -18,6 +18,8 @@ import PageRangeSummary from "@/components/documentTabs/PageRangeSummary";
 import { useParams } from "react-router";
 import QueryTab from "@/components/documentTabs/QueryTab";
 import useDocs from "@/hooks/useDocs";
+import { FaQuestion } from "react-icons/fa";
+import QuizTab from "@/components/documentTabs/QuizTab";
 
 export default function DocumentViewer() {
   const { docId } = useParams();
@@ -119,7 +121,7 @@ export default function DocumentViewer() {
               onValueChange={setActiveTab}
               className="flex-1 flex flex-col text-white"
             >
-              <TabsList className="grid grid-cols-4 mx-4 mt-4">
+              <TabsList className="grid grid-cols-5 mx-4 mt-4">
                 <TabsTrigger
                   value="summary"
                   className="flex items-center gap-2"
@@ -146,6 +148,11 @@ export default function DocumentViewer() {
                   <Search size={16} />
                   <span className="hidden sm:inline">Query</span>
                 </TabsTrigger>
+
+                <TabsTrigger value="quiz" className="flex items-center gap-2">
+                  <FaQuestion size={16} />
+                  <span className="hidden sm:inline">Quiz</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* Summary Tab */}
@@ -157,6 +164,7 @@ export default function DocumentViewer() {
               {/* Page Range Summary Tab */}
               <PageRangeSummary documentId={docId} />
               <QueryTab document={documentMeta} />
+              <QuizTab documentId={documentMeta._id} />
             </Tabs>
           </div>
         </div>

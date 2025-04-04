@@ -56,11 +56,17 @@ exports.queryBasedSummary = async (req, res) => {
       "http://localhost:8000/search/",
       form,
     );
-    res.status(201).json({
+    console.log(querySummary.data);
+    res.status(200).json({
       message: "Query-based summary created successfully",
-      summary: querySummary,
+      summary: querySummary.data,
     });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      error: `Internal Server Error`,
+    });
+  }
 };
 
 exports.summarizeDocument = async (req, res) => {

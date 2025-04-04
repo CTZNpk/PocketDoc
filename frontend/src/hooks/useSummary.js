@@ -39,8 +39,7 @@ const useSummary = () => {
   const generateQuerySummary = async (details) => {
     try {
       const response = await getQuerySummary(details);
-      console.log(response.data.answer);
-      return response.data.answer;
+      return response.summary;
     } catch (e) {
       emitToast(`Error getting Summary: ${e}`);
     }

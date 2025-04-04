@@ -2,23 +2,32 @@ const mongoose = require("mongoose");
 
 const quizSchema = new mongoose.Schema(
   {
-    documentId: String,
+    documentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Document",
+      required: true,
+    },
     filePath: { type: String, required: true },
     startPage: { type: Number, default: 1 },
     endPage: { type: Number, default: 1 },
+
     quiz: [
       {
-        question: String,
-        options: [String],
-        correctAnswer: String,
-        explanation: String,
-        type: String,
+        type: {
+          type: String,
+          enum: ["mcq", "short", "long", "true_false"],
+          required: true,
+        },
+        question: { type: String, required: true },
+        options: [String], // Only for MCQ
+        answer: { type: String, required: true },
       },
     ],
+
     metadata: {
       answerFormats: {
         type: [String],
-        enum: ["multiple_choice", "true_false", "short", "long"],
+        enum: ["mcq", "true_false", "short", "long"],
         required: true,
       },
       questionType: {
@@ -28,11 +37,18 @@ const quizSchema = new mongoose.Schema(
       },
       generatedAt: { type: Date, default: Date.now },
     },
+
     submissions: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         score: Number,
-        responses: [{ questionId: Number, userAnswer: String }],
+        responses: [
+          {
+            questionIndex: Number,
+            userAnswer: String,
+            evaluationScore: Number,
+          },
+        ],
         submittedAt: { type: Date, default: Date.now },
       },
     ],

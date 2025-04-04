@@ -38,7 +38,7 @@ export default function SummaryTab({ selectedText }) {
   return (
     <GenericTabLayout
       value="summary"
-      title="Document Summary"
+      title="Passage Summary"
       generateFunction={handleSummaryGeneration}
       settingsComponent={
         <div>

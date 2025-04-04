@@ -6,13 +6,8 @@ const documentModel = require("../models/documentModel");
 
 const generateAndStoreQuiz = async (req, res) => {
   try {
-    // Validate required fields
-    const requiredFields = [
-      "file_path",
-      "answer_formats",
-      "start_page",
-      "end_page",
-    ];
+    const requiredFields = ["answerFormats", "startPage", "endPage"];
+
     const missingFields = requiredFields.filter((field) => !req.body[field]);
 
     if (missingFields.length > 0) {
@@ -22,16 +17,21 @@ const generateAndStoreQuiz = async (req, res) => {
       });
     }
 
-    // Prepare payload for FastAPI
+    const document = await documentModel.findById(req.body.documentId);
+    if (!document) {
+      return res.status(404).json({
+        status: "error",
+        error: `This Document Does not exist`,
+      });
+    }
+
     const payload = {
-      file_path: req.body.file_path,
-      start_page: req.body.start_page || 1,
-      end_page: req.body.end_page || 1,
-      answer_formats: Array.isArray(req.body.answer_formats)
-        ? req.body.answer_formats.join(",")
-        : req.body.answer_formats,
-      question_type: req.body.question_type || "mixed",
-      document_id: req.body.document_id,
+      file_path: document.file,
+      start_page: req.body.startPage || 1,
+      end_page: req.body.endPage || 1,
+      answer_formats: req.body.answerFormats,
+      question_type: req.body.questionType || "mixed",
+      document_id: document._id,
     };
 
     const formData = querystring.stringify(payload);
@@ -52,29 +52,18 @@ const generateAndStoreQuiz = async (req, res) => {
       throw new Error("Invalid quiz response from FastAPI");
     }
 
-    // Fetch document to get userId
-    const doc = await documentModel.findOne({ _id: req.body.document_id });
-
-    if (!doc) {
-      return res.status(404).json({
-        status: "error",
-        error: "Document not found. Unable to associate quiz with a user.",
-      });
-    }
-
-    // Store Quiz in MongoDB
     const quizDoc = new Quiz({
-      userId: doc.userId,
-      documentId: req.body.document_id,
-      filePath: req.body.file_path,
-      startPage: req.body.start_page || 1,
-      endPage: req.body.end_page || 1,
+      userId: document.userId,
+      documentId: req.body.documentId,
+      filePath: document.file,
+      startPage: req.body.startPage || 1,
+      endPage: req.body.endPage || 1,
       quiz: fastApiResponse.data.quiz,
       metadata: {
-        answerFormats: Array.isArray(req.body.answer_formats)
-          ? req.body.answer_formats
+        answerFormats: Array.isArray(req.body.answerFormats)
+          ? req.body.answerFormats
           : [req.body.answer_formats],
-        questionType: req.body.question_type || "mixed",
+        questionType: req.body.questionType || "mixed",
         generatedAt: new Date(),
       },
       submissions: [],
@@ -87,7 +76,6 @@ const generateAndStoreQuiz = async (req, res) => {
       data: {
         quizId: quizDoc._id,
         questionCount: fastApiResponse.data.quiz.length,
-        preview: fastApiResponse.data.quiz[0],
       },
     });
   } catch (error) {

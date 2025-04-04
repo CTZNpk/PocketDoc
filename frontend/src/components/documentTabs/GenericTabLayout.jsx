@@ -23,7 +23,6 @@ export default function GenericTabLayout({
     if (!selectedText && !documentId) return;
     setIsGenerating(true);
     await generateFunction();
-
     setIsGenerating(false);
   };
 
@@ -54,7 +53,7 @@ export default function GenericTabLayout({
               onClick={handleGeneration}
               disabled={isGenerating || (!selectedText && !documentId)}
             >
-              {isGenerating ? "Generating..." : "Generate Summary"}
+              {isGenerating ? "Generating..." : "Generate"}
             </Button>
           )}
 
@@ -69,7 +68,7 @@ export default function GenericTabLayout({
           )}
 
           <h1 className="pt-5">Length: {text.length} characters</h1>
-          <div className="max-h-[calc(100vh-250px)] mt-5 pb-10 overflow-y-auto">
+          <div className="max-h-[calc(100vh-350px)] mt-5 pb-10 overflow-y-auto">
             <div className="prose prose-invert max-w-full w-full break-words">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
             </div>
