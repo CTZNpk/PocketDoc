@@ -1,5 +1,6 @@
 import {
   getExplanationFromText,
+  getQuerySummary,
   getSummaryFromPages,
   getSummaryFromPassage,
 } from "../api/summaryService";
@@ -35,10 +36,21 @@ const useSummary = () => {
     }
   };
 
+  const generateQuerySummary = async (details) => {
+    try {
+      const response = await getQuerySummary(details);
+      console.log(response.data.answer);
+      return response.data.answer;
+    } catch (e) {
+      emitToast(`Error getting Summary: ${e}`);
+    }
+  };
+
   return {
     generatePassageSummary,
     generateSummaryPages,
     generatePassageExplanation,
+    generateQuerySummary,
   };
 };
 

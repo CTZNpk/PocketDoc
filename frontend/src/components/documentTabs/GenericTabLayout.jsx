@@ -16,6 +16,7 @@ export default function GenericTabLayout({
   redirectToPage = false,
   redirectFunction,
   documentId,
+  showGenerateSummary = true,
 }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const handleGeneration = async () => {
@@ -46,14 +47,16 @@ export default function GenericTabLayout({
         <Separator className="bg-zinc-800" />
         <CardContent className="pt-4">
           {settingsComponent}
-          <Button
-            variant="default"
-            className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
-            onClick={handleGeneration}
-            disabled={isGenerating || (!selectedText && !documentId)}
-          >
-            {isGenerating ? "Generating..." : "Generate Summary"}
-          </Button>
+          {showGenerateSummary && (
+            <Button
+              variant="default"
+              className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
+              onClick={handleGeneration}
+              disabled={isGenerating || (!selectedText && !documentId)}
+            >
+              {isGenerating ? "Generating..." : "Generate Summary"}
+            </Button>
+          )}
 
           {redirectToPage && text && !isGenerating && (
             <Button

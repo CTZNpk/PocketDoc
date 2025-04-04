@@ -39,26 +39,28 @@ exports.generateSummaryFromText = async (req, res) => {
 };
 
 exports.queryBasedSummary = async (req, res) => {
-  const { id } = req.params;
-  const { query } = req.body;
+  const { documentId, query, startPage, endPage } = req.body;
   try {
-    const doc = await documentModel.findById(id);
+    const doc = await documentModel.findById(documentId);
+
     if (!doc) {
       res.status(404).json({ error: "Document Not Found" });
     }
-    const querySummary = generateQuerySummary(doc.content, query);
 
-    const newSummary = new summaryModel({
-      documentId: id,
-      content: querySummary,
-      queryBased: true,
-    });
-    await newSummary.save();
+    const form = new FormData();
+    form.append("document_id", documentId);
+    form.append("query", query);
+    form.append("start_page", startPage);
+    form.append("end_page", endPage);
+    const querySummary = await axios.post(
+      "http://localhost:8000/search/",
+      form,
+    );
     res.status(201).json({
       message: "Query-based summary created successfully",
-      summary: newSummary,
+      summary: querySummary,
     });
-  } catch (error) { }
+  } catch (error) {}
 };
 
 exports.summarizeDocument = async (req, res) => {

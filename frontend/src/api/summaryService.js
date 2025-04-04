@@ -14,3 +14,8 @@ export const getExplanationFromText = async (details) => {
   const response = await apiClient.post(`/explain/`, details);
   return response.data;
 };
+
+export const getQuerySummary = async (details) => {
+  const response = await apiClient.post(`summarize/search/`, details);
+  return response.data;
+};

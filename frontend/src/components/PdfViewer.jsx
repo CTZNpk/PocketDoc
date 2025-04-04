@@ -5,7 +5,7 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import useDocs from "@/hooks/useDocs";
 import { useEffect, useState } from "react";
 
-const PdfViewer = ({ onTotalPagesChange, onCurrentPageChange }) => {
+const PdfViewer = () => {
   const { docId } = useParams();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);

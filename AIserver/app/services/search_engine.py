@@ -68,9 +68,6 @@ def search_document(document_id: str, query: str, top_k=5, start_page=None, end_
     exact_source = llm.invoke(extraction_prompt).content
 
     return {
-        "query": query,
-        "similar_questions": similar_questions,
         "answer": answer,
         "exact_source": exact_source,
-        "context": unique
     }

@@ -5,6 +5,8 @@ const {
   uploadDocumentController,
   getDocumentsByUserId,
   getDocument,
+  getDocumentMetadata,
+  generateEmbeddings,
 } = require("../controllers/documentController");
 const documentRouter = express.Router();
 documentRouter.post(
@@ -15,5 +17,7 @@ documentRouter.post(
 );
 documentRouter.get("/", auth, getDocumentsByUserId);
 documentRouter.get("/:documentId", auth, getDocument);
+documentRouter.get("/:documentId/meta", auth, getDocumentMetadata);
+documentRouter.get("/:documentId/embed", auth, generateEmbeddings);
 
 module.exports = documentRouter;

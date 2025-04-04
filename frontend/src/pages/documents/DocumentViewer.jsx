@@ -9,27 +9,27 @@ import {
   MessageSquare,
   Layers,
   X,
+  Search,
 } from "lucide-react";
 import PdfViewer from "@/components/PdfViewer";
 import SummaryTab from "@/components/documentTabs/SummaryTab";
 import ExplanationTab from "@/components/documentTabs/ExplanationTab";
 import PageRangeSummary from "@/components/documentTabs/PageRangeSummary";
 import { useParams } from "react-router";
+import QueryTab from "@/components/documentTabs/QueryTab";
+import useDocs from "@/hooks/useDocs";
 
 export default function DocumentViewer() {
   const { docId } = useParams();
-  const [isGeneratingExplanation, setIsGeneratingExplanation] = useState(false);
-  const [isGeneratingPageSummary, setIsGeneratingPageSummary] = useState(false);
 
   const [selectedText, setSelectedText] = useState("");
   const [activeTab, setActiveTab] = useState("summary");
   const [showPanel, setShowPanel] = useState(true);
+  const [documentMeta, setDocumentMeta] = useState({});
+  const { getDocumentMetaData } = useDocs();
 
-  const [explanationQuery, setExplanationQuery] = useState("");
-  // Sidebar width state (in pixels)
   const [panelWidth, setPanelWidth] = useState(384);
 
-  // Monitor selection changes
   useEffect(() => {
     const handleSelectionChange = () => {
       const selected = window.getSelection().toString().trim();
@@ -42,7 +42,6 @@ export default function DocumentViewer() {
       document.removeEventListener("selectionchange", handleSelectionChange);
   }, []);
 
-  // Draggable handle event handlers for adjusting the sidebar width
   const handleDragStart = (e) => {
     e.preventDefault();
     document.addEventListener("mousemove", handleDragging);
@@ -61,7 +60,18 @@ export default function DocumentViewer() {
     document.removeEventListener("mouseup", handleDragEnd);
   };
 
-  // Generate page range summary handler
+  useEffect(() => {
+    const getFile = async () => {
+      try {
+        const document = await getDocumentMetaData(docId);
+        setDocumentMeta(document.document);
+        console.log(document);
+      } catch (error) {
+        console.error("Error fetching document:", error);
+      }
+    };
+    getFile();
+  }, []);
 
   return (
     <div className="flex h-screen bg-black overflow-hidden relative">
@@ -109,7 +119,7 @@ export default function DocumentViewer() {
               onValueChange={setActiveTab}
               className="flex-1 flex flex-col text-white"
             >
-              <TabsList className="grid grid-cols-3 mx-4 mt-4">
+              <TabsList className="grid grid-cols-4 mx-4 mt-4">
                 <TabsTrigger
                   value="summary"
                   className="flex items-center gap-2"
@@ -131,6 +141,11 @@ export default function DocumentViewer() {
                   <Layers size={16} />
                   <span className="hidden sm:inline">Pages</span>
                 </TabsTrigger>
+
+                <TabsTrigger value="query" className="flex items-center gap-2">
+                  <Search size={16} />
+                  <span className="hidden sm:inline">Query</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* Summary Tab */}
@@ -141,6 +156,7 @@ export default function DocumentViewer() {
               <ExplanationTab selectedText={selectedText} />
               {/* Page Range Summary Tab */}
               <PageRangeSummary documentId={docId} />
+              <QueryTab document={documentMeta} />
             </Tabs>
           </div>
         </div>

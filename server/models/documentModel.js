@@ -13,7 +13,7 @@ const documentSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "UserModel",
   },
-  hasChaptersGenerated: {
+  hasEmbeddings: {
     type: Boolean,
     default: false,
   },

@@ -10,6 +10,7 @@ const summaryRouter = express.Router();
 summaryRouter.post("/", auth, generateSummaryFromText);
 summaryRouter.post("/:id/query-based", auth, queryBasedSummary);
 summaryRouter.post("/summarize-doc/", auth, summarizeDocument);
-summaryRouter.get("/all-summaries", fetchUserSummaryHistories);
+summaryRouter.get("/all", auth, fetchUserSummaryHistories);
+summaryRouter.post("/search/", auth, queryBasedSummary);
 
 module.exports = summaryRouter;
