@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { FileText, Upload, Plus } from "lucide-react";
-import AnimateBox from "../shared/AnimateBox";
 import DocumentUploadPage from "./DocumentUploadPage";
 import docsStore from "../../store/docsStore";
 import useDocs from "../../hooks/useDocs";
@@ -10,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Navbar from "@/components/Navbar";
+import AnimateBox from "@/components/AnimateBox";
+import Title from "@/components/Title";
 
 export default function MyDocumentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,38 +23,39 @@ export default function MyDocumentsPage() {
   }, [getMyDocs]);
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <AnimateBox className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center mt-8 mb-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600">
-            My Documents
-          </h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 ">
+      <Navbar />
+      <div className="text-white mt-10">
+        <AnimateBox className="container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center mt-8 mb-12">
+            <Title>My Documents</Title>
 
-          <Button
-            variant="default"
-            onClick={() => setIsModalOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
-            size="lg"
-          >
-            <Plus className="h-5 w-5" />
-            Upload Document
-          </Button>
-        </div>
-
-        {docs.length === 0 ? (
-          <EmptyDocumentsState setIsModalOpen={setIsModalOpen} />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-            {docs.map((doc) => (
-              <DocumentCard key={doc.id} doc={doc} />
-            ))}
+            <Button
+              variant="default"
+              onClick={() => setIsModalOpen(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+              size="lg"
+            >
+              <Plus className="h-5 w-5" />
+              Upload Document
+            </Button>
           </div>
-        )}
 
-        {isModalOpen && (
-          <DocumentUploadPage onClose={() => setIsModalOpen(false)} />
-        )}
-      </AnimateBox>
+          {docs.length === 0 ? (
+            <EmptyDocumentsState setIsModalOpen={setIsModalOpen} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+              {docs.map((doc) => (
+                <DocumentCard key={doc.id} doc={doc} />
+              ))}
+            </div>
+          )}
+
+          {isModalOpen && (
+            <DocumentUploadPage onClose={() => setIsModalOpen(false)} />
+          )}
+        </AnimateBox>
+      </div>
     </div>
   );
 }

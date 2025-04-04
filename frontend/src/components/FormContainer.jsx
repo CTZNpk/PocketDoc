@@ -1,11 +1,12 @@
 import React from "react";
-import AnimateBox from "../shared/AnimateBox";
+import AnimateBox from "./AnimateBox";
+import Background from "./Background";
 
 export default function FormContainer({ title, subtitle, children, footer }) {
   return (
-    <div className="flex min-h-screen bg-black">
-      {/* Form side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
+    <div className="flex min-h-screen ">
+      <Background className="w-full lg:w-1/2 flex items-center justify-center p-6">
+        {/* Form side */}
         <AnimateBox className="w-full max-w-md">
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-800 p-8">
             <div className="mb-8">
@@ -18,7 +19,7 @@ export default function FormContainer({ title, subtitle, children, footer }) {
             {footer && <div className="mt-8">{footer}</div>}
           </div>
         </AnimateBox>
-      </div>
+      </Background>
 
       {/* Image side */}
       <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-cyan-900 to-gray-900 relative overflow-hidden">

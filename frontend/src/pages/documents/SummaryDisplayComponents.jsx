@@ -6,8 +6,8 @@ import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import useSummary from "@/hooks/useSummary";
 import { emitToast } from "../../utils/emitToast";
-import Button from "../shared/Button";
 import { useNavigate } from "react-router-dom";
+import ThemeButton from "@/components/Button";
 
 const SummaryDisplay = () => {
   const { docId } = useParams();
@@ -66,9 +66,9 @@ const SummaryDisplay = () => {
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Document Summary</h1>
-          <Button variant="secondary" onClick={navigateBack}>
+          <ThemeButton variant="secondary" onClick={navigateBack}>
             Back to Table of Contents
-          </Button>
+          </ThemeButton>
         </div>
 
         <div className="bg-gray-800 p-4 rounded-lg mb-6">

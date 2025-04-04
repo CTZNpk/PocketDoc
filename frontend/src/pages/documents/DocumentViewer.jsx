@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import useSummary from "@/hooks/useSummary";
-import PdfViewer from "./PdfViewer";
+import PdfViewer from "@/components/PdfViewer";
 
 export default function DocumentViewer() {
   const { generatePassageSummary, generatePassageExplanation } = useSummary();

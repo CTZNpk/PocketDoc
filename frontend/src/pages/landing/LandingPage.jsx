@@ -8,14 +8,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, BookOpen, Brain, FileQuestion } from "lucide-react";
-import Footer from "../shared/Footer";
-import Navbar from "../Navbar";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import ThemeButton from "@/components/Button";
+import Title from "@/components/Title";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
       <Navbar />
-      <div className="h-20"></div> {/* Spacer for fixed navbar */}
       <IntroScreen />
       <SummarizeDocumentSection />
       <GenerateQuizSection />
@@ -27,7 +28,7 @@ export default function LandingPage() {
 
 function IntroScreen() {
   return (
-    <div className="min-h-[90vh] px-4 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="pt-20 min-h-[90vh] pb-4 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-cyan-900 opacity-30"></div>
 
@@ -41,9 +42,7 @@ function IntroScreen() {
         <p className="text-cyan-400 font-medium mb-4">
           A Hub for Students, Teachers & Researchers
         </p>
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400">
-          PocketDoc
-        </h1>
+        <Title>PocketDoc</Title>
         <h2 className="text-2xl md:text-3xl text-gray-300 font-light mb-6">
           Your Friendly Pocket LLM
         </h2>
@@ -52,9 +51,9 @@ function IntroScreen() {
           generate personalized quizzes, and enhance your learning with
           AI-powered document analysis that adapts to your needs.
         </p>
-        <Button className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white px-8 py-6 rounded-lg text-lg shadow-lg shadow-cyan-600/20">
+        <ThemeButton className="px-8 py-4 rounded-lg text-lg">
           Start Exploring <ChevronRight className="ml-2 h-5 w-5" />
-        </Button>
+        </ThemeButton>
       </div>
 
       <div className="mt-12 w-full max-w-2xl mx-auto">
@@ -111,9 +110,10 @@ function SummarizeDocumentSection() {
               AI-powered summarization. Save hours of reading time by focusing
               only on what matters most to you.
             </p>
-            <Button className="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-5 rounded-lg">
+
+            <ThemeButton className="px-8 py-4 rounded-lg text-lg">
               Summarize Documents <BookOpen className="ml-2 h-5 w-5" />
-            </Button>
+            </ThemeButton>
           </div>
 
           <div className="lg:w-1/2 rounded-xl overflow-hidden border border-gray-800 shadow-2xl shadow-cyan-900/20">
@@ -178,9 +178,10 @@ function GenerateQuizSection() {
               learning goals. Our AI identifies key concepts and creates
               questions that reinforce your understanding.
             </p>
-            <Button className="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-5 rounded-lg">
+
+            <ThemeButton className="px-8 py-4 rounded-lg text-lg">
               Generate Quiz <Brain className="ml-2 h-5 w-5" />
-            </Button>
+            </ThemeButton>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
+import AnimateBox from "@/components/AnimateBox";
 import React, { useState } from "react";
-import AnimateBox from "../shared/AnimateBox";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -101,9 +101,11 @@ export default function Contact() {
               <div className="flex justify-between items-center mt-6 space-x-4">
                 {/* Send Button */}
                 <div className="relative inline-flex items-center justify-center group">
-                  <div className="absolute transition-all duration-300 rounded-full 
+                  <div
+                    className="absolute transition-all duration-300 rounded-full 
                   -inset-px bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:blur-lg 
-                  group-hover:opacity-75"></div>
+                  group-hover:opacity-75"
+                  ></div>
                   <button
                     type="submit"
                     className="relative inline-flex items-center justify-center px-10 py-3 text-lg 
@@ -123,7 +125,14 @@ export default function Contact() {
                   <div className="absolute transition-all duration-300 rounded-full -inset-px bg-gradient-to-r from-red-500 to-orange-500 group-hover:blur-lg group-hover:opacity-75"></div>
                   <button
                     type="button"
-                    onClick={() => setFormData({ name: "", email: "", subject: "", message: "" })}
+                    onClick={() =>
+                      setFormData({
+                        name: "",
+                        email: "",
+                        subject: "",
+                        message: "",
+                      })
+                    }
                     className="relative inline-flex items-center justify-center px-10 py-3 text-lg font-semibold text-white bg-black border border-transparent rounded-full group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-transform duration-300 transform hover:scale-105"
                   >
                     <span className="relative">🔄 Reset</span>
@@ -135,6 +144,5 @@ export default function Contact() {
         </div>
       </AnimateBox>
     </div>
-
   );
 }
