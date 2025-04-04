@@ -20,7 +20,7 @@ const docSummarySchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate: {
-        validator: function (v) {
+        validator: function(v) {
           return v >= this.startPage;
         },
         message: "End page must be >= start page",
@@ -43,13 +43,13 @@ const docSummarySchema = new mongoose.Schema(
       },
       formatPreference: {
         type: String,
-        enum: ["paragraph", "bullet_points", "headings"],
+        enum: ["outline", "bullet", "paragraph"],
         default: "paragraph",
       },
       focusArea: {
         type: String,
-        enum: ["main ideas", "key points", "examples", "all"],
-        default: "main ideas",
+        enum: ["main ideas", "definitions", "concepts"],
+        default: "main_ideas",
       },
       generatedAt: {
         type: Date,

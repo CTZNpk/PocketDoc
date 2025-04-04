@@ -17,7 +17,7 @@ const useSummary = () => {
 
   const generatePassageExplanation = async (details) => {
     try {
-      console.log("WE ARE HEHRHEHREH")
+      console.log("WE ARE HEHRHEHREH");
       const response = await getExplanationFromText(details);
       return response.explanation;
     } catch (e) {
@@ -25,13 +25,9 @@ const useSummary = () => {
     }
   };
 
-  const generateSummaryPages = async (documentId, start_page, end_page) => {
+  const generateSummaryPages = async (details) => {
     try {
-      const response = await getSummaryFromPages(
-        documentId,
-        start_page,
-        end_page,
-      );
+      const response = await getSummaryFromPages(details);
       console.log(response.data.summary);
       return response.data.summary;
     } catch (e) {

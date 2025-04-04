@@ -5,12 +5,8 @@ export const getSummaryFromPassage = async (details) => {
   return response.data;
 };
 
-export const getSummaryFromPages = async (documentId, start_page, end_page) => {
-  const response = await apiClient.post(`/summarize/summarize-doc/`, {
-    document_id: documentId,
-    start_page: start_page,
-    end_page: end_page,
-  });
+export const getSummaryFromPages = async (details) => {
+  const response = await apiClient.post(`/summarize/summarize-doc/`, details);
   return response.data;
 };
 

@@ -45,7 +45,6 @@ const generateAndStoreQuiz = async (req, res) => {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
         },
-        timeout: 30000,
       },
     );
 

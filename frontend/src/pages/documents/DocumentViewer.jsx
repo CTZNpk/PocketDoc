@@ -1,74 +1,33 @@
 import { useState, useEffect } from "react";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronRight,
   ChevronLeft,
-  Info,
   FileText,
   MessageSquare,
   Layers,
-  Settings,
   X,
 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
-import useSummary from "@/hooks/useSummary";
 import PdfViewer from "@/components/PdfViewer";
+import SummaryTab from "@/components/documentTabs/SummaryTab";
+import ExplanationTab from "@/components/documentTabs/ExplanationTab";
+import PageRangeSummary from "@/components/documentTabs/PageRangeSummary";
+import { useParams } from "react-router";
 
 export default function DocumentViewer() {
-  const { generatePassageSummary, generatePassageExplanation } = useSummary();
-  const [summaryText, setSummaryText] = useState(`
- *Summary will appear here*
-  - Select text from the document
-  - Adjust settings as needed
-  - Click "Generate Summary"
-  `);
-  const [explanationText, setExplanationText] = useState(`
- *Explanation will appear here*
-  - Select a complex concept or term
-  - Click "Generate Explanation"
-  `);
-  const [pageRangeSummary, setPageRangeSummary] = useState(`
- *Page Range Summary will appear here*
-  - Enter the start and end page numbers
-  - Click "Generate Page Summary"
-  `);
-
-  const [isGenerating, setIsGenerating] = useState(false);
+  const { docId } = useParams();
   const [isGeneratingExplanation, setIsGeneratingExplanation] = useState(false);
   const [isGeneratingPageSummary, setIsGeneratingPageSummary] = useState(false);
 
   const [selectedText, setSelectedText] = useState("");
-  const [startPage, setStartPage] = useState(1);
-  const [endPage, setEndPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [activeTab, setActiveTab] = useState("summary");
   const [showPanel, setShowPanel] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
 
-  const [explanationLength, setExplanationLength] = useState("simple");
   const [explanationQuery, setExplanationQuery] = useState("");
   // Sidebar width state (in pixels)
   const [panelWidth, setPanelWidth] = useState(384);
-  const [documentType, setDocumentType] = useState("general");
-  const [summaryLength, setSummaryLength] = useState(20);
-  const [formatPreference, setFormatPreference] = useState("outline");
-  const [focus, setFocus] = useState("main ideas");
-  const [showExplanationSettings, setShowExplanationSettings] = useState(false);
 
   // Monitor selection changes
   useEffect(() => {
@@ -102,72 +61,7 @@ export default function DocumentViewer() {
     document.removeEventListener("mouseup", handleDragEnd);
   };
 
-  // Generate summary handler
-  const handleSummaryGeneration = async () => {
-    if (!selectedText) return;
-    try {
-      setIsGenerating(true);
-      const summary = await generatePassageSummary({
-        passage: selectedText,
-        summaryLength,
-        formatPreference,
-        focus,
-        documentType,
-      });
-
-      console.log(summary);
-      const cleanedMarkdown = summary
-        .replace(/^```(?:\w+)?\n/, "")
-        .replace(/```$/, "");
-      setSummaryText(cleanedMarkdown);
-    } catch (error) {
-      console.error("Error generating summary:", error);
-      setSummaryText("**Error generating summary. Please try again.**");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleExplanationGeneration = async () => {
-    if (!selectedText) return;
-    try {
-      setIsGeneratingExplanation(true);
-      const explanation = await generatePassageExplanation({
-        passage: selectedText,
-        detailLevel: explanationLength,
-      });
-
-      const cleanedMarkdown = explanation
-        .replace(/^```(?:\w+)?\n/, "")
-        .replace(/```$/, "");
-      setExplanationText(cleanedMarkdown);
-    } catch (error) {
-      console.error("Error generating explanation:", error);
-      setExplanationText("**Error generating explanation. Please try again.**");
-    } finally {
-      setIsGeneratingExplanation(false);
-    }
-  };
-
   // Generate page range summary handler
-  const handlePageRangeSummary = async () => {
-    if (startPage > endPage || startPage < 1 || endPage > totalPages) {
-      setPageRangeSummary("**Please enter a valid page range.**");
-      return;
-    }
-    try {
-      setIsGeneratingPageSummary(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setPageRangeSummary(``);
-    } catch (error) {
-      console.error("Error generating page range summary:", error);
-      setPageRangeSummary(
-        "**Error generating page range summary. Please try again.**",
-      );
-    } finally {
-      setIsGeneratingPageSummary(false);
-    }
-  };
 
   return (
     <div className="flex h-screen bg-black overflow-hidden relative">
@@ -240,355 +134,13 @@ export default function DocumentViewer() {
               </TabsList>
 
               {/* Summary Tab */}
-              <TabsContent
-                value="summary"
-                className="flex-1 p-4 overflow-y-auto"
-              >
-                <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl font-semibold text-white">
-                        Document Summary
-                      </CardTitle>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-zinc-400"
-                            >
-                              <Info size={16} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm">
-                            <p>
-                              Select text from the document, adjust the summary
-                              settings, then click Generate Summary.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <p className="text-zinc-400 text-sm">
-                      {selectedText
-                        ? `${selectedText.length} characters selected`
-                        : "Select text from the document for summarization"}
-                    </p>
-                  </CardHeader>
-                  <Separator className="bg-zinc-800" />
-                  <CardContent className="pt-4">
-                    <div>
-                      <Button
-                        variant="outline"
-                        className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
-                        onClick={() => setShowSettings((prev) => !prev)}
-                      >
-                        <Settings className="mr-2 h-4 w-4" /> Summary Settings
-                      </Button>
-                      {showSettings && (
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
-                          <h2 className="text-white text-lg font-semibold">
-                            Summary Settings
-                          </h2>
-                          <p className="text-zinc-400 text-sm">
-                            Customize how your summary is generated
-                          </p>
-
-                          {/* Document Type */}
-                          <div className="space-y-2">
-                            <label className="text-zinc-300 block">
-                              Document Type
-                            </label>
-                            <select
-                              value={documentType}
-                              onChange={(e) => setDocumentType(e.target.value)}
-                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
-                            >
-                              <option value="general">General</option>
-                              <option value="technical">Technical</option>
-                            </select>
-                          </div>
-
-                          {/* Summary Length */}
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <label className="text-zinc-300">
-                                Summary Length: {summaryLength}%
-                              </label>
-                            </div>
-                            <input
-                              type="range"
-                              min={20}
-                              max={80}
-                              value={summaryLength}
-                              onChange={(e) =>
-                                setSummaryLength(parseInt(e.target.value))
-                              }
-                              className="w-full accent-cyan-600"
-                            />
-                          </div>
-
-                          {/* Format Preference */}
-                          <div className="space-y-2">
-                            <label className="text-zinc-300 block">
-                              Format Preference
-                            </label>
-                            <select
-                              value={formatPreference}
-                              onChange={(e) =>
-                                setFormatPreference(e.target.value)
-                              }
-                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
-                            >
-                              <option value="outline">Outline</option>
-                              <option value="bullet">Bullet</option>
-                              <option value="paragraph">Paragraph</option>
-                            </select>
-                          </div>
-
-                          {/* Focus */}
-                          <div className="space-y-2">
-                            <label className="text-zinc-300 block">Focus</label>
-                            <select
-                              value={focus}
-                              onChange={(e) => setFocus(e.target.value)}
-                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
-                            >
-                              <option value="main ideas">Main Ideas</option>
-                              <option value="definitions">Definitions</option>
-                              <option value="concepts">Concepts</option>
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <Button
-                      variant="default"
-                      className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
-                      onClick={handleSummaryGeneration}
-                      disabled={isGenerating || !selectedText}
-                    >
-                      {isGenerating ? "Generating..." : "Generate Summary"}
-                    </Button>
-                    <h1 className="pt-5">
-                      Length: {summaryText.length} characters
-                    </h1>
-                    <div className="max-h-[500px] overflow-y-auto">
-                      <div className="prose prose-invert max-w-full w-full break-words">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {summaryText}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              <SummaryTab selectedText={selectedText} />
 
               {/* Explanation Tab */}
-              <TabsContent
-                value="explain"
-                className="flex-1 p-4 overflow-y-auto"
-              >
-                <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl font-semibold text-white">
-                        Explanation
-                      </CardTitle>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-zinc-400"
-                            >
-                              <Info size={16} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm">
-                            <p>
-                              Select a term or concept from the document, adjust
-                              the settings, or ask a question, then click
-                              Generate Explanation.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <p className="text-zinc-400 text-sm">
-                      {selectedText
-                        ? `${selectedText.length} characters selected`
-                        : "Select text from the document for explanation"}
-                    </p>
-                  </CardHeader>
 
-                  <Separator className="bg-zinc-800" />
-
-                  <CardContent className="pt-4">
-                    <div>
-                      <Button
-                        variant="outline"
-                        className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
-                        onClick={() =>
-                          setShowExplanationSettings((prev) => !prev)
-                        }
-                      >
-                        <Settings className="mr-2 h-4 w-4" /> Explanation
-                        Settings
-                      </Button>
-
-                      {showExplanationSettings && (
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
-                          <h2 className="text-white text-lg font-semibold">
-                            Explanation Settings
-                          </h2>
-                          <p className="text-zinc-400 text-sm">
-                            Customize how your explanation is generated
-                            (optional)
-                          </p>
-
-                          {/* Explanation Depth */}
-                          <div className="space-y-2">
-                            <label className="text-zinc-300 block">
-                              Explanation Depth
-                            </label>
-                            <select
-                              value={explanationLength}
-                              onChange={(e) =>
-                                setExplanationLength(e.target.value)
-                              }
-                              className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
-                            >
-                              <option value="simple">
-                                Simple – Very easy to understand
-                              </option>
-                              <option value="medium">
-                                Medium – For students
-                              </option>
-                              <option value="in-depth">
-                                In-Depth – With examples and technical depth
-                              </option>
-                            </select>
-                          </div>
-                        </div>
-                      )}
-
-                      {
-                        //       {/* Ask a Question */}
-                        //   <div className="space-y-2 mb-5">
-                        //     <label className="text-zinc-300 block">
-                        //       Ask a Question
-                        //     </label>
-                        //     <input
-                        //       type="text"
-                        //       placeholder="E.g. What does this concept mean in context?"
-                        //       value={explanationQuery}
-                        //       onChange={(e) => setExplanationQuery(e.target.value)}
-                        //       className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
-                        //     />
-                        //   </div>
-                      }
-                    </div>
-
-                    <Button
-                      variant="default"
-                      className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700 text-white"
-                      onClick={handleExplanationGeneration}
-                      disabled={isGeneratingExplanation || !selectedText}
-                    >
-                      {isGeneratingExplanation
-                        ? "Generating..."
-                        : "Generate Explanation"}
-                    </Button>
-
-                    <h1 className="pt-5">
-                      Length: {explanationText.length} characters
-                    </h1>
-
-                    <div className="max-h-[500px] overflow-y-auto">
-                      <div className="prose prose-invert max-w-full w-full break-words">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {explanationText}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
+              <ExplanationTab selectedText={selectedText} />
               {/* Page Range Summary Tab */}
-              <TabsContent
-                value="pageRange"
-                className="flex-1 p-4 overflow-y-auto"
-              >
-                <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl font-semibold text-white">
-                        Page Range Summary
-                      </CardTitle>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-zinc-400"
-                            >
-                              <Info size={16} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm">
-                            <p>
-                              Enter the start and end page numbers, then click
-                              Generate Page Summary.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <p className="text-zinc-400 text-sm">
-                      Total Pages: {totalPages}
-                    </p>
-                  </CardHeader>
-                  <Separator className="bg-zinc-800" />
-                  <CardContent className="pt-4">
-                    <div className="flex space-x-2 mb-4">
-                      <Input
-                        type="number"
-                        value={startPage}
-                        onChange={(e) => setStartPage(Number(e.target.value))}
-                        placeholder="Start Page"
-                        className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
-                      />
-                      <Input
-                        type="number"
-                        value={endPage}
-                        onChange={(e) => setEndPage(Number(e.target.value))}
-                        placeholder="End Page"
-                        className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
-                      />
-                    </div>
-                    <Button
-                      variant="default"
-                      className="w-full mb-4 bg-cyan-600 hover:bg-cyan-700 text-white"
-                      onClick={handlePageRangeSummary}
-                      disabled={isGeneratingPageSummary}
-                    >
-                      {isGeneratingPageSummary
-                        ? "Generating..."
-                        : "Generate Page Summary"}
-                    </Button>
-                    <ScrollArea className="h-64">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {pageRangeSummary}
-                      </ReactMarkdown>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              <PageRangeSummary documentId={docId} />
             </Tabs>
           </div>
         </div>

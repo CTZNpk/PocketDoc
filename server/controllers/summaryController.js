@@ -5,6 +5,7 @@ const DocSummary = require("../models/summaryModel");
 const qs = require("qs");
 
 const FormData = require("form-data");
+const documentModel = require("../models/documentModel");
 
 exports.generateSummaryFromText = async (req, res) => {
   const { passage, documentType, summaryLength, formatPreference, focus } =
@@ -37,50 +38,6 @@ exports.generateSummaryFromText = async (req, res) => {
   }
 };
 
-exports.summarizeDocumentPages = async (req, res) => {
-  console.log("WE ARE HERHERHHER");
-  const { document_id, start_page, end_page } = req.body;
-  console.log(document_id);
-  console.log(start_page);
-  console.log(end_page);
-
-  try {
-    const document = await documentModel.findById(document_id);
-    if (!document) {
-      return res.status(404).json({ error: "Document not found" });
-    }
-
-    const formData = qs.stringify({
-      file_path: document.file,
-      start_page: start_page,
-      end_page: end_page,
-    });
-
-    const fastApiResponse = await axios.post(
-      "http://localhost:8000/summarize-doc/",
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      },
-    );
-
-    const newSummary = new textSummaryModel({
-      summary: fastApiResponse.data.summary,
-      modelUsed: "gemini",
-      path: fastApiResponse.data.pdf_path,
-    });
-    await newSummary.save();
-
-    return res.status(200).json({ data: newSummary });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: `Error summarizing document: ${error.message}` });
-  }
-};
-
 exports.queryBasedSummary = async (req, res) => {
   const { id } = req.params;
   const { query } = req.body;
@@ -101,43 +58,46 @@ exports.queryBasedSummary = async (req, res) => {
       message: "Query-based summary created successfully",
       summary: newSummary,
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
-exports.storeSummaryDocument = async (req, res) => {
+exports.summarizeDocument = async (req, res) => {
   try {
-    // 1. Extract all required fields with defaults
     const {
-      document_id,
-      file_path,
-      start_page = 1,
-      end_page = 1,
-      document_type = "general",
-      summary_length = 40,
-      format_preference = "paragraph",
+      documentId,
+      startPage = 1,
+      endPage = 1,
+      documentType = "general",
+      summaryLength = 40,
+      formatPreference = "paragraph",
       focus = "main ideas",
     } = req.body;
 
-    // 2. Validate required fields
-    if (!document_id || !file_path) {
+    const document = await documentModel.findById(documentId);
+
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    const filePath = document.file;
+
+    if (!documentId || !filePath) {
       return res.status(400).json({
         status: "error",
         error: "document_id and file_path are required",
       });
     }
 
-    // 3. Create form-data payload
     const form = new FormData();
-    form.append("document_id", document_id);
-    form.append("file_path", file_path);
-    form.append("start_page", start_page.toString());
-    form.append("end_page", end_page.toString());
-    form.append("document_type", document_type);
-    form.append("summary_length", summary_length.toString());
-    form.append("format_preference", format_preference);
+    form.append("document_id", documentId);
+    form.append("file_path", filePath);
+    form.append("start_page", startPage.toString());
+    form.append("end_page", endPage.toString());
+    form.append("document_type", documentType);
+    form.append("summary_length", summaryLength.toString());
+    form.append("format_preference", formatPreference);
     form.append("focus", focus);
 
-    // 4. Call FastAPI endpoint
     const fastApiResponse = await axios.post(
       "http://localhost:8000/summarize-doc/",
       form,
@@ -146,26 +106,23 @@ exports.storeSummaryDocument = async (req, res) => {
           ...form.getHeaders(),
           Accept: "application/json",
         },
-        timeout: 30000,
       },
     );
 
-    // 5. Verify and process response
     if (!fastApiResponse.data?.summary) {
       throw new Error("Invalid response from summarization service");
     }
 
-    // 6. Store in MongoDB with all fields
     const summaryDoc = new DocSummary({
-      documentId: document_id,
-      filePath: file_path,
-      startPage: parseInt(start_page),
-      endPage: parseInt(end_page),
+      documentId: documentId,
+      filePath: filePath,
+      startPage: parseInt(startPage),
+      endPage: parseInt(endPage),
       summary: fastApiResponse.data.summary,
       metadata: {
-        documentType: document_type,
-        summaryLength: parseInt(summary_length),
-        formatPreference: format_preference,
+        documentType: documentType,
+        summaryLength: parseInt(summaryLength),
+        formatPreference: formatPreference,
         focusArea: focus,
         generatedAt: new Date(),
       },
@@ -173,7 +130,6 @@ exports.storeSummaryDocument = async (req, res) => {
 
     await summaryDoc.save();
 
-    // 7. Return success response
     return res.status(201).json({
       status: "success",
       data: {

@@ -13,24 +13,26 @@ def get_summary_intro_prompt(
     }.get(format_preference, "Write in natural flowing paragraphs.")
 
     return f"""
-    Summarize the following {document_type} document.
+    Summarize this {document_type} document:
 
     Instructions:
     - Focus on: {focus}
-    - Summary length: approximately {summary_length}% of the original
-    - Formatting style: {format_preference}
-    - {format_instruction}
-    - Include specific details from the text.
-    - Ensure clarity and avoid vague statements.
-    - Do NOT add any information not found in the text.
-    - Respond in **markdown format**:
-      - Use **bold** for key terms or important points.
-      - Use bullet points or numbered lists if the format is "bullet_points".
-      - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
-      - For "paragraph" format, use clear markdown-formatted paragraphs.
+    - Length: {summary_length}% of original text
+    - Format: {format_preference}
+    - Key Instructions: {format_instruction}
+    - Include key details only
+    - No information beyond the text
+    - Strict {summary_length}% length limit
+
+    Use markdown formatting:
+    - **Bold** for key terms
+    - Follow specified format style
+    - Give proper headings if needed
+    - No code blocks needed donot wrap in ``` ``` ***IMPORTANT***
 
     Text:
     {text}
+
     SUMMARY:
     """
 
@@ -57,23 +59,25 @@ Here is the summary so far:
 Continue the summary with the new section:
 {chunk}
 
-### Important Instructions:
+### Summary Instructions:
 - Document type: {document_type}
-- Focus on: {focus}
-- Target summary length: approximately {summary_length}% of the original
-- Formatting style: {format_preference}
-- {format_instruction}
-- Respond in **markdown format**:
-  - Use **bold** for key terms or important points.
-  - Use bullet points or numbered lists if the format is "bullet_points".
-  - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
-  - For "paragraph" format, use clear markdown-formatted paragraphs.
+- Focus: {focus}
+- Length: ~{summary_length}% of original
+- Format: {format_preference}
+- Key Instructions: {format_instruction}
 
-- **Do NOT repeat previous content.**
-- Extract only essential information from this section.
-- Assume the reader has read previous summaries.
+Use markdown:
+- **Bold** for key terms
+- Follow specified format
+- Give proper headings if needed
+- No code blocks needed donot wrap in ``` ``` ***IMPORTANT***
 
-begin the summary imediately
+**Important:**
+- Do not repeat previous content
+- No information beyond the text
+- Maintain strict {summary_length}% length limit
+
+Begin the summary immediately no introductory sentence
 SUMMARY:
 """
 
@@ -107,7 +111,8 @@ def get_summarize_text_prompt(
           - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
           - For "paragraph" format, use clear markdown-formatted paragraphs.
         **IMPORTANT**
-        GENERATE SUMMARY ADHERING TO THE SUMMARY LIMIT OF {summary_length}% OF THE ORIGINAL DOCUMENT
+        GENERATING SUMMARY {summary_length}% IS IMPORTANT EVEN IF IT MEANS LEAVING DETAIL OF IMPORTANT THINGS
+        THIS IS A STRICT WORD LIMIT {summary_length}% OF THE ORIGINAL
 
         Text:
         {text}
