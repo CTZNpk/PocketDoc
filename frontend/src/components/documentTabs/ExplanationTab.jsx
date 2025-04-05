@@ -26,7 +26,6 @@ export default function ExplanationTab({ selectedText }) {
       .replace(/^```(?:\w+)?\n/, "")
       .replace(/```$/, "");
     setExplanationText(cleanedMarkdown);
-    setIsGeneratingExplanation(false);
   };
 
   return (

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, FileText } from "lucide-react";
-
+import { Menu, X, BookOpen } from "lucide-react";
 // Import shadcn components
 import { Button } from "@/components/ui/button";
 import {
@@ -30,8 +29,8 @@ export default function Navbar() {
     <nav className="bg-gray-900 border-b border-gray-800 fixed w-full z-20 top-0 left-0 shadow-lg shadow-black/20">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-lg">
-            <FileText className="h-5 w-5 text-white" />
+          <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-2 rounded-lg">
+            <BookOpen className="h-5 w-5 text-white" />
           </div>
           <span className="self-center text-xl font-bold whitespace-nowrap text-white">
             PocketDoc
@@ -62,7 +61,7 @@ export default function Navbar() {
                 <Link to="/" legacyBehavior passHref>
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/") ? "text-purple-400" : "text-gray-300"
+                      isActive("/") ? "text-cyan-400" : "text-gray-300"
                     }`}
                   >
                     Home
@@ -73,9 +72,7 @@ export default function Navbar() {
                 <Link to="/services" legacyBehavior passHref>
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/services")
-                        ? "text-purple-400"
-                        : "text-gray-300"
+                      isActive("/services") ? "text-cyan-400" : "text-gray-300"
                     }`}
                   >
                     Services
@@ -87,7 +84,7 @@ export default function Navbar() {
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/myDocuments")
-                        ? "text-purple-400"
+                        ? "text-cyan-400"
                         : "text-gray-300"
                     }`}
                   >
@@ -99,7 +96,7 @@ export default function Navbar() {
                 <Link to="/about" legacyBehavior passHref>
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/about") ? "text-purple-400" : "text-gray-300"
+                      isActive("/about") ? "text-cyan-400" : "text-gray-300"
                     }`}
                   >
                     About
@@ -110,7 +107,7 @@ export default function Navbar() {
                 <Link to="/contact" legacyBehavior passHref>
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/contact") ? "text-purple-400" : "text-gray-300"
+                      isActive("/contact") ? "text-cyan-400" : "text-gray-300"
                     }`}
                   >
                     Contact
@@ -119,11 +116,10 @@ export default function Navbar() {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-
           <Button
             variant="default"
             onClick={() => navigate("/login")}
-            className="bg-purple-600 hover:bg-purple-700 text-white ml-4"
+            className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white ml-4"
           >
             Login
           </Button>
@@ -137,7 +133,7 @@ export default function Navbar() {
                 to="/"
                 className={`py-3 px-4 hover:bg-gray-700 ${
                   isActive("/")
-                    ? "text-purple-400 bg-gray-700/70"
+                    ? "text-cyan-400 bg-gray-700/70"
                     : "text-gray-300"
                 }`}
                 onClick={toggleMenu}
@@ -148,7 +144,7 @@ export default function Navbar() {
                 to="/services"
                 className={`py-3 px-4 hover:bg-gray-700 ${
                   isActive("/services")
-                    ? "text-purple-400 bg-gray-700/70"
+                    ? "text-cyan-400 bg-gray-700/70"
                     : "text-gray-300"
                 }`}
                 onClick={toggleMenu}
@@ -159,7 +155,7 @@ export default function Navbar() {
                 to="/myDocuments"
                 className={`py-3 px-4 hover:bg-gray-700 ${
                   isActive("/myDocuments")
-                    ? "text-purple-400 bg-gray-700/70"
+                    ? "text-cyan-400 bg-gray-700/70"
                     : "text-gray-300"
                 }`}
                 onClick={toggleMenu}
@@ -170,7 +166,7 @@ export default function Navbar() {
                 to="/about"
                 className={`py-3 px-4 hover:bg-gray-700 ${
                   isActive("/about")
-                    ? "text-purple-400 bg-gray-700/70"
+                    ? "text-cyan-400 bg-gray-700/70"
                     : "text-gray-300"
                 }`}
                 onClick={toggleMenu}
@@ -181,7 +177,7 @@ export default function Navbar() {
                 to="/contact"
                 className={`py-3 px-4 hover:bg-gray-700 ${
                   isActive("/contact")
-                    ? "text-purple-400 bg-gray-700/70"
+                    ? "text-cyan-400 bg-gray-700/70"
                     : "text-gray-300"
                 }`}
                 onClick={toggleMenu}
@@ -195,7 +191,7 @@ export default function Navbar() {
                     navigate("/login");
                     toggleMenu();
                   }}
-                  className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                  className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
                 >
                   Login
                 </Button>

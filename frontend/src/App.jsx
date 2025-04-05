@@ -9,6 +9,7 @@ import TextSummarizer from "./components/TextSummarizer";
 import MyDocumentsPage from "./pages/documents/MyDocumentsPage";
 import DocumentViewer from "./pages/documents/DocumentViewer";
 import SummaryDisplay from "./pages/documents/SummaryDisplayComponents";
+import QuizModule from "./pages/quiz/quizPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/document/:docId" element={<DocumentViewer />} />
         <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
         <Route path="/summary" element={<TextSummarizer />} />
+        <Route path="/quiz" element={<QuizModule />} />
       </Routes>
       <ToastContainer />
     </>

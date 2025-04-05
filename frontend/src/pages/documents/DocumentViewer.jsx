@@ -163,7 +163,7 @@ export default function DocumentViewer() {
               <ExplanationTab selectedText={selectedText} />
               {/* Page Range Summary Tab */}
               <PageRangeSummary documentId={docId} />
-              <QueryTab document={documentMeta} />
+              <QueryTab document={documentMeta} setDocument={setDocumentMeta} />
               <QuizTab documentId={documentMeta._id} />
             </Tabs>
           </div>

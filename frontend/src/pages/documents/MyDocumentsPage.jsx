@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { FileText, Upload, Plus } from "lucide-react";
+import { FileText, Upload, Plus, BookOpen } from "lucide-react";
 import DocumentUploadPage from "./DocumentUploadPage";
 import docsStore from "../../store/docsStore";
 import useDocs from "../../hooks/useDocs";
@@ -33,7 +33,7 @@ export default function MyDocumentsPage() {
             <Button
               variant="default"
               onClick={() => setIsModalOpen(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+              className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white flex items-center gap-2"
               size="lg"
             >
               <Plus className="h-5 w-5" />
@@ -63,8 +63,8 @@ export default function MyDocumentsPage() {
 function EmptyDocumentsState({ setIsModalOpen }) {
   return (
     <div className="flex flex-col items-center justify-center p-8 rounded-lg border border-gray-700 bg-gray-800/50 mt-8">
-      <div className="bg-purple-900/20 p-4 rounded-full mb-4">
-        <FileText className="h-12 w-12 text-purple-400" />
+      <div className="bg-cyan-900/20 p-4 rounded-full mb-4">
+        <BookOpen className="h-12 w-12 text-cyan-400" />
       </div>
       <h2 className="text-xl font-medium text-white mb-2">No documents yet</h2>
       <p className="text-gray-400 text-center mb-6">
@@ -73,7 +73,7 @@ function EmptyDocumentsState({ setIsModalOpen }) {
       <Button
         variant="outline"
         onClick={() => setIsModalOpen(true)}
-        className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+        className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
       >
         <Upload className="h-4 w-4 mr-2" />
         Upload a document
@@ -100,10 +100,10 @@ function DocumentCard({ doc }) {
 
   return (
     <Card
-      className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-lg hover:shadow-purple-700/10 transition-all duration-300"
+      className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-lg hover:shadow-cyan-700/10 transition-all duration-300 cursor-pointer"
       onClick={handleClick}
     >
-      <div className="relative h-40 bg-gradient-to-br from-purple-900 to-indigo-900 flex items-center justify-center">
+      <div className="relative h-40 bg-gradient-to-br from-cyan-900 to-cyan-700 flex items-center justify-center">
         {/* Document preview - first page simulation */}
         <div className="absolute inset-4 bg-white rounded-sm shadow-md flex flex-col p-2">
           <div className="w-full h-4 bg-gray-200 rounded-sm mb-2"></div>
@@ -116,7 +116,7 @@ function DocumentCard({ doc }) {
         </div>
 
         {/* Document type indicator */}
-        <Badge className="absolute top-2 right-2 bg-purple-600 text-white border-none">
+        <Badge className="absolute top-2 right-2 bg-cyan-600 text-white border-none">
           PDF
         </Badge>
       </div>
