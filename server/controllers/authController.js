@@ -6,8 +6,17 @@ const {
 } = require("../utils/generateTokens");
 const setAuthCookies = require("../utils/setAuthCookies");
 
-exports.getHelloController = async (req, res) => {
-  res.json({ message: "hello" });
+exports.getUserController = async (req, res) => {
+  console.log(req.user);
+  res
+    .status(200)
+    .json({
+      user: {
+        email: req.user.email,
+        id: req.user.id,
+        username: req.user.username,
+      },
+    });
 };
 
 exports.signupController = async (req, res) => {

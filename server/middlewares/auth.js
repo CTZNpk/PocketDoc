@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const setAuthCookies = require("../utils/setAuthCookies");
+const { generateAccessToken } = require("../utils/generateTokens");
 
 const auth = (req, res, next) => {
   const accessToken = req.cookies.access_token;
@@ -8,7 +9,7 @@ const auth = (req, res, next) => {
   if (accessToken) {
     try {
       const verified = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-      req.user = { id: verified.id, email: verified.email };
+      req.user = verified;
       return next();
     } catch (err) {
       if (err.name !== "TokenExpiredError") {
@@ -23,20 +24,12 @@ const auth = (req, res, next) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
       );
-      const user = { id: verified.id, email: verified.email };
 
-      const newAccessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "15m",
-      });
-      const newRefreshToken = jwt.sign(
-        { id: user.id },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" },
-      );
+      const newAccessToken = generateAccessToken(verified);
 
-      setAuthCookies(res, newAccessToken, newRefreshToken);
+      setAuthCookies(res, newAccessToken, refreshToken);
 
-      req.user = user;
+      req.user = verified;
       return next();
     } catch (err) {
       return res.status(401).json({ error: "Invalid refresh token" });

@@ -1,13 +1,13 @@
-import { signIn, signUp } from '../api/authService';
-import userStore from '../store/userStore';
-import { emitToast } from '../utils/emitToast';
+import { getUser, logoutUser, signIn, signUp } from "../api/authService";
+import userStore from "../store/userStore";
+import { emitToast } from "../utils/emitToast";
+import Cookies from "js-cookie";
 
 const useAuth = () => {
-  const { setUser, clearUser } = userStore()
+  const { setUser, clearUser, user } = userStore();
   const handleSignIn = async (formData) => {
     try {
       const data = await signIn(formData);
-      localStorage.setItem('token', data.token);
       setUser({ username: data.username });
       emitToast("Sign in Successful");
     } catch (error) {
@@ -18,25 +18,32 @@ const useAuth = () => {
   const handleSignUp = async (formData) => {
     try {
       const data = await signUp(formData);
-      console.log(data)
-      localStorage.setItem('token', data.token);
       setUser({ username: data.username });
       emitToast("Sign up Successful");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       emitToast(`Error Signing Up: ${error.response.data.error}`);
     }
   };
 
   const handleLogout = async () => {
-    try {
-      localStorage.removeItem('token');
-      clearUser();
-    } catch (error) {
-    }
-  }
+    await logoutUser();
+    clearUser();
+  };
 
-  return { handleSignIn, handleSignUp, handleLogout };
+  const fetchUser = async () => {
+    try {
+      if (user == null) {
+        const data = await getUser();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.log(error);
+      emitToast(`Error Fetching User: ${error.response.data.error}`);
+    }
+  };
+
+  return { handleSignIn, handleSignUp, handleLogout, fetchUser };
 };
 
-export default useAuth
+export default useAuth;

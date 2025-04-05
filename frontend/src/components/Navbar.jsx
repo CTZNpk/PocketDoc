@@ -9,13 +9,16 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import useAuth from "@/hooks/useAuth";
 import userStore from "@/store/userStore";
+import { getUser } from "@/api/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = userStore();
+  const { fetchUser, handleLogout } = useAuth();
+  const { user, setUser } = userStore();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,7 +27,7 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   useEffect(() => {
-    console.log(user);
+    fetchUser();
   }, []);
 
   return (
@@ -78,13 +81,30 @@ export default function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <Button
-            variant="default"
-            onClick={() => navigate("/login")}
-            className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white ml-4"
-          >
-            Login
-          </Button>
+          {!user && (
+            <Button
+              variant="default"
+              onClick={() => {
+                navigate("/login");
+                toggleMenu();
+              }}
+              className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
+            >
+              Login
+            </Button>
+          )}
+          {user && (
+            <Button
+              variant="default"
+              onClick={() => {
+                handleLogout();
+                toggleMenu();
+              }}
+              className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
+            >
+              LogOut
+            </Button>
+          )}
         </div>
 
         {/* Mobile menu dropdown */}
@@ -113,16 +133,30 @@ export default function Navbar() {
               ))}
 
               <div className="py-3 px-4 border-t border-gray-700">
-                <Button
-                  variant="default"
-                  onClick={() => {
-                    navigate("/login");
-                    toggleMenu();
-                  }}
-                  className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
-                >
-                  Login
-                </Button>
+                {!user && (
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      navigate("/login");
+                      toggleMenu();
+                    }}
+                    className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
+                  >
+                    Login
+                  </Button>
+                )}
+                {user && (
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      handleLogout();
+                      toggleMenu();
+                    }}
+                    className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white w-full"
+                  >
+                    LogOut
+                  </Button>
+                )}
               </div>
             </div>
           </div>
