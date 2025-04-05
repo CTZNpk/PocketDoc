@@ -28,7 +28,7 @@ export default function GenericTabLayout({
 
   return (
     <TabsContent value={value} className="flex-1 p-4 overflow-y-auto">
-      <Card className="bg-zinc-900 border-zinc-800 shadow-lg">
+      <Card className="border-zinc-800 shadow-lg">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl font-semibold text-white">

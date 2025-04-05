@@ -20,6 +20,7 @@ import QueryTab from "@/components/documentTabs/QueryTab";
 import useDocs from "@/hooks/useDocs";
 import { FaQuestion } from "react-icons/fa";
 import QuizTab from "@/components/documentTabs/QuizTab";
+import Background from "@/components/Background";
 
 export default function DocumentViewer() {
   const { docId } = useParams();
@@ -76,99 +77,106 @@ export default function DocumentViewer() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-black overflow-hidden relative">
-      {/* PDF Viewer Area */}
-      <div className="flex-1 transition-all duration-300">
-        <PdfViewer />
-      </div>
-
-      {/* Toggle Button (always visible) */}
-      <button
-        onClick={() => setShowPanel(!showPanel)}
-        className="fixed top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-l-lg shadow-lg z-30"
-      >
-        {showPanel ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-      </button>
-
-      {/* Document Tools Sidebar */}
-      {showPanel && (
-        <div
-          style={{ width: panelWidth }}
-          className="relative bg-zinc-900 border-l border-zinc-800 shadow-xl transition-all duration-300"
-        >
-          {/* Draggable handle */}
-          <div
-            onMouseDown={handleDragStart}
-            className="absolute left-0 top-0 h-full w-2 cursor-col-resize z-30"
-          />
-          <div className="flex flex-col h-full ml-2">
-            {/* Sidebar Header */}
-            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-xl font-semibold text-white">
-                Document Tools
-              </h2>
-              <button
-                onClick={() => setShowPanel(false)}
-                className="text-zinc-400 hover:text-white"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Tabs */}
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="flex-1 flex flex-col text-white"
-            >
-              <TabsList className="grid grid-cols-5 mx-4 mt-4">
-                <TabsTrigger
-                  value="summary"
-                  className="flex items-center gap-2"
-                >
-                  <FileText size={16} />
-                  <span className="hidden sm:inline">Summary</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="explain"
-                  className="flex items-center gap-2"
-                >
-                  <MessageSquare size={16} />
-                  <span className="hidden sm:inline">Explain</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pageRange"
-                  className="flex items-center gap-2"
-                >
-                  <Layers size={16} />
-                  <span className="hidden sm:inline">Pages</span>
-                </TabsTrigger>
-
-                <TabsTrigger value="query" className="flex items-center gap-2">
-                  <Search size={16} />
-                  <span className="hidden sm:inline">Query</span>
-                </TabsTrigger>
-
-                <TabsTrigger value="quiz" className="flex items-center gap-2">
-                  <FaQuestion size={16} />
-                  <span className="hidden sm:inline">Quiz</span>
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Summary Tab */}
-              <SummaryTab selectedText={selectedText} />
-
-              {/* Explanation Tab */}
-
-              <ExplanationTab selectedText={selectedText} />
-              {/* Page Range Summary Tab */}
-              <PageRangeSummary documentId={docId} />
-              <QueryTab document={documentMeta} setDocument={setDocumentMeta} />
-              <QuizTab documentId={documentMeta._id} />
-            </Tabs>
-          </div>
+    <Background>
+      <div className="flex h-screen overflow-hidden relative">
+        <div className="flex-1 transition-all duration-300">
+          <PdfViewer />
         </div>
-      )}
-    </div>
+
+        {/* Toggle Button (always visible) */}
+        <button
+          onClick={() => setShowPanel(!showPanel)}
+          className="fixed top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-l-lg shadow-lg z-30"
+        >
+          {showPanel ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        </button>
+
+        {/* Document Tools Sidebar */}
+        {showPanel && (
+          <div
+            style={{ width: panelWidth }}
+            className="relative border-l border-zinc-800 shadow-xl transition-all duration-300"
+          >
+            {/* Draggable handle */}
+            <div
+              onMouseDown={handleDragStart}
+              className="absolute left-0 top-0 h-full w-2 cursor-col-resize z-30"
+            />
+            <div className="flex flex-col h-full ml-2">
+              {/* Sidebar Header */}
+              <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+                <h2 className="text-xl font-semibold text-white">
+                  Document Tools
+                </h2>
+                <button
+                  onClick={() => setShowPanel(false)}
+                  className="text-zinc-400 hover:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="flex-1 flex flex-col text-white"
+              >
+                <TabsList className="grid grid-cols-5 mx-4 mt-4">
+                  <TabsTrigger
+                    value="summary"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText size={16} />
+                    <span className="hidden sm:inline">Summary</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="explain"
+                    className="flex items-center gap-2"
+                  >
+                    <MessageSquare size={16} />
+                    <span className="hidden sm:inline">Explain</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="pageRange"
+                    className="flex items-center gap-2"
+                  >
+                    <Layers size={16} />
+                    <span className="hidden sm:inline">Pages</span>
+                  </TabsTrigger>
+
+                  <TabsTrigger
+                    value="query"
+                    className="flex items-center gap-2"
+                  >
+                    <Search size={16} />
+                    <span className="hidden sm:inline">Query</span>
+                  </TabsTrigger>
+
+                  <TabsTrigger value="quiz" className="flex items-center gap-2">
+                    <FaQuestion size={16} />
+                    <span className="hidden sm:inline">Quiz</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Summary Tab */}
+                <SummaryTab selectedText={selectedText} />
+
+                {/* Explanation Tab */}
+
+                <ExplanationTab selectedText={selectedText} />
+                {/* Page Range Summary Tab */}
+                <PageRangeSummary documentId={docId} />
+                <QueryTab
+                  document={documentMeta}
+                  setDocument={setDocumentMeta}
+                />
+                <QuizTab documentId={documentMeta._id} />
+              </Tabs>
+            </div>
+          </div>
+        )}
+      </div>
+    </Background>
   );
 }

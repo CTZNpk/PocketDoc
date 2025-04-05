@@ -10,6 +10,12 @@ import MyDocumentsPage from "./pages/documents/MyDocumentsPage";
 import DocumentViewer from "./pages/documents/DocumentViewer";
 import SummaryDisplay from "./pages/documents/SummaryDisplayComponents";
 import QuizModule from "./pages/quiz/quizPage";
+import AboutUsPage from "./pages/about/AboutUsPage";
+import PrivacyPolicy from "./pages/privacy/PrivacyPage";
+import TermsOfService from "./pages/privacy/TermsOfService";
+import Updates from "./pages/privacy/Updates";
+import Pricing from "./pages/privacy/Pricing";
+import Services from "./pages/services/Services";
 
 function App() {
   return (
@@ -24,6 +30,12 @@ function App() {
         <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
         <Route path="/summary" element={<TextSummarizer />} />
         <Route path="/quiz" element={<QuizModule />} />
+        <Route path="/about" element={<AboutUsPage />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/updates" element={<Updates />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/services" element={<Services />} />
       </Routes>
       <ToastContainer />
     </>

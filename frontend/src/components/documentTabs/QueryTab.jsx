@@ -71,14 +71,14 @@ export default function QueryTab({ document, setDocument }) {
                   value={startPage}
                   onChange={(e) => setStartPage(Number(e.target.value))}
                   placeholder="Start Page"
-                  className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
+                  className="w-1/2 border-zinc-700 text-white"
                 />
                 <Input
                   type="number"
                   value={endPage}
                   onChange={(e) => setEndPage(Number(e.target.value))}
                   placeholder="End Page"
-                  className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
+                  className="w-1/2 border-zinc-700 text-white"
                 />
               </div>
               <div className="space-y-2 mb-5">
@@ -88,7 +88,7 @@ export default function QueryTab({ document, setDocument }) {
                   placeholder="What does Penetration Testing mean?"
                   value={questionQuery}
                   onChange={(e) => setQuestionQuery(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
+                  className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
                 />
               </div>
             </div>

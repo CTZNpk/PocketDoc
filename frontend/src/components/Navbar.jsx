@@ -58,7 +58,7 @@ export default function Navbar() {
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link to="/" legacyBehavior passHref>
+                <Link to="/">
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/") ? "text-cyan-400" : "text-gray-300"
@@ -69,7 +69,7 @@ export default function Navbar() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/services" legacyBehavior passHref>
+                <Link to="/services" >
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/services") ? "text-cyan-400" : "text-gray-300"
@@ -80,7 +80,7 @@ export default function Navbar() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/myDocuments" legacyBehavior passHref>
+                <Link to="/myDocuments" >
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/myDocuments")
@@ -93,7 +93,7 @@ export default function Navbar() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/about" legacyBehavior passHref>
+                <Link to="/about" >
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/about") ? "text-cyan-400" : "text-gray-300"
@@ -104,7 +104,7 @@ export default function Navbar() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/contact" legacyBehavior passHref>
+                <Link to="/contact" >
                   <NavigationMenuLink
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
                       isActive("/contact") ? "text-cyan-400" : "text-gray-300"

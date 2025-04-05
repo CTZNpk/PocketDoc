@@ -37,14 +37,14 @@ export default function ExplanationTab({ selectedText }) {
         <div>
           <Button
             variant="outline"
-            className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
+            className="w-full mb-4 text-zinc-300 border-zinc-700 "
             onClick={() => setShowSettings((prev) => !prev)}
           >
             <Settings className="mr-2 h-4 w-4" /> Explanation Settings
           </Button>
 
           {showSettings && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
+            <div className="border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
               <h2 className="text-white text-lg font-semibold">
                 Explanation Settings
               </h2>
@@ -58,7 +58,7 @@ export default function ExplanationTab({ selectedText }) {
                 <select
                   value={explanationLength}
                   onChange={(e) => setExplanationLength(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                  className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
                 >
                   <option value="simple">
                     Simple – Very easy to understand
@@ -83,7 +83,7 @@ export default function ExplanationTab({ selectedText }) {
             //       placeholder="E.g. What does this concept mean in context?"
             //       value={explanationQuery}
             //       onChange={(e) => setExplanationQuery(e.target.value)}
-            //       className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
+            //       className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full placeholder-zinc-500"
             //     />
             //   </div>
           }

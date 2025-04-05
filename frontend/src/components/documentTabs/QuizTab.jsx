@@ -35,7 +35,7 @@ export default function QuizTab({ documentId }) {
       generateFunction={handleQuizGeneration}
       settingsComponent={
         <div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
+          <div className="border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
             <h2 className="text-white text-lg font-semibold">Quiz Settings</h2>
             <p className="text-zinc-400 text-sm">
               Customize how your quiz is generated
@@ -50,7 +50,7 @@ export default function QuizTab({ documentId }) {
                   value={startPage}
                   onChange={(e) => setStartPage(Number(e.target.value))}
                   min={1}
-                  className="w-full bg-zinc-800 border border-zinc-700 text-white px-3 py-2 rounded"
+                  className="w-full border border-zinc-700 text-white px-3 py-2 rounded"
                 />
               </div>
               <div className="flex-1 space-y-1">
@@ -60,7 +60,7 @@ export default function QuizTab({ documentId }) {
                   value={endPage}
                   onChange={(e) => setEndPage(Number(e.target.value))}
                   min={startPage}
-                  className="w-full bg-zinc-800 border border-zinc-700 text-white px-3 py-2 rounded"
+                  className="w-full border border-zinc-700 text-white px-3 py-2 rounded"
                 />
               </div>
             </div>
@@ -100,7 +100,7 @@ export default function QuizTab({ documentId }) {
               <select
                 value={questionType}
                 onChange={(e) => setQuestionType(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 text-white px-3 py-2 rounded"
+                className="w-full border border-zinc-700 text-white px-3 py-2 rounded"
               >
                 <option value="mixed">Mixed</option>
                 <option value="conceptual">Conceptual</option>

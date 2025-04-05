@@ -94,7 +94,6 @@ function DocumentCard({ documentName }) {
     </Card>
   );
 }
-
 export default function DocumentUploadPage({ onClose }) {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -119,47 +118,47 @@ export default function DocumentUploadPage({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-      <Card className="w-full max-w-4xl bg-white dark:bg-gray-900 border-0 shadow-2xl">
-        <CardHeader className="relative pb-2">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+      <Card className="w-full max-w-4xl bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border border-gray-800 shadow-2xl shadow-cyan-900/30 rounded-xl">
+        <CardHeader className="relative pb-2 border-b border-gray-800">
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="absolute right-4 top-4 text-gray-400 hover:text-white"
             onClick={onClose}
           >
             <X className="h-5 w-5" />
           </Button>
-          <CardTitle className="text-2xl font-bold text-center">
+          <CardTitle className="text-2xl font-bold text-center text-white">
             Upload Document
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Upload Section */}
             <div className="w-full">
               <DragDrop setFile={setFile} file={file} />
 
               {!file && (
-                <Alert className="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-                  <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <AlertDescription className="text-sm text-blue-700 dark:text-blue-300">
-                    Supported file type: PDF
+                <Alert className="mt-4 bg-cyan-900/20 border border-cyan-800">
+                  <AlertCircle className="h-4 w-4 text-cyan-400" />
+                  <AlertDescription className="text-sm text-cyan-300">
+                    Only PDF files are supported.
                   </AlertDescription>
                 </Alert>
               )}
             </div>
 
+            {/* Preview Section */}
             <div className="flex flex-col space-y-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Document Preview
-              </h3>
+              <h3 className="text-lg font-medium text-white">Document Preview</h3>
 
-              <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div className="flex-1 flex items-center justify-center bg-gray-800/50 rounded-lg p-4 border border-gray-700">
                 {file ? (
                   <DocumentCard documentName={file.name} />
                 ) : (
-                  <div className="text-center text-gray-500 dark:text-gray-400">
+                  <div className="text-center text-gray-500">
                     <p>No document selected</p>
                   </div>
                 )}
@@ -168,15 +167,14 @@ export default function DocumentUploadPage({ onClose }) {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-end space-x-4 p-6 pt-0">
-          <Button variant="outline" onClick={onClose}>
+        <CardFooter className="flex justify-end space-x-4 p-6 pt-0 border-t border-gray-800">
+          <Button variant="outline" onClick={onClose} className="border-gray-600 text-gray-300 hover:text-white">
             Cancel
           </Button>
           <Button
-            variant="default"
             onClick={confirmUpload}
             disabled={!file || isUploading}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-cyan-600 hover:bg-cyan-500 text-white"
           >
             {isUploading ? "Uploading..." : "Upload Document"}
           </Button>
@@ -185,3 +183,4 @@ export default function DocumentUploadPage({ onClose }) {
     </div>
   );
 }
+

@@ -47,13 +47,13 @@ export default function PageRangeSummary({ documentId }) {
         <div>
           <Button
             variant="outline"
-            className="w-full mb-4 text-zinc-300 border-zinc-700 bg-zinc-800"
+            className="w-full mb-4 text-zinc-300 border-zinc-700"
             onClick={() => setShowSettings((prev) => !prev)}
           >
             <Settings className="mr-2 h-4 w-4" /> Summary Settings
           </Button>
           {showSettings && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
+            <div className="border border-zinc-800 rounded-lg px-4 py-4 space-y-4 mb-4">
               <h2 className="text-white text-lg font-semibold">
                 Summary Settings
               </h2>
@@ -67,7 +67,7 @@ export default function PageRangeSummary({ documentId }) {
                 <select
                   value={documentType}
                   onChange={(e) => setDocumentType(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                  className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
                 >
                   <option value="general">General</option>
                   <option value="technical">Technical</option>
@@ -97,7 +97,7 @@ export default function PageRangeSummary({ documentId }) {
                 <select
                   value={formatPreference}
                   onChange={(e) => setFormatPreference(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                  className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
                 >
                   <option value="outline">Outline</option>
                   <option value="bullet">Bullet</option>
@@ -111,7 +111,7 @@ export default function PageRangeSummary({ documentId }) {
                 <select
                   value={focus}
                   onChange={(e) => setFocus(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
+                  className="border border-zinc-700 text-zinc-200 px-3 py-2 rounded w-full"
                 >
                   <option value="main ideas">Main Ideas</option>
                   <option value="definitions">Definitions</option>
@@ -126,14 +126,14 @@ export default function PageRangeSummary({ documentId }) {
               value={startPage}
               onChange={(e) => setStartPage(Number(e.target.value))}
               placeholder="Start Page"
-              className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
+              className="w-1/2 border-zinc-700 text-white"
             />
             <Input
               type="number"
               value={endPage}
               onChange={(e) => setEndPage(Number(e.target.value))}
               placeholder="End Page"
-              className="w-1/2 bg-zinc-800 border-zinc-700 text-white"
+              className="w-1/2 border-zinc-700 text-white"
             />
           </div>
         </div>

@@ -68,24 +68,13 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-2">
             <FooterLinkGroup
               title="Product"
               links={[
-                { name: "Features", href: "/features" },
-                { name: "Documentation", href: "/docs" },
+                { name: "Services", href: "/services" },
                 { name: "Pricing", href: "/pricing" },
                 { name: "Updates", href: "/updates" },
-              ]}
-            />
-
-            <FooterLinkGroup
-              title="Resources"
-              links={[
-                { name: "Blog", href: "/blog" },
-                { name: "Community", href: "/community" },
-                { name: "Support", href: "/support" },
-                { name: "API", href: "/api" },
               ]}
             />
 
@@ -93,7 +82,6 @@ export default function Footer() {
               title="Company"
               links={[
                 { name: "About", href: "/about" },
-                { name: "Careers", href: "/careers" },
                 { name: "Privacy", href: "/privacy" },
                 { name: "Terms", href: "/terms" },
               ]}
@@ -125,13 +113,6 @@ export default function Footer() {
             <span>•</span>
             <a href="/terms" className="hover:text-cyan-400 transition-colors">
               Terms of Service
-            </a>
-            <span>•</span>
-            <a
-              href="/cookies"
-              className="hover:text-cyan-400 transition-colors"
-            >
-              Cookie Policy
             </a>
           </div>
         </div>
