@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, BookOpen } from "lucide-react";
-// Import shadcn components
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -10,28 +9,29 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import userStore from "@/store/userStore";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = userStore();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Check if a path is active
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
+
+  useEffect(() => {
+    console.log(user);
+  }, []);
 
   return (
     <nav className="bg-gray-900 border-b border-gray-800 fixed w-full z-20 top-0 left-0 shadow-lg shadow-black/20">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-2 rounded-lg">
-            <BookOpen className="h-5 w-5 text-white" />
-          </div>
+          <img src="/logo.png" alt="PocketDoc Logo" className="h-8 mr-3" />
           <span className="self-center text-xl font-bold whitespace-nowrap text-white">
             PocketDoc
           </span>
@@ -57,65 +57,27 @@ export default function Navbar() {
         <div className="hidden md:flex md:items-center md:gap-6">
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link to="/">
+              {[
+                { path: "/", label: "Home" },
+                { path: "/services", label: "Services" },
+                { path: "/myDocuments", label: "Documents" },
+                { path: "/about", label: "About" },
+                { path: "/contact", label: "Contact" },
+              ].map(({ path, label }) => (
+                <NavigationMenuItem key={path}>
                   <NavigationMenuLink
+                    asChild
                     className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/") ? "text-cyan-400" : "text-gray-300"
+                      isActive(path) ? "text-cyan-400" : "text-gray-300"
                     }`}
                   >
-                    Home
+                    <Link to={path}>{label}</Link>
                   </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/services" >
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/services") ? "text-cyan-400" : "text-gray-300"
-                    }`}
-                  >
-                    Services
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/myDocuments" >
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/myDocuments")
-                        ? "text-cyan-400"
-                        : "text-gray-300"
-                    }`}
-                  >
-                    Documents
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/about" >
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/about") ? "text-cyan-400" : "text-gray-300"
-                    }`}
-                  >
-                    About
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/contact" >
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-gray-800 ${
-                      isActive("/contact") ? "text-cyan-400" : "text-gray-300"
-                    }`}
-                  >
-                    Contact
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
+
           <Button
             variant="default"
             onClick={() => navigate("/login")}
@@ -129,61 +91,27 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden w-full mt-4 bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
             <div className="flex flex-col">
-              <Link
-                to="/"
-                className={`py-3 px-4 hover:bg-gray-700 ${
-                  isActive("/")
-                    ? "text-cyan-400 bg-gray-700/70"
-                    : "text-gray-300"
-                }`}
-                onClick={toggleMenu}
-              >
-                Home
-              </Link>
-              <Link
-                to="/services"
-                className={`py-3 px-4 hover:bg-gray-700 ${
-                  isActive("/services")
-                    ? "text-cyan-400 bg-gray-700/70"
-                    : "text-gray-300"
-                }`}
-                onClick={toggleMenu}
-              >
-                Services
-              </Link>
-              <Link
-                to="/myDocuments"
-                className={`py-3 px-4 hover:bg-gray-700 ${
-                  isActive("/myDocuments")
-                    ? "text-cyan-400 bg-gray-700/70"
-                    : "text-gray-300"
-                }`}
-                onClick={toggleMenu}
-              >
-                Documents
-              </Link>
-              <Link
-                to="/about"
-                className={`py-3 px-4 hover:bg-gray-700 ${
-                  isActive("/about")
-                    ? "text-cyan-400 bg-gray-700/70"
-                    : "text-gray-300"
-                }`}
-                onClick={toggleMenu}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className={`py-3 px-4 hover:bg-gray-700 ${
-                  isActive("/contact")
-                    ? "text-cyan-400 bg-gray-700/70"
-                    : "text-gray-300"
-                }`}
-                onClick={toggleMenu}
-              >
-                Contact
-              </Link>
+              {[
+                { path: "/", label: "Home" },
+                { path: "/services", label: "Services" },
+                { path: "/myDocuments", label: "Documents" },
+                { path: "/about", label: "About" },
+                { path: "/contact", label: "Contact" },
+              ].map(({ path, label }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`py-3 px-4 hover:bg-gray-700 ${
+                    isActive(path)
+                      ? "text-cyan-400 bg-gray-700/70"
+                      : "text-gray-300"
+                  }`}
+                  onClick={toggleMenu}
+                >
+                  {label}
+                </Link>
+              ))}
+
               <div className="py-3 px-4 border-t border-gray-700">
                 <Button
                   variant="default"

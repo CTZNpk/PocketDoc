@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BookOpen, FileQuestion, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
+import FeatureCards from "@/components/landing/FeatureCards";
+import FeatureCard from "@/components/FeatureCard";
 
 export default function Services() {
   const [input, setInput] = useState("");
@@ -73,24 +75,29 @@ export default function Services() {
         </div>
 
         {/* Features Section */}
+
         <h2 className="text-3xl font-semibold text-center mb-12">
           What You Can Do with PocketDoc
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <ServiceCard
+          <FeatureCard
+            title="Summarize Documents"
+            description="Get the essential points from any document in seconds."
             icon={<BookOpen className="h-8 w-8 text-cyan-400" />}
-            title="Document Summarization"
-            desc="Upload PDFs, articles, and lecture notes to get clean, AI-powered summaries that highlight key points."
+            hoverEffect={false}
           />
-          <ServiceCard
-            icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
+          <FeatureCard
             title="Query-Based Summary"
-            desc="Ask a specific question about your document and get a focused answer or explanation."
+            description="Ask specific questions and get targeted information."
+            icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
+            hoverEffect={false}
           />
-          <ServiceCard
+          <FeatureCard
+            title="Generate Quiz"
+            description="Create custom quizzes to test your knowledge."
             icon={<Brain className="h-8 w-8 text-cyan-400" />}
-            title="Quiz Generation"
-            desc="Automatically create multiple-choice, true/false, or short-answer quizzes from your documents."
+            hoverEffect={false}
           />
         </div>
       </div>
