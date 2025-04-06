@@ -45,36 +45,9 @@ def mark_quiz(questions: list, answers: list, user_answers: list, types: list) -
                 user_answer=user_answers[i]
             )
 
-            try:
-                response = model.generate_content(prompt).text.strip()
+            user_answer_clean = user_answers[i].strip()
 
-                # Expecting format: Score: X/Y\nJustification: ...
-                score_match = re.search(
-                    r"Score:\s*(\d+)\s*/\s*(\d+)", response, re.IGNORECASE)
-                justification_match = re.search(
-                    r"Justification:\s*(.*)", response, re.IGNORECASE | re.DOTALL)
-
-                if score_match:
-                    score = int(score_match.group(1))
-                    out_of = int(score_match.group(2))
-                else:
-                    score = 0
-                    out_of = 2 if q_type == "short" else 5
-
-                justification = justification_match.group(1).strip(
-                ) if justification_match else "No justification provided."
-
-                evaluations.append({
-                    "question": questions[i],
-                    "correct_answer": answers[i],
-                    "user_answer": user_answers[i],
-                    "question_type": q_type,
-                    "score": score,
-                    "out_of": out_of,
-                    "justification": justification
-                })
-
-            except Exception as e:
+            if not user_answer_clean:
                 evaluations.append({
                     "question": questions[i],
                     "correct_answer": answers[i],
@@ -82,8 +55,48 @@ def mark_quiz(questions: list, answers: list, user_answers: list, types: list) -
                     "question_type": q_type,
                     "score": 0,
                     "out_of": 2 if q_type == "short" else 5,
-                    "justification": f"Evaluation failed: {str(e)}"
+                    "justification": "No answer provided by user."
                 })
+            else:
+
+                try:
+                    response = model.generate_content(prompt).text.strip()
+
+                    score_match = re.search(
+                        r"Score:\s*(\d+)\s*/\s*(\d+)", response, re.IGNORECASE)
+                    justification_match = re.search(
+                        r"Justification:\s*(.*)", response, re.IGNORECASE | re.DOTALL)
+
+                    if score_match:
+                        score = int(score_match.group(1))
+                        out_of = int(score_match.group(2))
+                    else:
+                        score = 0
+                        out_of = 2 if q_type == "short" else 5
+
+                    justification = justification_match.group(1).strip(
+                    ) if justification_match else "No justification provided."
+
+                    evaluations.append({
+                        "question": questions[i],
+                        "correct_answer": answers[i],
+                        "user_answer": user_answers[i],
+                        "question_type": q_type,
+                        "score": score,
+                        "out_of": out_of,
+                        "justification": justification
+                    })
+
+                except Exception as e:
+                    evaluations.append({
+                        "question": questions[i],
+                        "correct_answer": answers[i],
+                        "user_answer": user_answers[i],
+                        "question_type": q_type,
+                        "score": 0,
+                        "out_of": 2 if q_type == "short" else 5,
+                        "justification": f"Evaluation failed: {str(e)}"
+                    })
 
         total_score += score
         max_score += weight

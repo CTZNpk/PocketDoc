@@ -22,20 +22,23 @@ export default function QuizModule() {
   const { quizId } = useParams();
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState([]);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const { getQuiz } = useQuiz();
+  const { getQuiz, submitQuiz } = useQuiz();
   const [quizData, setQuizData] = useState();
-  let progressPercentage;
+  const [quizResults, setQuizResults] = useState();
+  const [progressPercentage, setProgressPercentage] = useState();
 
   const startQuiz = () => {
     setQuizStarted(true);
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (currentQuestionIndex < quizData.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
+      const response = await submitQuiz({ quizId, userAnswers: answers });
+      setQuizResults(response);
       setQuizCompleted(true);
     }
   };
@@ -49,27 +52,37 @@ export default function QuizModule() {
   useEffect(() => {
     const fetch = async () => {
       const response = await getQuiz(quizId);
-      console.log(response);
+      setAnswers(
+        Array.from({ length: response.questions.length }, (_, __) => {
+          return "";
+        }),
+      );
       setQuizData(response);
-      console.log(response);
     };
     console.log(quizStarted);
     fetch();
   }, []);
 
-  if (quizData)
-    progressPercentage =
-      ((currentQuestionIndex + 1) / quizData.totalQuestions) * 100;
+  useEffect(() => {
+    console.log("effect triggered", currentQuestionIndex, quizData);
+    console.log(progressPercentage);
+    if (quizData)
+      setProgressPercentage(
+        ((currentQuestionIndex + 1) / quizData.questions.length) * 100,
+      );
+    console.log("we are herhe hah");
+  }, [quizData, currentQuestionIndex]);
 
   const handleAnswer = (answer) => {
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: answer,
+    setAnswers((prev) => {
+      const updated = [...prev];
+      updated[currentQuestionIndex] = answer;
+      return updated;
     });
   };
 
   if (quizCompleted) {
-    return <QuizResults quizData={quizData} answers={answers} />;
+    return <QuizResults quizResults={quizResults} />;
   }
 
   if (!quizStarted) {

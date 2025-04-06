@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Progress } from "@/components/ui/progress";
 
 export default function QuizProgress({
@@ -17,7 +17,7 @@ export default function QuizProgress({
       <Progress
         value={progress}
         className="h-2 bg-gray-700"
-        indicatorClassName="bg-gradient-to-r from-cyan-600 to-cyan-400"
+        indicatorclassname="bg-gradient-to-r from-cyan-600 to-cyan-400"
       />
     </div>
   );

@@ -204,7 +204,7 @@ const getQuizById = async (req, res) => {
       numberOfSubmissions === 0
         ? 0
         : quiz.submissions.reduce((sum, s) => sum + (s.score || 0), 0) /
-        numberOfSubmissions;
+          numberOfSubmissions;
 
     const responseData = {
       documentTitle: quiz.document?.title || "Untitled",
@@ -252,12 +252,13 @@ const downloadQuizAndKey = async (req, res) => {
 
         const heading = q.type === "true/false" ? "True / False:" : "_Answer:_";
 
-        return `### Q${i + 1}. ${q.question}\n${q.type === "mcq"
+        return `### Q${i + 1}. ${q.question}\n${
+          q.type === "mcq"
             ? q.options
-              .map((opt, j) => `- ${String.fromCharCode(65 + j)}. ${opt}`)
-              .join("\n")
+                .map((opt, j) => `- ${String.fromCharCode(65 + j)}. ${opt}`)
+                .join("\n")
             : `${heading} ${lines}`
-          }`;
+        }`;
       })
       .join("\n\n");
 
@@ -318,9 +319,9 @@ const downloadQuizAndKey = async (req, res) => {
 
     output.on("close", () => {
       res.download(zipPath, zipName, () => {
-        fs.unlink(quizPath, () => { });
-        fs.unlink(keyPath, () => { });
-        fs.unlink(zipPath, () => { });
+        fs.unlink(quizPath, () => {});
+        fs.unlink(keyPath, () => {});
+        fs.unlink(zipPath, () => {});
       });
     });
 
@@ -341,7 +342,10 @@ const downloadQuizAndKey = async (req, res) => {
 const submitQuiz = async (req, res) => {
   try {
     const { quizId, userAnswers } = req.body;
-    const userId = req.user.id; // Assuming auth middleware populates this
+    const userId = req.user.id;
+
+    console.log(quizId);
+    console.log(userAnswers);
 
     if (!quizId || !userAnswers || !Array.isArray(userAnswers)) {
       return res.status(400).json({ message: "Missing or invalid input" });

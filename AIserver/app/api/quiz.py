@@ -18,8 +18,6 @@ async def generate_quiz(
     text = extract_text_from_pdf(file_path, start_page, end_page)
     chunks = chunk_document(text, chunk_size=20000)
     quiz = generate_quiz_from_chunks(chunks, answer_formats, question_type)
-    print("GEN QUIZ")
-    print(quiz)
     return {"quiz": quiz}
 
 
