@@ -3,6 +3,11 @@ const axios = require("axios");
 const Quiz = require("../models/quizModel");
 const querystring = require("querystring");
 const documentModel = require("../models/documentModel");
+const { default: puppeteer } = require("puppeteer");
+const { marked } = require("marked");
+const archiver = require("archiver");
+const path = require("path");
+const fs = require("fs");
 
 const generateAndStoreQuiz = async (req, res) => {
   try {
@@ -52,13 +57,28 @@ const generateAndStoreQuiz = async (req, res) => {
       throw new Error("Invalid quiz response from FastAPI");
     }
 
+    const sortedQuiz = [...fastApiResponse.data.quiz].sort((a, b) => {
+      const normalize = (type) =>
+        type.toLowerCase().replace("true/false", "true_false");
+
+      const order = {
+        mcq: 1,
+        true_false: 2,
+        short: 3,
+        long: 4,
+      };
+
+      return order[normalize(a.type)] - order[normalize(b.type)];
+    });
+    console.log(sortedQuiz);
+
     const quizDoc = new Quiz({
       userId: document.userId,
       document: req.body.documentId,
       filePath: document.file,
       startPage: req.body.startPage || 1,
       endPage: req.body.endPage || 1,
-      quiz: fastApiResponse.data.quiz,
+      quiz: sortedQuiz,
       metadata: {
         answerFormats: Array.isArray(req.body.answerFormats)
           ? req.body.answerFormats
@@ -209,10 +229,121 @@ const getQuizById = async (req, res) => {
   }
 };
 
-// Export functions
+const downloadQuizAndKey = async (req, res) => {
+  const { quizId } = req.params;
+
+  try {
+    const quiz = await Quiz.findById(quizId).populate("document", "title");
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    const title = quiz.document?.title?.replace(/\s+/g, "_") || "Untitled";
+    const filenameQuiz = `Quiz_${title}_${quiz.startPage}-${quiz.endPage}.pdf`;
+    const filenameKey = `Key_${title}_${quiz.startPage}-${quiz.endPage}.pdf`;
+
+    // Markdown for Quiz (with blank lines)
+    const quizMarkdown = quiz.quiz
+      .map((q, i) => {
+        let lines = "";
+
+        if (q.type === "short") lines = "<br/><br/><br/>";
+        else if (q.type === "long")
+          lines = "<br/><br/><br/><br/><br/><br/><br/>";
+
+        const heading = q.type === "true/false" ? "True / False:" : "_Answer:_";
+
+        return `### Q${i + 1}. ${q.question}\n${q.type === "mcq"
+            ? q.options
+              .map((opt, j) => `- ${String.fromCharCode(65 + j)}. ${opt}`)
+              .join("\n")
+            : `${heading} ${lines}`
+          }`;
+      })
+      .join("\n\n");
+
+    // Markdown for Answer Key
+    const keyMarkdown = quiz.quiz
+      .map((q, i) => `### Q${i + 1}. ${q.question}\n**Answer:** ${q.answer}`)
+      .join("\n\n");
+
+    const tempDir = path.join(__dirname, "../temp");
+    fs.mkdirSync(tempDir, { recursive: true });
+
+    const quizPath = path.join(tempDir, filenameQuiz);
+    const keyPath = path.join(tempDir, filenameKey);
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const generatePdf = async (markdownContent, outputPath) => {
+      const htmlContent = marked(markdownContent);
+      await page.setContent(`
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                padding: 30px;
+                color: #000;
+                line-height: 1.6;
+              }
+              h3 {
+                margin-top: 24px;
+                font-size: 18px;
+              }
+              ul {
+                margin-top: 8px;
+                margin-left: 20px;
+              }
+              strong {
+                color: #333;
+              }
+            </style>
+          </head>
+          <body>${htmlContent}</body>
+        </html>
+      `);
+      await page.pdf({ path: outputPath, format: "A4", printBackground: true });
+    };
+
+    await generatePdf(quizMarkdown, quizPath);
+    await generatePdf(keyMarkdown, keyPath);
+    await browser.close();
+
+    // Create ZIP
+    const zipName = `QuizFiles_${title}_${quiz.startPage}-${quiz.endPage}.zip`;
+    const zipPath = path.join(tempDir, zipName);
+    const output = fs.createWriteStream(zipPath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    output.on("close", () => {
+      res.download(zipPath, zipName, () => {
+        fs.unlink(quizPath, () => { });
+        fs.unlink(keyPath, () => { });
+        fs.unlink(zipPath, () => { });
+      });
+    });
+
+    archive.on("error", (err) => {
+      throw err;
+    });
+
+    archive.pipe(output);
+    archive.file(quizPath, { name: filenameQuiz });
+    archive.file(keyPath, { name: filenameKey });
+    archive.finalize();
+  } catch (err) {
+    console.error("Error generating quiz/key files:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   generateAndStoreQuiz,
   userCompletesQuiz,
   getUserQuizHistory,
   getQuizById,
+  downloadQuizAndKey,
 };

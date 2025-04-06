@@ -17,7 +17,7 @@ D. ...
 ANSWER: B
 END""")
 
-    if "true_false" in answer_formats:
+    if "true/false" in answer_formats:
         format_instructions.append("- True/False questions")
         examples.append("""
 - True/False:

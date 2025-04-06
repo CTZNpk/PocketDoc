@@ -33,6 +33,8 @@ export default function QuizTab({ documentId }) {
     navigate(`/quiz/${latestQuizId}`);
   };
 
+  const { downloadQuizFromId } = useQuiz();
+
   return (
     <GenericTabLayout
       value="quiz"
@@ -74,7 +76,7 @@ export default function QuizTab({ documentId }) {
             <div className="space-y-2">
               <label className="text-zinc-300 block">Answer Formats</label>
               <div className="grid grid-cols-2 gap-2">
-                {["mcq", "short", "long", "true_false"].map((format) => (
+                {["mcq", "short", "long", "true/false"].map((format) => (
                   <label
                     key={format}
                     className="flex items-center space-x-2 text-zinc-200"
@@ -124,7 +126,9 @@ export default function QuizTab({ documentId }) {
               <Button
                 variant="outline"
                 className="border-cyan-600 text-cyan-600 hover:bg-cyan-950 w-full"
-                onClick={() => {}}
+                onClick={() => {
+                  downloadQuizFromId(latestQuizId);
+                }}
               >
                 Download Quiz
               </Button>

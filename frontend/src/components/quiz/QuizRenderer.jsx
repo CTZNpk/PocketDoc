@@ -8,7 +8,7 @@ export default function QuestionRenderer({ question, answer, onAnswer }) {
       return (
         <MCQQuestion question={question} answer={answer} onAnswer={onAnswer} />
       );
-    case "true_false":
+    case "true/false":
       return (
         <TrueFalseQuestion
           question={question}

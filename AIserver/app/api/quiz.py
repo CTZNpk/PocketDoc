@@ -13,8 +13,9 @@ async def generate_quiz(
     answer_formats: list[str] = Form(...),
     question_type: str = Form("mixed")
 ):
-    answer_format = [fmt.strip() for fmt in answer_formats[0].split(",")]
     text = extract_text_from_pdf(file_path, start_page, end_page)
     chunks = chunk_document(text, chunk_size=20000)
-    quiz = generate_quiz_from_chunks(chunks, answer_format, question_type)
+    quiz = generate_quiz_from_chunks(chunks, answer_formats, question_type)
+    print("GEN QUIZ")
+    print(quiz)
     return {"quiz": quiz}

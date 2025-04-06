@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 
 export default function QuizResults({ quizData, answers }) {
   const scorableQuestions = quizData.questions.filter(
-    (q) => q.type === "mcq" || q.type === "true_false",
+    (q) => q.type === "mcq" || q.type === "true/false",
   );
   const correctAnswers = scorableQuestions.filter(
     (q) => answers[q.id] === q.correctAnswer,
@@ -80,7 +80,7 @@ export default function QuizResults({ quizData, answers }) {
                         </p>
                       </div>
                       {(question.type === "mcq" ||
-                        question.type === "true_false") && (
+                        question.type === "true/false") && (
                           <div
                             className={`flex items-center ${answers[question.id] === question.correctAnswer ? "text-green-400" : "text-red-400"}`}
                           >
@@ -114,7 +114,7 @@ export default function QuizResults({ quizData, answers }) {
                       </div>
                     )}
 
-                    {question.type === "true_false" && (
+                    {question.type === "true/false" && (
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div
                           className={`p-2 rounded-md text-center ${question.correctAnswer === true

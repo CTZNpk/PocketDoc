@@ -81,7 +81,9 @@ export default function QuizModule() {
           </div>
         </Background>
       );
-    return <QuizIntro quizData={quizData} onStartQuiz={startQuiz} />;
+    return (
+      <QuizIntro quizId={quizId} quizData={quizData} onStartQuiz={startQuiz} />
+    );
   }
 
   return (

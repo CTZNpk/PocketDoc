@@ -15,7 +15,7 @@ const quizSchema = new mongoose.Schema(
       {
         type: {
           type: String,
-          enum: ["mcq", "short", "long", "true_false"],
+          enum: ["mcq", "short", "long", "true/false"],
           required: true,
         },
         question: { type: String, required: true },
@@ -27,7 +27,7 @@ const quizSchema = new mongoose.Schema(
     metadata: {
       answerFormats: {
         type: [String],
-        enum: ["mcq", "true_false", "short", "long"],
+        enum: ["mcq", "true/false", "short", "long"],
         required: true,
       },
       questionType: {

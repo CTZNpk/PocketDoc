@@ -1,4 +1,4 @@
-import { generateQuiz, getQuizById } from "@/api/quizService";
+import { downloadQuiz, generateQuiz, getQuizById } from "@/api/quizService";
 import { emitToast } from "../utils/emitToast";
 
 const useQuiz = () => {
@@ -22,9 +22,18 @@ const useQuiz = () => {
     }
   };
 
+  const downloadQuizFromId = async (quizId) => {
+    try {
+      downloadQuiz(quizId);
+    } catch (e) {
+      emitToast(`Error getting Quiz: ${e}`);
+    }
+  };
+
   return {
     getQuiz,
     generateQuizFromDoc,
+    downloadQuizFromId,
   };
 };
 

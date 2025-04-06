@@ -6,11 +6,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, CheckCircle2, BookOpen, FileCheck } from "lucide-react";
+import {
+  ChevronRight,
+  CheckCircle2,
+  BookOpen,
+  FileCheck,
+  Download,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ThemeButton from "../Button";
+import useQuiz from "@/hooks/useQuiz";
 
-export default function QuizIntro({ quizData, onStartQuiz }) {
+export default function QuizIntro({ quizId, quizData, onStartQuiz }) {
+  const { downloadQuizFromId } = useQuiz();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
       <Navbar />
@@ -18,10 +28,18 @@ export default function QuizIntro({ quizData, onStartQuiz }) {
         <div className="max-w-3xl mx-auto">
           <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 shadow-lg shadow-cyan-900/10 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 to-transparent pointer-events-none"></div>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-3xl font-bold text-white">
                 Quiz Overview
               </CardTitle>
+
+              <ThemeButton
+                variant="secondary"
+                onClick={() => downloadQuizFromId(quizId)}
+                className="p-3"
+              >
+                <Download className="h-5" />
+              </ThemeButton>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between gap-6 ">
