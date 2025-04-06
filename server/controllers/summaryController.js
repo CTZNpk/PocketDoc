@@ -83,6 +83,7 @@ exports.summarizeDocument = async (req, res) => {
       formatPreference = "paragraph",
       focus = "main ideas",
     } = req.body;
+    const userId = req.user.id;
 
     const document = await documentModel.findById(documentId);
 
@@ -126,6 +127,7 @@ exports.summarizeDocument = async (req, res) => {
 
     const summaryDoc = new DocSummary({
       document: documentId,
+      userId: userId,
       filePath: filePath,
       startPage: parseInt(startPage),
       endPage: parseInt(endPage),
@@ -163,55 +165,6 @@ exports.summarizeDocument = async (req, res) => {
       error: "Failed to process summary",
       details:
         process.env.NODE_ENV === "development" ? error.message : undefined,
-    });
-  }
-};
-
-exports.fetchUserSummaryHistories = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    // Fetch all summaries from the textSummaryModel for the specific user
-    const textSummaries = await textSummaryModel
-      .find({ userId })
-      .sort({ createdAt: -1 });
-
-    // Fetch all summaries from DocSummary for the specific user
-    const docSummaries = await DocSummary.find({ userId }).sort({
-      createdAt: -1,
-    });
-
-    // Combine the summaries into a single array
-    const allSummaries = [
-      ...textSummaries.map((summary) => ({
-        summaryId: summary._id,
-        documentId: summary.documentId, // Adjust if the field is different
-        summary: summary.summary,
-        modelUsed: summary.modelUsed,
-        createdAt: summary.createdAt,
-        type: "text", // You can add a type to differentiate between summary sources
-      })),
-      ...docSummaries.map((summary) => ({
-        summaryId: summary._id,
-        document: summary.document, // Adjust if the field is different
-        summary: summary.summary,
-        modelUsed: summary.modelUsed,
-        createdAt: summary.createdAt,
-        type: "doc", // Different type for DocSummary
-      })),
-    ];
-
-    // Sort the summaries by createdAt (if not already sorted)
-    allSummaries.sort((a, b) => b.createdAt - a.createdAt);
-
-    return res.status(200).json({
-      status: "success",
-      data: allSummaries,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      error: `Failed to fetch summary histories: ${error.message}`,
     });
   }
 };
@@ -289,10 +242,43 @@ exports.downloadSummaryPdf = async (req, res) => {
         console.error("Error sending PDF:", err);
         res.status(500).json({ message: "Failed to send file" });
       }
-      fs.unlink(filePath, () => { });
+      fs.unlink(filePath, () => {});
     });
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getUserDocumentSummaries = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const summaries = await DocSummary.find({ userId })
+      .populate("document", "title") // Just get the title from the document
+      .sort({ createdAt: -1 }) // optional: newest first
+      .exec();
+
+    if (!summaries.length) {
+      return res
+        .status(404)
+        .json({ error: "No summaries found for this user" });
+    }
+
+    const result = userSummaries.map((summary) => ({
+      summaryId: summary._id,
+      documentTitle: summary.document?.title || "Untitled",
+      startPage: summary.startPage,
+      endPage: summary.endPage,
+      summaryLength: summary.metadata.summaryLength,
+      formatPreference: summary.metadata.formatPreference,
+      focusArea: summary.metadata.focusArea,
+      generatedAt: summary.metadata.generatedAt,
+    }));
+
+    return res.status(200).json({ status: "success", data: result });
+  } catch (error) {
+    console.error("Error fetching summaries:", error);
+    return res.status(500).json({ error: "Error fetching summaries" });
   }
 };

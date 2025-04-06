@@ -7,6 +7,11 @@ const docSummarySchema = new mongoose.Schema(
       ref: "DocumentModel",
       required: true,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserModel",
+      required: true,
+    },
     filePath: {
       type: String,
       required: true,

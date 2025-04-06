@@ -5,8 +5,7 @@ const quizController = require("../controllers/quizController");
 const quizrouter = express.Router();
 
 quizrouter.post("/generate", auth, quizController.generateAndStoreQuiz);
-quizrouter.post("/submit-quiz", auth, quizController.userCompletesQuiz);
-quizrouter.get("/quiz-history", auth, quizController.getUserQuizHistory);
+quizrouter.get("/all", auth, quizController.getUserQuiz);
 quizrouter.get("/:quizId", auth, quizController.getQuizById);
 quizrouter.get("/:quizId/download", auth, quizController.downloadQuizAndKey);
 quizrouter.post("/submit", auth, quizController.submitQuiz);
