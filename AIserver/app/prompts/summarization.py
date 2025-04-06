@@ -8,22 +8,49 @@ def get_format_instruction(format_preference: str) -> str:
 
 def get_common_instructions(summary_length: int, format_preference: str, focus: str, document_type: str) -> str:
     return f"""
-- Document type: {document_type}
-- Focus: {focus}
-- Length: ~{summary_length}% of the original
-- Format: {format_preference}
-- Key Instructions: {get_format_instruction(format_preference)}
+You are a Markdown formatting expert.
 
-Use markdown:
-- **Bold** for key terms
-- Give Proper Markdown format which can be used by REACTMARKDOWN and reders perfectly in that ***IMPORTANT***
-- CODE BLOCKS ONLY FOR CODE ELEMENTS DONOT WRAP any normal text in Code block i.e ``` ```
-- DONOT WRAP OUTPUT IN ``` ``` and make it a CODE BLOCK
+Summarize the following {document_type} document using **clean and properly rendered Markdown**.
 
-**IMPORTANT:**
-- Maintain strict {summary_length}% length limit — even if important details are lost
-- Do not add any information beyond the text
-- Ensure clarity and avoid vague statements
+---
+
+**SUMMARY INSTRUCTIONS:**
+- Focus on: **{focus}**
+- Length: **~{summary_length}%** of the original
+- Format style: **{format_preference}**
+- Important: be concise, structured, and markdown-compliant.
+
+---
+
+**MARKDOWN RULES** (follow strictly):
+
+**Headings:**
+- Use `#`, `##`, `###` etc. for titles and sections
+- No bold-wrapping of headings (e.g., ❌ `# **Title**`) — use plain `# Title`
+
+**Lists and Bullets:**
+- Each bullet must be on a **separate line**
+- Use `*` or `-` for unordered lists
+- Use `1.`, `2.`, etc. for ordered steps
+- Add **one empty line** between list blocks
+
+**Bold:**
+- Use `**bold**` for emphasis on terms or headings
+
+**Code blocks (Important!):**
+- Use triple backticks (```) **only for actual terminal/code snippets**
+- **DO NOT** wrap normal text, bullets, or whole sections in code blocks
+- **DO NOT** use ` ```markdown ` — use plain markdown output only
+
+**Avoid escape characters:**
+- DO NOT output text with `\\n`, `\\t`, `\\` etc.
+- Simply use real newlines (hit Enter/Return in your output)
+
+---
+
+**Your Response MUST be clean, readable, and fully Markdown-rendered**.
+
+Begin the summary now:
 """
 
 
@@ -38,6 +65,8 @@ Instructions:
 Text:
 {text}
 
+
+BEGIN IMMEDIATELY NO INTRO SENTENCE
 SUMMARY:
 """
 
@@ -54,10 +83,11 @@ Instructions:
 {get_common_instructions(
         summary_length, format_preference, focus, document_type)}
 
---You are a Summarizing model summarizing large text the previous summary has already been seen by the user it is necessary that you 
+--You are a Summarizing model summarizing large text the previous summary has already been seen by the user it is necessary that you
 continue the summary forward donot repeat
 Begin the summary immediately. Do not repeat previous content.
 
+BEGIN IMMEDIATELY NO INTRO SENTENCE
 SUMMARY:
 """
 
@@ -73,6 +103,6 @@ Instructions:
 Text:
 {text}
 
+BEGIN IMMEDIATELY NO INTRO SENTENCE
 SUMMARY:
 """
-

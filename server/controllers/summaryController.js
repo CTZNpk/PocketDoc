@@ -1,8 +1,11 @@
 const { default: axios } = require("axios");
 const textSummaryModel = require("../models/textSummaryModel");
+const fs = require("fs");
+const path = require("path");
+const puppeteer = require("puppeteer");
+const { marked } = require("marked");
 
 const DocSummary = require("../models/summaryModel");
-const qs = require("qs");
 
 const FormData = require("form-data");
 const documentModel = require("../models/documentModel");
@@ -215,8 +218,6 @@ exports.fetchUserSummaryHistories = async (req, res) => {
 
 exports.getSummaryById = async (req, res) => {
   const { summaryId } = req.params;
-  console.log("HAHHAHAHHA");
-  console.log(summaryId);
 
   try {
     const summary = await DocSummary.findById(summaryId).populate({
@@ -231,6 +232,67 @@ exports.getSummaryById = async (req, res) => {
     res.json(summary);
   } catch (error) {
     console.error("Error fetching summary:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.downloadSummaryPdf = async (req, res) => {
+  const { summaryId } = req.params;
+
+  try {
+    const summary = await DocSummary.findById(summaryId).populate({
+      path: "document",
+      select: "title",
+    });
+
+    if (!summary) {
+      return res.status(404).json({ message: "Summary not found" });
+    }
+
+    const markdown = summary.summary;
+    const htmlContent = marked(markdown); // Convert Markdown to HTML
+
+    const title = summary.document?.title?.replace(/\s+/g, "_") || "Untitled";
+    const filename = `Summary_${title}_${summary.startPage}_${summary.endPage}.pdf`;
+    const filePath = path.join(__dirname, "../temp", filename);
+
+    // Launch Puppeteer and generate the PDF
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.setContent(`
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 40px;
+              color: #000;
+            }
+            h1, h2, h3 {
+              color: #333;
+            }
+            ul {
+              margin-left: 20px;
+            }
+          </style>
+        </head>
+        <body>${htmlContent}</body>
+      </html>
+    `);
+
+    await page.pdf({ path: filePath, format: "A4", printBackground: true });
+    await browser.close();
+
+    res.download(filePath, filename, (err) => {
+      if (err) {
+        console.error("Error sending PDF:", err);
+        res.status(500).json({ message: "Failed to send file" });
+      }
+      fs.unlink(filePath, () => { });
+    });
+  } catch (error) {
+    console.error("Error generating PDF:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

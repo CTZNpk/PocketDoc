@@ -6,6 +6,7 @@ const {
   fetchUserSummaryHistories,
   summarizeDocument,
   getSummaryById,
+  downloadSummaryPdf,
 } = require("../controllers/summaryController");
 const summaryRouter = express.Router();
 summaryRouter.post("/", auth, generateSummaryFromText);
@@ -14,5 +15,6 @@ summaryRouter.post("/summarize-doc/", auth, summarizeDocument);
 summaryRouter.get("/all", auth, fetchUserSummaryHistories);
 summaryRouter.post("/search/", auth, queryBasedSummary);
 summaryRouter.get("/:summaryId", auth, getSummaryById);
+summaryRouter.get("/:summaryId/download", auth, downloadSummaryPdf);
 
 module.exports = summaryRouter;

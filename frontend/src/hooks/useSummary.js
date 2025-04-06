@@ -1,4 +1,5 @@
 import {
+  downloadSummary,
   getExplanationFromText,
   getQuerySummary,
   getSummaryFromId,
@@ -53,12 +54,20 @@ const useSummary = () => {
     }
   };
 
+  const downloadSummaryFromId = async (summaryId) => {
+    try {
+      downloadSummary(summaryId);
+    } catch (e) {
+      emitToast(`Error getting Summary: ${e}`);
+    }
+  };
   return {
     generatePassageSummary,
     generateSummaryPages,
     generatePassageExplanation,
     getSummaryId,
     generateQuerySummary,
+    downloadSummaryFromId,
   };
 };
 

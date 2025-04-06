@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import useSummary from "@/hooks/useSummary";
 import ThemeButton from "@/components/Button";
+import { Download } from "lucide-react";
 
 const SummaryDisplay = () => {
   const { summaryId } = useParams();
@@ -23,7 +24,7 @@ const SummaryDisplay = () => {
     navigate(`/myDocuments`);
   };
 
-  const { getSummaryId } = useSummary();
+  const { getSummaryId, downloadSummaryFromId } = useSummary();
 
   useEffect(() => {
     const fetch = async () => {
@@ -44,6 +45,10 @@ const SummaryDisplay = () => {
     fetch();
   }, []);
 
+  const downloadSummary = () => {
+    downloadSummaryFromId(summaryId);
+  };
+
   return (
     <div className="bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white min-h-screen pt-20">
       <div className="px-6 max-w-6xl mx-auto w-full">
@@ -54,9 +59,23 @@ const SummaryDisplay = () => {
             </h1>
             <p className="text-gray-400 text-sm mt-1">{documentTitle}</p>
           </div>
-          <ThemeButton variant="primary" onClick={navigateBack} className="p-3">
-            Back to Summaries
-          </ThemeButton>
+          <div className="flex justify-center">
+            <ThemeButton
+              variant="primary"
+              onClick={navigateBack}
+              className="p-3 mr-4"
+            >
+              Back to Summaries
+            </ThemeButton>
+
+            <ThemeButton
+              variant="secondary"
+              onClick={downloadSummary}
+              className="p-3"
+            >
+              <Download className="h-5" />
+            </ThemeButton>
+          </div>
         </div>
 
         {/* Metadata Display */}

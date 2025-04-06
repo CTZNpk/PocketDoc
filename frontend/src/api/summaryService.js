@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient, { BASE_URL } from "./apiClient";
 
 export const getSummaryFromPassage = async (details) => {
   const response = await apiClient.post("/summarize/", details);
@@ -22,7 +22,9 @@ export const getQuerySummary = async (details) => {
 
 export const getSummaryFromId = async (summaryId) => {
   const response = await apiClient.get(`summarize/${summaryId}`);
-  console.log("HAHAHHAHH HERE WWWWW");
-  console.log(response);
   return response.data;
+};
+
+export const downloadSummary = async (summaryId) => {
+  window.open(`${BASE_URL}summarize/${summaryId}/download`, "_blank");
 };
