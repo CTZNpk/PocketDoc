@@ -167,9 +167,52 @@ const getUserQuizHistory = async (req, res) => {
   }
 };
 
+const getQuizById = async (req, res) => {
+  const { quizId } = req.params;
+
+  try {
+    const quiz = await Quiz.findById(quizId).populate({
+      path: "documentId",
+      select: "title", // assuming Document model has a 'title' field
+    });
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    const numberOfSubmissions = quiz.submissions.length;
+
+    const averageScore =
+      numberOfSubmissions === 0
+        ? 0
+        : quiz.submissions.reduce((sum, s) => sum + (s.score || 0), 0) /
+          numberOfSubmissions;
+
+    const responseData = {
+      documentTitle: quiz.documentId?.title || "Untitled",
+      startPage: quiz.startPage,
+      endPage: quiz.endPage,
+      metadata: quiz.metadata,
+      numberOfSubmissions,
+      averageSubmissionScore: averageScore.toFixed(2),
+      questions: quiz.quiz.map((q) => ({
+        type: q.type,
+        question: q.question,
+        options: q.options,
+      })),
+    };
+
+    res.json(responseData);
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Export functions
 module.exports = {
   generateAndStoreQuiz,
   userCompletesQuiz,
   getUserQuizHistory,
+  getQuizById,
 };

@@ -5,15 +5,17 @@ import useSummary from "@/hooks/useSummary";
 import GenericTabLayout from "./GenericTabLayout";
 import { useNavigate } from "react-router";
 import { Input } from "../ui/input";
+import { Page } from "react-pdf";
 
 export default function PageRangeSummary({ documentId }) {
   const [summaryText, setSummaryText] = useState(``);
+  const [summaryId, setSummaryId] = useState(``);
 
   const navigate = useNavigate();
   const { generateSummaryPages } = useSummary();
   const [showSettings, setShowSettings] = useState(false);
   const [documentType, setDocumentType] = useState("general");
-  const [summaryLength, setSummaryLength] = useState(20);
+  const [summaryLength, setSummaryLength] = useState(50);
   const [formatPreference, setFormatPreference] = useState("outline");
   const [focus, setFocus] = useState("main ideas");
 
@@ -26,7 +28,7 @@ export default function PageRangeSummary({ documentId }) {
       setSummaryText("**Please enter a valid page range.**");
       return;
     }
-    const responseText = await generateSummaryPages({
+    const response = await generateSummaryPages({
       startPage,
       endPage,
       focus,
@@ -35,7 +37,17 @@ export default function PageRangeSummary({ documentId }) {
       documentType,
       documentId,
     });
-    setSummaryText(responseText);
+    console.log(response);
+
+    const cleanedMarkdown = response.summary
+      .replace(/^```(?:\w+)?\n/, "")
+      .replace(/```$/, "");
+    setSummaryText(cleanedMarkdown);
+    setSummaryId(response.summaryId);
+  };
+
+  const navigateToSummaryScreen = () => {
+    navigate(`/summary/${summaryId}`);
   };
 
   return (
@@ -141,7 +153,7 @@ export default function PageRangeSummary({ documentId }) {
       documentId={documentId}
       text={summaryText}
       redirectToPage={true}
-      redirectFunction={() => navigate("/summary/view")}
+      redirectFunction={navigateToSummaryScreen}
     />
   );
 }

@@ -122,7 +122,7 @@ exports.summarizeDocument = async (req, res) => {
     }
 
     const summaryDoc = new DocSummary({
-      documentId: documentId,
+      document: documentId,
       filePath: filePath,
       startPage: parseInt(startPage),
       endPage: parseInt(endPage),
@@ -142,7 +142,7 @@ exports.summarizeDocument = async (req, res) => {
       status: "success",
       data: {
         summaryId: summaryDoc._id,
-        documentId: summaryDoc.documentId,
+        document: summaryDoc.document,
         summary: fastApiResponse.data.summary,
         metadata: summaryDoc.metadata,
       },
@@ -190,7 +190,7 @@ exports.fetchUserSummaryHistories = async (req, res) => {
       })),
       ...docSummaries.map((summary) => ({
         summaryId: summary._id,
-        documentId: summary.documentId, // Adjust if the field is different
+        document: summary.document, // Adjust if the field is different
         summary: summary.summary,
         modelUsed: summary.modelUsed,
         createdAt: summary.createdAt,
@@ -210,5 +210,27 @@ exports.fetchUserSummaryHistories = async (req, res) => {
       status: "error",
       error: `Failed to fetch summary histories: ${error.message}`,
     });
+  }
+};
+
+exports.getSummaryById = async (req, res) => {
+  const { summaryId } = req.params;
+  console.log("HAHHAHAHHA");
+  console.log(summaryId);
+
+  try {
+    const summary = await DocSummary.findById(summaryId).populate({
+      path: "document",
+      select: "title",
+    });
+
+    if (!summary) {
+      return res.status(404).json({ message: "Summary not found" });
+    }
+
+    res.json(summary);
+  } catch (error) {
+    console.error("Error fetching summary:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

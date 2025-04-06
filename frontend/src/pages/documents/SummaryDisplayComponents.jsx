@@ -1,94 +1,112 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm";
 import useSummary from "@/hooks/useSummary";
-import { emitToast } from "../../utils/emitToast";
-import { useNavigate } from "react-router-dom";
 import ThemeButton from "@/components/Button";
 
 const SummaryDisplay = () => {
-  const { docId } = useParams();
-  const [searchParams] = useSearchParams();
-  const startPage = searchParams.get("startPage");
-  const endPage = searchParams.get("endPage");
-  const [summary, setSummary] = useState("");
-  const [wordCount, setWordCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const { generateSummaryPages } = useSummary();
+  const { summaryId } = useParams();
+  const [characterCount, setCharacterCount] = useState(1200);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        setLoading(true);
-        console.log("PAGES ");
-        console.log(startPage);
-        console.log(endPage);
-        const summaryData = await generateSummaryPages(
-          docId,
-          startPage,
-          endPage,
-        );
-        setSummary(summaryData);
-
-        // Calculate word count
-        if (summaryData) {
-          // Count words by splitting on whitespace and filtering out empty strings
-          const words = summaryData
-            .split(/\s+/)
-            .filter((word) => word.length > 0);
-          setWordCount(words.length);
-        }
-      } catch (err) {
-        emitToast(`Failed to generate summary: ${err}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (docId && startPage && endPage) {
-      fetchSummary();
-    } else {
-      emitToast("Missing required parameters");
-      navigate(`/document/${docId}/toc`);
-    }
-  }, []);
+  const [startPage, setStartPage] = useState(0);
+  const [endPage, setEndPage] = useState(0);
+  const [summary, setSummary] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("Untitled");
+  const [metadata, setMetadata] = useState(null);
 
   const navigateBack = () => {
-    navigate(`/document/${docId}/toc`);
+    navigate(`/myDocuments`);
   };
 
+  const { getSummaryId } = useSummary();
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      const response = await getSummaryId(summaryId);
+
+      const cleanedMarkdown = response.summary
+        .replace(/^```(?:\w+)?\n/, "")
+        .replace(/```$/, "");
+      setMetadata(response.metadata);
+      setSummary(cleanedMarkdown);
+      setStartPage(response.startPage);
+      setEndPage(response.endPage);
+      setCharacterCount(response.summary.length);
+      setDocumentTitle(response.document.title); // <- assume API returns this
+      setLoading(false);
+    };
+    fetch();
+  }, []);
+
   return (
-    <div className="bg-black text-white min-h-screen mt-16">
-      <div className="container mx-auto p-6 max-w-4xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Document Summary</h1>
-          <ThemeButton variant="secondary" onClick={navigateBack}>
-            Back to Table of Contents
+    <div className="bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white min-h-screen pt-20">
+      <div className="px-6 max-w-6xl mx-auto w-full">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400">
+              Document Summary
+            </h1>
+            <p className="text-gray-400 text-sm mt-1">{documentTitle}</p>
+          </div>
+          <ThemeButton variant="primary" onClick={navigateBack} className="p-3">
+            Back to Summaries
           </ThemeButton>
         </div>
 
-        <div className="bg-gray-800 p-4 rounded-lg mb-6">
+        {/* Metadata Display */}
+        {metadata && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-gray-800/60 p-5 rounded-lg mb-8 text-sm text-gray-300">
+            <div>
+              <span className="font-semibold text-white">Document Type:</span>{" "}
+              {metadata.documentType}
+            </div>
+            <div>
+              <span className="font-semibold text-white">
+                Summary Percentage:
+              </span>{" "}
+              {metadata.summaryLength}%
+            </div>
+            <div>
+              <span className="font-semibold text-white">
+                Format Preference:
+              </span>{" "}
+              {metadata.formatPreference}
+            </div>
+            <div>
+              <span className="font-semibold text-white">Focus Area:</span>{" "}
+              {metadata.focusArea}
+            </div>
+            <div>
+              <span className="font-semibold text-white">Generated At:</span>{" "}
+              {new Date(metadata.generatedAt).toLocaleString()}
+            </div>
+          </div>
+        )}
+
+        <div className="bg-gray-800/60 p-5 rounded-lg mb-8">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl">
+            <h2 className="text-xl font-semibold">
               Summary for Pages {startPage} - {endPage}
             </h2>
             <div className="bg-gray-700 px-3 py-1 rounded-full text-sm">
-              {wordCount.toLocaleString()} words
+              {characterCount.toLocaleString()} characters
             </div>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
           </div>
         ) : (
-          <div className="bg-gray-900 rounded-lg overflow-hidden">
-            <div className="p-6 markdown-body">
+          <div className="w-full">
+            <div className="p-6 prose prose-invert max-w-none">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -109,68 +127,6 @@ const SummaryDisplay = () => {
                       </code>
                     );
                   },
-                  h1: ({ node, ...props }) => (
-                    <h1 className="text-2xl font-bold mt-6 mb-4" {...props} />
-                  ),
-                  h2: ({ node, ...props }) => (
-                    <h2 className="text-xl font-bold mt-5 mb-3" {...props} />
-                  ),
-                  h3: ({ node, ...props }) => (
-                    <h3 className="text-lg font-bold mt-4 mb-2" {...props} />
-                  ),
-                  h4: ({ node, ...props }) => (
-                    <h4 className="text-base font-bold mt-3 mb-2" {...props} />
-                  ),
-                  p: ({ node, ...props }) => <p className="my-3" {...props} />,
-                  ul: ({ node, ...props }) => (
-                    <ul className="list-disc pl-5 my-3" {...props} />
-                  ),
-                  ol: ({ node, ...props }) => (
-                    <ol className="list-decimal pl-5 my-3" {...props} />
-                  ),
-                  li: ({ node, ...props }) => (
-                    <li className="ml-2 my-1" {...props} />
-                  ),
-                  a: ({ node, ...props }) => (
-                    <a
-                      className="text-blue-400 hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      {...props}
-                    />
-                  ),
-                  blockquote: ({ node, ...props }) => (
-                    <blockquote
-                      className="border-l-4 border-gray-500 pl-4 my-3 italic"
-                      {...props}
-                    />
-                  ),
-                  table: ({ node, ...props }) => (
-                    <div className="overflow-x-auto my-4">
-                      <table
-                        className="min-w-full border-collapse border border-gray-700"
-                        {...props}
-                      />
-                    </div>
-                  ),
-                  thead: ({ node, ...props }) => (
-                    <thead className="bg-gray-800" {...props} />
-                  ),
-                  th: ({ node, ...props }) => (
-                    <th
-                      className="border border-gray-700 px-4 py-2 text-left"
-                      {...props}
-                    />
-                  ),
-                  td: ({ node, ...props }) => (
-                    <td
-                      className="border border-gray-700 px-4 py-2"
-                      {...props}
-                    />
-                  ),
-                  hr: ({ node, ...props }) => (
-                    <hr className="my-4 border-gray-600" {...props} />
-                  ),
                 }}
               >
                 {summary}

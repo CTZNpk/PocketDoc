@@ -27,7 +27,6 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/document/:docId" element={<DocumentViewer />} />
-        <Route path="/document/:docId/summary" element={<SummaryDisplay />} />
         <Route path="/summary" element={<TextSummarizer />} />
         <Route path="/quiz" element={<QuizModule />} />
         <Route path="/about" element={<AboutUsPage />} />
@@ -36,6 +35,7 @@ function App() {
         <Route path="/updates" element={<Updates />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/summary/:summaryId/" element={<SummaryDisplay />} />
       </Routes>
       <ToastContainer />
     </>

@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+const { default: mongoose } = require("mongoose");
 
 const docSummarySchema = new mongoose.Schema(
   {
-    documentId: {
-      type: String,
+    document: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DocumentModel",
       required: true,
-      index: true,
     },
     filePath: {
       type: String,
@@ -20,7 +20,7 @@ const docSummarySchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate: {
-        validator: function(v) {
+        validator: function (v) {
           return v >= this.startPage;
         },
         message: "End page must be >= start page",

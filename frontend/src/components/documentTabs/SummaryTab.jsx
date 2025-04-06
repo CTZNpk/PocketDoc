@@ -15,7 +15,7 @@ export default function SummaryTab({ selectedText }) {
   const { generatePassageSummary } = useSummary();
   const [showSettings, setShowSettings] = useState(false);
   const [documentType, setDocumentType] = useState("general");
-  const [summaryLength, setSummaryLength] = useState(20);
+  const [summaryLength, setSummaryLength] = useState(50);
   const [formatPreference, setFormatPreference] = useState("outline");
   const [focus, setFocus] = useState("main ideas");
 

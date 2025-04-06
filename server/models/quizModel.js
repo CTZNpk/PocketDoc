@@ -4,7 +4,7 @@ const quizSchema = new mongoose.Schema(
   {
     documentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Document",
+      ref: "DocumentModel",
       required: true,
     },
     filePath: { type: String, required: true },

@@ -19,3 +19,10 @@ export const getQuerySummary = async (details) => {
   const response = await apiClient.post(`summarize/search/`, details);
   return response.data;
 };
+
+export const getSummaryFromId = async (summaryId) => {
+  const response = await apiClient.get(`summarize/${summaryId}`);
+  console.log("HAHAHHAHH HERE WWWWW");
+  console.log(response);
+  return response.data;
+};

@@ -1,57 +1,48 @@
-def get_summary_intro_prompt(
-    text: str,
-    document_type: str = "general",
-    summary_length: int = 40,
-    format_preference: str = "paragraph",
-    focus: str = "main ideas"
-) -> str:
-
-    format_instruction = {
+def get_format_instruction(format_preference: str) -> str:
+    return {
         "bullet": "Use bullet points to present each idea clearly.",
         "paragraph": "Write in natural flowing paragraphs.",
         "outline": "Use an outline format with headings and subpoints."
     }.get(format_preference, "Write in natural flowing paragraphs.")
 
+
+def get_common_instructions(summary_length: int, format_preference: str, focus: str, document_type: str) -> str:
     return f"""
-    Summarize this {document_type} document:
+- Document type: {document_type}
+- Focus: {focus}
+- Length: ~{summary_length}% of the original
+- Format: {format_preference}
+- Key Instructions: {get_format_instruction(format_preference)}
 
-    Instructions:
-    - Focus on: {focus}
-    - Length: {summary_length}% of original text
-    - Format: {format_preference}
-    - Key Instructions: {format_instruction}
-    - Include key details only
-    - No information beyond the text
-    - Strict {summary_length}% length limit
+Use markdown:
+- **Bold** for key terms
+- Give Proper Markdown format which can be used by REACTMARKDOWN and reders perfectly in that ***IMPORTANT***
+- CODE BLOCKS ONLY FOR CODE ELEMENTS DONOT WRAP any normal text in Code block i.e ``` ```
+- DONOT WRAP OUTPUT IN ``` ``` and make it a CODE BLOCK
 
-    Use markdown formatting:
-    - **Bold** for key terms
-    - Follow specified format style
-    - Give proper headings if needed
-    - No code blocks needed donot wrap in ``` ``` ***IMPORTANT***
-
-    Text:
-    {text}
-
-    SUMMARY:
-    """
+**IMPORTANT:**
+- Maintain strict {summary_length}% length limit — even if important details are lost
+- Do not add any information beyond the text
+- Ensure clarity and avoid vague statements
+"""
 
 
-def get_summary_continue_prompt(
-    context: str,
-    chunk: str,
-    document_type: str = "general",
-    summary_length: int = 40,
-    format_preference: str = "paragraph",
-    focus: str = "main ideas"
-) -> str:
+def get_summary_intro_prompt(text: str, document_type="general", summary_length=40, format_preference="paragraph", focus="main ideas") -> str:
+    return f"""
+Summarize this {document_type} document:
 
-    format_instruction = {
-        "bullet": "Use bullet points to present each idea clearly.",
-        "paragraph": "Write in natural flowing paragraphs.",
-        "outline": "Use an outline format with headings and subpoints."
-    }.get(format_preference, "Write in natural flowing paragraphs.")
+Instructions:
+{get_common_instructions(
+        summary_length, format_preference, focus, document_type)}
 
+Text:
+{text}
+
+SUMMARY:
+"""
+
+
+def get_summary_continue_prompt(context: str, chunk: str, document_type="general", summary_length=40, format_preference="paragraph", focus="main ideas") -> str:
     return f"""
 Here is the summary so far:
 {context}
@@ -59,62 +50,29 @@ Here is the summary so far:
 Continue the summary with the new section:
 {chunk}
 
-### Summary Instructions:
-- Document type: {document_type}
-- Focus: {focus}
-- Length: ~{summary_length}% of original
-- Format: {format_preference}
-- Key Instructions: {format_instruction}
+Instructions:
+{get_common_instructions(
+        summary_length, format_preference, focus, document_type)}
 
-Use markdown:
-- **Bold** for key terms
-- Follow specified format
-- Give proper headings if needed
-- No code blocks needed donot wrap in ``` ``` ***IMPORTANT***
+--You are a Summarizing model summarizing large text the previous summary has already been seen by the user it is necessary that you 
+continue the summary forward donot repeat
+Begin the summary immediately. Do not repeat previous content.
 
-**Important:**
-- Do not repeat previous content
-- No information beyond the text
-- Maintain strict {summary_length}% length limit
-
-Begin the summary immediately no introductory sentence
 SUMMARY:
 """
 
 
-def get_summarize_text_prompt(
-    text: str,
-    document_type: str = "general",
-    summary_length: int = 40,
-    format_preference: str = "paragraph",
-    focus: str = "main ideas"
-) -> str:
-
-    format_instruction = {
-        "bullet": "Use bullet points to present each idea clearly.",
-        "paragraph": "Write in natural flowing paragraphs.",
-        "outline": "Use an outline format with headings and subpoints."
-    }.get(format_preference, "Write in natural flowing paragraphs.")
+def get_summarize_text_prompt(text: str, document_type="general", summary_length=40, format_preference="paragraph", focus="main ideas") -> str:
     return f"""
-        Summarize the following {document_type} document.
+Summarize the following {document_type} document.
 
-        Instructions:
-        - Focus on: {focus}
-        - Summary length: approximately {summary_length}% of the original
-        - Formatting style: {format_preference}
-        - {format_instruction}
-        - Ensure clarity and avoid vague statements.
-        - Do NOT add any information not found in the text.
-        - Respond in **markdown format**:
-          - Use **bold** for key terms or important points.
-          - Use bullet points or numbered lists if the format is "bullet_points".
-          - Use headings (e.g., `#`, `##`) for sections if the format is "headings".
-          - For "paragraph" format, use clear markdown-formatted paragraphs.
-        **IMPORTANT**
-        GENERATING SUMMARY {summary_length}% IS IMPORTANT EVEN IF IT MEANS LEAVING DETAIL OF IMPORTANT THINGS
-        THIS IS A STRICT WORD LIMIT {summary_length}% OF THE ORIGINAL
+Instructions:
+{get_common_instructions(
+        summary_length, format_preference, focus, document_type)}
 
-        Text:
-        {text}
-        SUMMARY:
-        """
+Text:
+{text}
+
+SUMMARY:
+"""
+

@@ -1,6 +1,7 @@
 import {
   getExplanationFromText,
   getQuerySummary,
+  getSummaryFromId,
   getSummaryFromPages,
   getSummaryFromPassage,
 } from "../api/summaryService";
@@ -18,7 +19,6 @@ const useSummary = () => {
 
   const generatePassageExplanation = async (details) => {
     try {
-      console.log("WE ARE HEHRHEHREH");
       const response = await getExplanationFromText(details);
       return response.explanation;
     } catch (e) {
@@ -29,8 +29,7 @@ const useSummary = () => {
   const generateSummaryPages = async (details) => {
     try {
       const response = await getSummaryFromPages(details);
-      console.log(response.data.summary);
-      return response.data.summary;
+      return response.data;
     } catch (e) {
       emitToast(`Error getting Summary: ${e}`);
     }
@@ -45,10 +44,20 @@ const useSummary = () => {
     }
   };
 
+  const getSummaryId = async (summaryId) => {
+    try {
+      const response = await getSummaryFromId(summaryId);
+      return response;
+    } catch (e) {
+      emitToast(`Error getting Summary: ${e}`);
+    }
+  };
+
   return {
     generatePassageSummary,
     generateSummaryPages,
     generatePassageExplanation,
+    getSummaryId,
     generateQuerySummary,
   };
 };
