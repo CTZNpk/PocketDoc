@@ -9,5 +9,6 @@ quizrouter.post("/submit-quiz", auth, quizController.userCompletesQuiz);
 quizrouter.get("/quiz-history", auth, quizController.getUserQuizHistory);
 quizrouter.get("/:quizId", auth, quizController.getQuizById);
 quizrouter.get("/:quizId/download", auth, quizController.downloadQuizAndKey);
+quizrouter.post("/submit", auth, quizController.submitQuiz);
 
 module.exports = quizrouter;

@@ -41,7 +41,6 @@ const generateAndStoreQuiz = async (req, res) => {
 
     const formData = querystring.stringify(payload);
 
-    // Call FastAPI
     const fastApiResponse = await axios.post(
       "http://localhost:8000/generate-quiz/",
       formData,
@@ -70,7 +69,6 @@ const generateAndStoreQuiz = async (req, res) => {
 
       return order[normalize(a.type)] - order[normalize(b.type)];
     });
-    console.log(sortedQuiz);
 
     const quizDoc = new Quiz({
       userId: document.userId,
@@ -340,10 +338,77 @@ const downloadQuizAndKey = async (req, res) => {
   }
 };
 
+const submitQuiz = async (req, res) => {
+  try {
+    const { quizId, userAnswers } = req.body;
+    const userId = req.user.id; // Assuming auth middleware populates this
+
+    if (!quizId || !userAnswers || !Array.isArray(userAnswers)) {
+      return res.status(400).json({ message: "Missing or invalid input" });
+    }
+
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    const questions = quiz.quiz.map((q) => q.question);
+    const correctAnswers = quiz.quiz.map((q) => q.answer);
+    const types = quiz.quiz.map((q) => q.type);
+
+    const payload = new URLSearchParams();
+
+    questions.forEach((q) => payload.append("questions", q));
+    correctAnswers.forEach((a) => payload.append("answers", a));
+    userAnswers.forEach((ua) => payload.append("user_answers", ua));
+    types.forEach((t) => payload.append("types", t));
+
+    const apiResponse = await axios.post(
+      "http://localhost:8000/submit-quiz/",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+
+    const { percentage_score, evaluations, total_score } = apiResponse.data;
+
+    quiz.submissions.push({
+      userId,
+      score: percentage_score,
+      responses: evaluations.map((e, i) => ({
+        questionIndex: i,
+        userAnswer: userAnswers[i],
+        evaluationScore: e.score,
+      })),
+      submittedAt: new Date(),
+    });
+
+    await quiz.save();
+
+    return res.status(200).json({
+      message: "Quiz submitted successfully",
+      percentage_score,
+      total_score,
+      evaluation: evaluations,
+    });
+  } catch (error) {
+    console.error("Quiz submission error:", error);
+    return res.status(500).json({
+      message: "Quiz submission failed",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
 module.exports = {
   generateAndStoreQuiz,
   userCompletesQuiz,
   getUserQuizHistory,
   getQuizById,
   downloadQuizAndKey,
+  submitQuiz,
 };
