@@ -67,3 +67,37 @@ Format examples:
 {''.join(examples)}
 """
 
+
+def mark_quiz_prompt(q_type: str, question: str, answer: str, user_answer: str) -> str:
+    max_score = 2 if q_type.lower() == "short" else 5
+
+    grading_rule_line = ""
+    if q_type.lower() == "short":
+        grading_rule_line = "- This is a short question. Mark it out of 2."
+    elif q_type.lower() == "long":
+        grading_rule_line = "- This is a long question. Mark it out of 5."
+
+    return f"""
+You are an automated grading assistant.
+
+Grade the following student's answer based on the correct answer and the question type.
+
+Question: {question}
+
+Correct Answer: {answer}
+
+User Answer: {user_answer}
+
+Question Type: {q_type.capitalize()}
+
+Grading Rules:
+{grading_rule_line}
+- Award full marks for complete and accurate answers.
+- Award partial marks for partially correct or incomplete answers.
+- Award zero if the answer is incorrect, off-topic, or too vague.
+- Show a little leniency in checking
+
+Respond in the format:
+Score: X/{max_score}
+Justification: <why the user got this score>
+"""
