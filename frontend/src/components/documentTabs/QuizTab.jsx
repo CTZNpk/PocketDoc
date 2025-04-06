@@ -3,10 +3,11 @@ import quizStore from "@/store/quizStore";
 import React, { useState } from "react";
 import GenericTabLayout from "./GenericTabLayout";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
 
 export default function QuizTab({ documentId }) {
   const { generateQuizFromDoc } = useQuiz();
-  const [showSettings, setShowSettings] = useState(false);
+  const navigate = useNavigate();
   const [startPage, setStartPage] = useState(1);
   const [endPage, setEndPage] = useState(1);
   const [answerFormats, setAnswerFormats] = useState(["mcq"]);
@@ -26,6 +27,10 @@ export default function QuizTab({ documentId }) {
     addQuiz(quizId);
     console.log(quizId);
     setLatestQuizId(quizId);
+  };
+
+  const navigateToQuiz = () => {
+    navigate(`/quiz/${latestQuizId}`);
   };
 
   return (
@@ -112,7 +117,7 @@ export default function QuizTab({ documentId }) {
             <div className="flex gap-2 mt-4">
               <Button
                 className="bg-cyan-600 hover:bg-cyan-700 text-white w-full"
-                onClick={() => {}}
+                onClick={navigateToQuiz}
               >
                 Take the Quiz
               </Button>

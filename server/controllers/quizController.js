@@ -54,7 +54,7 @@ const generateAndStoreQuiz = async (req, res) => {
 
     const quizDoc = new Quiz({
       userId: document.userId,
-      documentId: req.body.documentId,
+      document: req.body.documentId,
       filePath: document.file,
       startPage: req.body.startPage || 1,
       endPage: req.body.endPage || 1,
@@ -151,7 +151,7 @@ const getUserQuizHistory = async (req, res) => {
     // Format history response
     const history = quizzes.map((quiz) => ({
       quizId: quiz._id,
-      documentId: quiz.documentId,
+      document: quiz.document,
       filePath: quiz.filePath,
       submittedAt: quiz.submissions.find((s) => s.userId.toString() === userId)
         ?.submittedAt,
@@ -172,7 +172,7 @@ const getQuizById = async (req, res) => {
 
   try {
     const quiz = await Quiz.findById(quizId).populate({
-      path: "documentId",
+      path: "document",
       select: "title", // assuming Document model has a 'title' field
     });
 
@@ -186,10 +186,10 @@ const getQuizById = async (req, res) => {
       numberOfSubmissions === 0
         ? 0
         : quiz.submissions.reduce((sum, s) => sum + (s.score || 0), 0) /
-          numberOfSubmissions;
+        numberOfSubmissions;
 
     const responseData = {
-      documentTitle: quiz.documentId?.title || "Untitled",
+      documentTitle: quiz.document?.title || "Untitled",
       startPage: quiz.startPage,
       endPage: quiz.endPage,
       metadata: quiz.metadata,

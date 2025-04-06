@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,102 +13,20 @@ import Footer from "@/components/Footer";
 import QuizResults from "@/components/quiz/QuizResults";
 import QuizIntro from "@/components/quiz/QuizIntro";
 import QuizProgress from "@/components/quiz/QuizProgress";
-
-// Dummy quiz data
-const quizData = {
-  quizId: "q12345",
-  documentName: "Advanced Machine Learning Concepts",
-  startPage: 24,
-  endPage: 42,
-  answerFormat: ["mcq", "true_false", "short", "long"],
-  questionType: "mixed",
-  generatedAt: "2025-04-02T12:30:00Z",
-  submissions: 127,
-  averageScore: 72,
-  totalQuestions: 8,
-  questions: [
-    {
-      id: 1,
-      type: "mcq",
-      question:
-        "Which of the following is NOT a common activation function in neural networks?",
-      options: [
-        "ReLU (Rectified Linear Unit)",
-        "Sigmoid",
-        "Quadratic Activation Function",
-        "Tanh (Hyperbolic Tangent)",
-      ],
-      correctAnswer: 2, // Index of correct option
-    },
-    {
-      id: 2,
-      type: "true_false",
-      question:
-        "Gradient descent is a first-order optimization algorithm for finding the minimum of a function.",
-      correctAnswer: true,
-    },
-    {
-      id: 3,
-      type: "short",
-      question: "What does the acronym CNN stand for in deep learning?",
-      correctAnswer: "Convolutional Neural Network",
-    },
-    {
-      id: 4,
-      type: "long",
-      question:
-        "Explain the concept of overfitting in machine learning and mention at least two techniques to prevent it.",
-      correctAnswer:
-        "Overfitting occurs when a model learns the training data too well, including its noise and outliers, resulting in poor generalization to new data. Techniques to prevent overfitting include regularization (L1, L2), dropout, early stopping, data augmentation, and cross-validation.",
-    },
-    {
-      id: 5,
-      type: "mcq",
-      question: "Which of these is a type of unsupervised learning algorithm?",
-      options: [
-        "Linear Regression",
-        "Random Forest",
-        "K-means Clustering",
-        "Support Vector Machines",
-      ],
-      correctAnswer: 2,
-    },
-    {
-      id: 6,
-      type: "true_false",
-      question:
-        "Transfer learning involves using a pre-trained model for a new but related task.",
-      correctAnswer: true,
-    },
-    {
-      id: 7,
-      type: "short",
-      question:
-        "What is the purpose of the activation function in neural networks?",
-      correctAnswer:
-        "To introduce non-linearity into the network, allowing it to learn complex patterns",
-    },
-    {
-      id: 8,
-      type: "mcq",
-      question:
-        "Which loss function is commonly used for binary classification problems?",
-      options: [
-        "Mean Squared Error",
-        "Binary Cross-Entropy",
-        "Hinge Loss",
-        "Categorical Cross-Entropy",
-      ],
-      correctAnswer: 1,
-    },
-  ],
-};
+import { useParams } from "react-router";
+import useQuiz from "@/hooks/useQuiz";
+import Background from "@/components/Background";
+import QuestionRenderer from "@/components/quiz/QuizRenderer";
 
 export default function QuizModule() {
+  const { quizId } = useParams();
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const { getQuiz } = useQuiz();
+  const [quizData, setQuizData] = useState();
+  let progressPercentage;
 
   const startQuiz = () => {
     setQuizStarted(true);
@@ -128,21 +46,41 @@ export default function QuizModule() {
     }
   };
 
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await getQuiz(quizId);
+      console.log(response);
+      setQuizData(response);
+      console.log(response);
+    };
+    console.log(quizStarted);
+    fetch();
+  }, []);
+
+  if (quizData)
+    progressPercentage =
+      ((currentQuestionIndex + 1) / quizData.totalQuestions) * 100;
+
   const handleAnswer = (answer) => {
     setAnswers({
       ...answers,
-      [quizData.questions[currentQuestionIndex].id]: answer,
+      [currentQuestionIndex]: answer,
     });
   };
-
-  const progressPercentage =
-    ((currentQuestionIndex + 1) / quizData.totalQuestions) * 100;
 
   if (quizCompleted) {
     return <QuizResults quizData={quizData} answers={answers} />;
   }
 
   if (!quizStarted) {
+    if (!quizData)
+      return (
+        <Background>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+          </div>
+        </Background>
+      );
     return <QuizIntro quizData={quizData} onStartQuiz={startQuiz} />;
   }
 
@@ -153,11 +91,14 @@ export default function QuizModule() {
         <div className="max-w-3xl mx-auto">
           <QuizProgress
             currentQuestion={currentQuestionIndex + 1}
-            totalQuestions={quizData.totalQuestions}
+            totalQuestions={quizData.questions.length}
             progress={progressPercentage}
           />
 
-          <Card className="mt-8 bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 shadow-lg shadow-cyan-900/10">
+          <Card
+            className="mt-8 w-[500px] bg-gradient-to-br from-gray-800 to-gray-900 
+    border border-gray-700 shadow-lg shadow-cyan-900/10 flex flex-col"
+          >
             <CardHeader className="border-b border-gray-700">
               <CardTitle className="text-2xl text-white">
                 Question {currentQuestionIndex + 1}
@@ -166,7 +107,7 @@ export default function QuizModule() {
             <CardContent className="py-6">
               <QuestionRenderer
                 question={quizData.questions[currentQuestionIndex]}
-                answer={answers[quizData.questions[currentQuestionIndex].id]}
+                answer={answers[currentQuestionIndex]}
                 onAnswer={handleAnswer}
               />
             </CardContent>

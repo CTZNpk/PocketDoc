@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function QuizResults({ quizData, answers }) {
-  // Calculate score (for MCQ and True/False questions only)
   const scorableQuestions = quizData.questions.filter(
     (q) => q.type === "mcq" || q.type === "true_false",
   );
@@ -82,18 +81,18 @@ export default function QuizResults({ quizData, answers }) {
                       </div>
                       {(question.type === "mcq" ||
                         question.type === "true_false") && (
-                        <div
-                          className={`flex items-center ${answers[question.id] === question.correctAnswer ? "text-green-400" : "text-red-400"}`}
-                        >
-                          {answers[question.id] === question.correctAnswer ? (
-                            <CheckCircle2 className="h-6 w-6" />
-                          ) : (
-                            <span className="h-6 w-6 rounded-full border-2 border-current flex items-center justify-center">
-                              ✕
-                            </span>
-                          )}
-                        </div>
-                      )}
+                          <div
+                            className={`flex items-center ${answers[question.id] === question.correctAnswer ? "text-green-400" : "text-red-400"}`}
+                          >
+                            {answers[question.id] === question.correctAnswer ? (
+                              <CheckCircle2 className="h-6 w-6" />
+                            ) : (
+                              <span className="h-6 w-6 rounded-full border-2 border-current flex items-center justify-center">
+                                ✕
+                              </span>
+                            )}
+                          </div>
+                        )}
                     </div>
 
                     {question.type === "mcq" && (
@@ -101,14 +100,13 @@ export default function QuizResults({ quizData, answers }) {
                         {question.options.map((option, optIndex) => (
                           <div
                             key={optIndex}
-                            className={`p-2 rounded-md ${
-                              optIndex === question.correctAnswer
+                            className={`p-2 rounded-md ${optIndex === question.correctAnswer
                                 ? "bg-green-900/20 border border-green-600/30"
                                 : optIndex === answers[question.id] &&
-                                    optIndex !== question.correctAnswer
+                                  optIndex !== question.correctAnswer
                                   ? "bg-red-900/20 border border-red-600/30"
                                   : "bg-gray-800/50"
-                            }`}
+                              }`}
                           >
                             <p className="text-sm text-gray-300">{option}</p>
                           </div>
@@ -119,24 +117,22 @@ export default function QuizResults({ quizData, answers }) {
                     {question.type === "true_false" && (
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div
-                          className={`p-2 rounded-md text-center ${
-                            question.correctAnswer === true
+                          className={`p-2 rounded-md text-center ${question.correctAnswer === true
                               ? "bg-green-900/20 border border-green-600/30"
                               : answers[question.id] === true
                                 ? "bg-red-900/20 border border-red-600/30"
                                 : "bg-gray-800/50"
-                          }`}
+                            }`}
                         >
                           <p className="text-sm text-gray-300">True</p>
                         </div>
                         <div
-                          className={`p-2 rounded-md text-center ${
-                            question.correctAnswer === false
+                          className={`p-2 rounded-md text-center ${question.correctAnswer === false
                               ? "bg-green-900/20 border border-green-600/30"
                               : answers[question.id] === false
                                 ? "bg-red-900/20 border border-red-600/30"
                                 : "bg-gray-800/50"
-                          }`}
+                            }`}
                         >
                           <p className="text-sm text-gray-300">False</p>
                         </div>
@@ -148,7 +144,7 @@ export default function QuizResults({ quizData, answers }) {
                         <div className="bg-gray-800/50 p-3 rounded-md">
                           <p className="text-sm text-gray-400">Your Answer:</p>
                           <p className="text-gray-300">
-                            {answers[question.id] || "No answer provided"}
+                            {answers[index] || "No answer provided"}
                           </p>
                         </div>
                         <div className="bg-gray-800/50 p-3 rounded-md mt-2">

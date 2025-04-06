@@ -1,4 +1,4 @@
-import { generateQuiz } from "@/api/quizService";
+import { generateQuiz, getQuizById } from "@/api/quizService";
 import { emitToast } from "../utils/emitToast";
 
 const useQuiz = () => {
@@ -13,7 +13,17 @@ const useQuiz = () => {
     }
   };
 
+  const getQuiz = async (quizId) => {
+    try {
+      const response = await getQuizById(quizId);
+      return response;
+    } catch (e) {
+      emitToast(`Error getting Summary: ${e}`);
+    }
+  };
+
   return {
+    getQuiz,
     generateQuizFromDoc,
   };
 };

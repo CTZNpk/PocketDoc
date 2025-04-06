@@ -40,7 +40,7 @@ export default function QueryTab({ document, setDocument }) {
     const newDoc = await generateDocumentEmbeddings(document._id);
     setDocument((oldDoc) => ({
       ...oldDoc,
-      hasEmbeddings: newDoc.hasEmbeddings,
+      hasEmbeddings: true,
     }));
     setIsGenerating(false);
   };

@@ -24,15 +24,15 @@ export default function QuizIntro({ quizData, onStartQuiz }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col md:flex-row justify-between gap-6">
-                <div className="flex flex-col items-center p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex flex-col md:flex-row justify-between gap-6 ">
+                <div className="flex flex-col items-center p-4 bg-gray-800/50 rounded-lg ">
                   <BookOpen className="h-8 w-8 text-cyan-400 mb-2" />
                   <h3 className="font-medium text-gray-300">Document</h3>
-                  <p className="text-lg font-semibold text-white">
-                    {quizData.documentName}
+                  <p className="text-lg font-semibold text-white text-center">
+                    {quizData.documentTitle}
                   </p>
                 </div>
-                <div className="flex flex-col items-center p-4 bg-gray-800/50 rounded-lg">
+                <div className="flex flex-col items-center p-4 bg-gray-800/50 rounded-lg w-fit shrink-0">
                   <FileCheck className="h-8 w-8 text-cyan-400 mb-2" />
                   <h3 className="font-medium text-gray-300">Pages</h3>
                   <p className="text-lg font-semibold text-white">
@@ -43,7 +43,7 @@ export default function QuizIntro({ quizData, onStartQuiz }) {
                   <CheckCircle2 className="h-8 w-8 text-cyan-400 mb-2" />
                   <h3 className="font-medium text-gray-300">Questions</h3>
                   <p className="text-lg font-semibold text-white">
-                    {quizData.totalQuestions}
+                    {quizData.questions.length}
                   </p>
                 </div>
               </div>
@@ -54,25 +54,25 @@ export default function QuizIntro({ quizData, onStartQuiz }) {
                   <div className="p-4 bg-gray-800/50 rounded-lg">
                     <p className="text-gray-400">Question Type</p>
                     <p className="text-lg font-medium text-white capitalize">
-                      {quizData.questionType}
+                      {quizData.metadata.questionType}
                     </p>
                   </div>
                   <div className="p-4 bg-gray-800/50 rounded-lg">
                     <p className="text-gray-400">Answer Format</p>
                     <p className="text-lg font-medium text-white capitalize">
-                      {quizData.answerFormat.join(", ")}
+                      {quizData.metadata.answerFormats.join(", ")}
                     </p>
                   </div>
                   <div className="p-4 bg-gray-800/50 rounded-lg">
                     <p className="text-gray-400">Submissions</p>
                     <p className="text-lg font-medium text-white">
-                      {quizData.submissions}
+                      {quizData.numberOfSubmissions}
                     </p>
                   </div>
                   <div className="p-4 bg-gray-800/50 rounded-lg">
                     <p className="text-gray-400">Average Score</p>
                     <p className="text-lg font-medium text-white">
-                      {quizData.averageScore}%
+                      {quizData.averageSubmissionScore}%
                     </p>
                   </div>
                 </div>

@@ -33,3 +33,4 @@ export const generateEmbeddings = async (docId) => {
   const response = await apiClient.get(`/document/${docId}/embed`);
   return response.data;
 };
+
