@@ -16,6 +16,8 @@ import TermsOfService from "./pages/privacy/TermsOfService";
 import Updates from "./pages/privacy/Updates";
 import Pricing from "./pages/privacy/Pricing";
 import Services from "./pages/services/Services";
+import MySummaries from "./pages/documents/MySummary";
+import MyQuizScreen from "./pages/quiz/myQuiz";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/summary/:summaryId/" element={<SummaryDisplay />} />
         <Route path="/quiz/:quizId" element={<QuizModule />} />
+        <Route path="/mySummaries" element={<MySummaries />} />
+        <Route path="/myQuiz" element={<MyQuizScreen />} />
       </Routes>
       <ToastContainer />
     </>

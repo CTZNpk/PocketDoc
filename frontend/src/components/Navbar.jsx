@@ -66,6 +66,12 @@ export default function Navbar() {
                 { path: "/myDocuments", label: "Documents" },
                 { path: "/about", label: "About" },
                 { path: "/contact", label: "Contact" },
+                ...(user
+                  ? [
+                      { path: "/myQuiz", label: "Quizzes" },
+                      { path: "/mySummaries", label: "Summaries" },
+                    ]
+                  : []),
               ].map(({ path, label }) => (
                 <NavigationMenuItem key={path}>
                   <NavigationMenuLink
