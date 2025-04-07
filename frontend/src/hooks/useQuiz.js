@@ -1,17 +1,19 @@
 import {
   downloadQuiz,
   generateQuiz,
+  getAllUserQuiz,
   getQuizById,
   submitQuizService,
 } from "@/api/quizService";
 import { emitToast } from "../utils/emitToast";
+import quizStore from "@/store/quizStore";
 
 const useQuiz = () => {
+  const { isLatest, setLatestFalse, setQuiz, quiz } = quizStore();
   const generateQuizFromDoc = async (details) => {
     try {
       const response = await generateQuiz(details);
-      console.log("RESPONSE");
-      console.log(response);
+      setLatestFalse();
       return response.quizId;
     } catch (e) {
       emitToast(`Error getting Summary: ${e}`);
@@ -44,11 +46,26 @@ const useQuiz = () => {
     }
   };
 
+  const getUserQuizzes = async () => {
+    try {
+      if (!isLatest) {
+        const response = await getAllUserQuiz();
+        setQuiz(response.data);
+        return response.data;
+      } else {
+        return quiz;
+      }
+    } catch (e) {
+      emitToast(`Error getting Quiz: ${e}`);
+    }
+  };
+
   return {
     getQuiz,
     generateQuizFromDoc,
     downloadQuizFromId,
     submitQuiz,
+    getUserQuizzes,
   };
 };
 

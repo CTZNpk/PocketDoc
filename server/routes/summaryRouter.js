@@ -13,8 +13,8 @@ summaryRouter.post("/", auth, generateSummaryFromText);
 summaryRouter.post("/:id/query-based", auth, queryBasedSummary);
 summaryRouter.post("/summarize-doc/", auth, summarizeDocument);
 summaryRouter.post("/search/", auth, queryBasedSummary);
+summaryRouter.get("/all", auth, getUserDocumentSummaries);
 summaryRouter.get("/:summaryId", auth, getSummaryById);
 summaryRouter.get("/:summaryId/download", auth, downloadSummaryPdf);
-summaryRouter.get("/all", auth, getUserDocumentSummaries);
 
 module.exports = summaryRouter;

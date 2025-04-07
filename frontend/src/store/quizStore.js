@@ -5,6 +5,7 @@ const quizStore = create((set) => ({
   isLatest: false,
   latestQuiz: null,
 
+  setLatestFalse: () => set({ isLatest: false }),
   addQuiz: (quiz) =>
     set((state) => ({ quiz: [...state.quiz, quiz], latestQuiz: quiz })),
   setQuiz: (newQuiz) => set({ quiz: newQuiz, isLatest: true }),

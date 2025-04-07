@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, FileText, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,20 @@ import Navbar from "@/components/Navbar";
 import AnimateBox from "@/components/AnimateBox";
 import Title from "@/components/Title";
 import SummaryGeneratorModal from "@/components/SummaryGeneratorModal";
+import useSummary from "@/hooks/useSummary";
+import { useNavigate } from "react-router";
 
 export default function MySummaries() {
-  const [summaries] = useState([]);
+  const [summaries, setSummaries] = useState([]);
+  const { getAllUserSummaries } = useSummary();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await getAllUserSummaries();
+      setSummaries(response);
+    };
+    fetch();
+  }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -79,12 +90,12 @@ function EmptySummariesState({ setIsModalOpen }) {
 }
 
 function SummaryCard({ summary }) {
+  const navigate = useNavigate();
   const handleClick = () => {
-    // Navigate to summary view (update route later)
-    alert(`Go to summary: ${summary.title}`);
+    navigate(`/summary/${summary.summaryId}/`);
   };
 
-  const date = new Date().toLocaleDateString("en-US", {
+  const date = new Date(summary.generatedAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -97,9 +108,15 @@ function SummaryCard({ summary }) {
     >
       <div className="relative h-32 bg-gradient-to-br from-cyan-900 to-cyan-700 flex items-center justify-center">
         <div className="absolute inset-4 bg-white rounded-sm shadow-md flex flex-col p-3">
-          <div className="w-3/4 h-3 bg-gray-200 rounded-sm mb-2"></div>
-          <div className="w-full h-12 bg-gray-100 rounded-sm"></div>
-          <div className="mt-auto w-1/3 h-2 bg-gray-300 rounded-sm"></div>
+          <div className="text-gray-800 text-sm font-semibold mb-2 line-clamp-1">
+            {summary.documentTitle}
+          </div>
+          <div className="text-gray-600 text-xs">
+            Pages {summary.startPage}–{summary.endPage}
+          </div>
+          <div className="mt-auto text-gray-500 text-xs">
+            {summary.formatPreference}, {summary.focusArea}
+          </div>
         </div>
         <Badge className="absolute top-2 right-2 bg-cyan-600 text-white border-none">
           Summary
@@ -109,13 +126,13 @@ function SummaryCard({ summary }) {
       <CardContent className="p-4">
         <ScrollArea className="h-12">
           <h3 className="font-medium text-white text-lg line-clamp-2">
-            {summary.title}
+            {summary.documentTitle}
           </h3>
         </ScrollArea>
       </CardContent>
 
       <CardFooter className="p-4 pt-0 border-t border-gray-700 flex justify-between items-center text-sm">
-        <span className="text-gray-400">{summary.length}</span>
+        <span className="text-gray-400">{summary.summaryLength}%</span>
         <span className="text-gray-400">{date}</span>
       </CardFooter>
     </Card>

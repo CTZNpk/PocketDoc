@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,10 +9,21 @@ import Navbar from "@/components/Navbar";
 import AnimateBox from "@/components/AnimateBox";
 import Title from "@/components/Title";
 import QuizGeneratorModal from "@/components/QuizGeneratorModal";
+import useQuiz from "@/hooks/useQuiz";
 
 export default function MyQuizScreen() {
-  const quizzes = ["quiz_abc123", "quiz_def456", "quiz_xyz789"];
+  const [quizzes, setQuizzes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { getUserQuizzes } = useQuiz();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await getUserQuizzes();
+      console.log(response);
+      setQuizzes(response);
+    };
+    fetch();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
@@ -37,8 +48,8 @@ export default function MyQuizScreen() {
             <EmptyQuizzesState setIsModalOpen={setIsModalOpen} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-              {quizzes.map((quizId, index) => (
-                <QuizCard key={quizId} id={quizId} index={index + 1} />
+              {quizzes.map((quiz, index) => (
+                <QuizCard key={quiz.quizId} quiz={quiz} index={index + 1} />
               ))}
             </div>
           )}
@@ -77,8 +88,7 @@ function EmptyQuizzesState({ setIsModalOpen }) {
     </div>
   );
 }
-
-function QuizCard({ id, index }) {
+function QuizCard({ quiz, index }) {
   const date = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -88,7 +98,7 @@ function QuizCard({ id, index }) {
   return (
     <Card
       className="bg-gray-800 border-gray-700 hover:shadow-lg hover:shadow-cyan-700/10 transition-all duration-300 cursor-pointer"
-      onClick={() => (window.location.href = `/quiz/${id}`)}
+      onClick={() => (window.location.href = `/quiz/${quiz.quizId}`)}
     >
       <div className="relative h-32 bg-gradient-to-br from-cyan-900 to-cyan-700 flex items-center justify-center">
         <div className="text-white font-bold text-3xl">Quiz {index}</div>
@@ -96,16 +106,23 @@ function QuizCard({ id, index }) {
           Ready
         </Badge>
       </div>
+
       <CardContent className="p-4">
-        <ScrollArea className="h-12">
-          <h3 className="font-medium text-white text-lg line-clamp-2">
-            Document-based Quiz
-          </h3>
-        </ScrollArea>
+        <h3 className="font-medium text-white text-lg line-clamp-2">
+          {quiz.documentTitle}
+        </h3>
+        <p className="text-sm text-gray-300 mt-1">
+          Pages {quiz.startPage}–{quiz.endPage}
+        </p>
+        <p className="text-sm text-gray-400 mt-1">
+          {quiz.totalQuestions} Questions · {quiz.numberOfSubmissions}{" "}
+          Submissions
+        </p>
       </CardContent>
+
       <CardFooter className="p-4 pt-0 border-t border-gray-700 text-sm text-gray-400 flex justify-between">
         <span>{date}</span>
-        <span>Quiz ID: {id.slice(0, 6)}...</span>
+        <span>Avg: {quiz.averageScore}%</span>
       </CardFooter>
     </Card>
   );

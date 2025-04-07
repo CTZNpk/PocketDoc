@@ -12,8 +12,11 @@ export const getQuizById = async (quizId) => {
 
 export const submitQuizService = async (details) => {
   const response = await apiClient.post(`quiz/submit/`, details);
-  console.log("HERE IS THE RESPONSE");
-  console.log(response);
+  return response.data;
+};
+
+export const getAllUserQuiz = async () => {
+  const response = await apiClient.get(`quiz/all/`);
   return response.data;
 };
 

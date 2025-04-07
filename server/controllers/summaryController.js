@@ -242,7 +242,7 @@ exports.downloadSummaryPdf = async (req, res) => {
         console.error("Error sending PDF:", err);
         res.status(500).json({ message: "Failed to send file" });
       }
-      fs.unlink(filePath, () => {});
+      fs.unlink(filePath, () => { });
     });
   } catch (error) {
     console.error("Error generating PDF:", error);
@@ -255,8 +255,9 @@ exports.getUserDocumentSummaries = async (req, res) => {
     const userId = req.user.id;
 
     const summaries = await DocSummary.find({ userId })
-      .populate("document", "title") // Just get the title from the document
-      .sort({ createdAt: -1 }) // optional: newest first
+      .select("-summary")
+      .populate("document", "title")
+      .sort({ createdAt: -1 })
       .exec();
 
     if (!summaries.length) {
@@ -265,7 +266,7 @@ exports.getUserDocumentSummaries = async (req, res) => {
         .json({ error: "No summaries found for this user" });
     }
 
-    const result = userSummaries.map((summary) => ({
+    const result = summaries.map((summary) => ({
       summaryId: summary._id,
       documentTitle: summary.document?.title || "Untitled",
       startPage: summary.startPage,
