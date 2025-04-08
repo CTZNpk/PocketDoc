@@ -9,7 +9,7 @@ const {
   getUserDocumentSummaries,
 } = require("../controllers/summaryController");
 const summaryRouter = express.Router();
-summaryRouter.post("/", auth, generateSummaryFromText);
+summaryRouter.post("/", generateSummaryFromText);
 summaryRouter.post("/:id/query-based", auth, queryBasedSummary);
 summaryRouter.post("/summarize-doc/", auth, summarizeDocument);
 summaryRouter.post("/search/", auth, queryBasedSummary);

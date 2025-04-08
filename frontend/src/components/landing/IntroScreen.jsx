@@ -1,8 +1,13 @@
 import Title from "@/components/Title";
 import ThemeButton from "../Button";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function IntroScreen() {
+  const navigate = useNavigate();
+  const navigateToServices = () => {
+    navigate("/services");
+  };
   return (
     <div className="min-h-[90vh] pb-4 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Animated gradient background */}
@@ -28,7 +33,10 @@ export default function IntroScreen() {
           generate personalized quizzes, and enhance your learning with
           AI-powered document analysis that adapts to your needs.
         </p>
-        <ThemeButton className="px-8 py-4 rounded-lg text-lg mb-20">
+        <ThemeButton
+          className="px-8 py-4 rounded-lg text-lg mb-20"
+          onClick={navigateToServices}
+        >
           Start Exploring <ChevronRight className="ml-2 h-5 w-5" />
         </ThemeButton>
       </div>

@@ -50,9 +50,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="mb-10 md:mb-0">
             <a href="/" className="flex items-center">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
+              <img src="/logo.png" alt="PocketDoc Logo" className="h-8 mr-3" />
               <span className="self-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400">
                 PocketDoc
               </span>

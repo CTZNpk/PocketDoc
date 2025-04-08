@@ -2,18 +2,37 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BookOpen, FileQuestion, Brain } from "lucide-react";
-import { Link } from "react-router-dom";
-import FeatureCards from "@/components/landing/FeatureCards";
+import { Link, useNavigate } from "react-router-dom";
 import FeatureCard from "@/components/FeatureCard";
+import useSummary from "@/hooks/useSummary";
+import ReactMarkdown from "react-markdown";
 
 export default function Services() {
   const [input, setInput] = useState("");
   const [summary, setSummary] = useState("");
+  const { generatePassageSummary } = useSummary();
 
-  const handleSummarize = () => {
+  const navigate = useNavigate();
+
+  const navigateToDocument = () => {
+    navigate("/myDocuments");
+  };
+
+  const navigateToQuiz = () => {
+    navigate("/myQuiz");
+  };
+
+  const handleSummaryGeneration = async () => {
     if (!input.trim()) return;
-    // For now, simulate summary
-    setSummary("This is a sample summary. Log in to use the full summarizer.");
+
+    const summary = await generatePassageSummary({
+      passage: input.trim(),
+    });
+
+    const cleanedMarkdown = summary
+      .replace(/^```(?:\w+)?\n/, "")
+      .replace(/```$/, "");
+    setSummary(cleanedMarkdown);
   };
 
   return (
@@ -42,7 +61,7 @@ export default function Services() {
               placeholder="Enter or paste your content..."
             />
             <button
-              onClick={handleSummarize}
+              onClick={handleSummaryGeneration}
               className="mt-4 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white px-6 py-2 rounded-md font-medium"
             >
               Summarize
@@ -53,9 +72,9 @@ export default function Services() {
             <label className="block text-sm text-gray-400 mb-2">
               Summary Output
             </label>
-            <div className="w-full min-h-[160px] bg-gray-800/60 border border-gray-700 rounded-md p-4 text-gray-300">
+            <ReactMarkdown className="prose prose-invert w-full min-h-[160px] bg-gray-800/60 border border-gray-700 rounded-md p-4 text-gray-300">
               {summary || "Summary will appear here after clicking summarize."}
-            </div>
+            </ReactMarkdown>
           </div>
         </div>
 
@@ -81,24 +100,30 @@ export default function Services() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            title="Summarize Documents"
-            description="Get the essential points from any document in seconds."
-            icon={<BookOpen className="h-8 w-8 text-cyan-400" />}
-            hoverEffect={false}
-          />
-          <FeatureCard
-            title="Query-Based Summary"
-            description="Ask specific questions and get targeted information."
-            icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
-            hoverEffect={false}
-          />
-          <FeatureCard
-            title="Generate Quiz"
-            description="Create custom quizzes to test your knowledge."
-            icon={<Brain className="h-8 w-8 text-cyan-400" />}
-            hoverEffect={false}
-          />
+          <div onClick={navigateToDocument}>
+            <FeatureCard
+              title="Summarize Documents"
+              description="Get the essential points from any document in seconds."
+              icon={<BookOpen className="h-8 w-8 text-cyan-400" />}
+              hoverEffect={false}
+            />
+          </div>
+          <div onClick={navigateToDocument}>
+            <FeatureCard
+              title="Query-Based Summary"
+              description="Ask specific questions and get targeted information."
+              icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
+              hoverEffect={false}
+            />
+          </div>
+          <div onClick={navigateToQuiz}>
+            <FeatureCard
+              title="Generate Quiz"
+              description="Create custom quizzes to test your knowledge."
+              icon={<Brain className="h-8 w-8 text-cyan-400" />}
+              hoverEffect={false}
+            />
+          </div>
         </div>
       </div>
 

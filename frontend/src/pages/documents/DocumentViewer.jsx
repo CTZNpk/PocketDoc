@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,11 +35,17 @@ export default function DocumentViewer() {
 
   useEffect(() => {
     const handleSelectionChange = () => {
-      const selected = window.getSelection().toString().trim();
-      if (selected) {
-        setSelectedText(selected);
-      }
+      const selection = window.getSelection();
+      const selected = selection.toString().trim();
+
+      if (!selected) return;
+
+      const anchorNode = selection.anchorNode;
+      if (!pdfContainerRef.current.contains(anchorNode)) return;
+
+      setSelectedText(selected);
     };
+
     document.addEventListener("selectionchange", handleSelectionChange);
     return () =>
       document.removeEventListener("selectionchange", handleSelectionChange);
@@ -50,6 +56,7 @@ export default function DocumentViewer() {
     document.addEventListener("mousemove", handleDragging);
     document.addEventListener("mouseup", handleDragEnd);
   };
+  const pdfContainerRef = useRef(null);
 
   const handleDragging = (e) => {
     const newWidth = window.innerWidth - e.clientX;
@@ -79,7 +86,10 @@ export default function DocumentViewer() {
   return (
     <Background>
       <div className="flex h-screen overflow-hidden relative">
-        <div className="flex-1 transition-all duration-300">
+        <div
+          className="flex-1 transition-all duration-300"
+          ref={pdfContainerRef}
+        >
           <PdfViewer />
         </div>
 

@@ -11,14 +11,13 @@ import {
 } from "@/components/ui/navigation-menu";
 import useAuth from "@/hooks/useAuth";
 import userStore from "@/store/userStore";
-import { getUser } from "@/api/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { fetchUser, handleLogout } = useAuth();
-  const { user, setUser } = userStore();
+  const { user } = userStore();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -123,6 +122,12 @@ export default function Navbar() {
                 { path: "/myDocuments", label: "Documents" },
                 { path: "/about", label: "About" },
                 { path: "/contact", label: "Contact" },
+                ...(user
+                  ? [
+                      { path: "/myQuiz", label: "Quizzes" },
+                      { path: "/mySummaries", label: "Summaries" },
+                    ]
+                  : []),
               ].map(({ path, label }) => (
                 <Link
                   key={path}

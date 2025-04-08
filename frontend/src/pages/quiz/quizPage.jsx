@@ -12,7 +12,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import QuizResults from "@/components/quiz/QuizResults";
 import QuizIntro from "@/components/quiz/QuizIntro";
-import QuizProgress from "@/components/quiz/QuizProgress";
 import { useParams } from "react-router";
 import useQuiz from "@/hooks/useQuiz";
 import Background from "@/components/Background";
@@ -28,6 +27,7 @@ export default function QuizModule() {
   const [quizData, setQuizData] = useState();
   const [quizResults, setQuizResults] = useState();
   const [progressPercentage, setProgressPercentage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const startQuiz = () => {
     setQuizStarted(true);
@@ -37,9 +37,11 @@ export default function QuizModule() {
     if (currentQuestionIndex < quizData.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
+      setIsLoading(true);
       const response = await submitQuiz({ quizId, userAnswers: answers });
       setQuizResults(response);
       setQuizCompleted(true);
+      setIsLoading(false);
     }
   };
 
@@ -70,7 +72,6 @@ export default function QuizModule() {
       setProgressPercentage(
         ((currentQuestionIndex + 1) / quizData.questions.length) * 100,
       );
-    console.log("we are herhe hah");
   }, [quizData, currentQuestionIndex]);
 
   const handleAnswer = (answer) => {
@@ -80,6 +81,15 @@ export default function QuizModule() {
       return updated;
     });
   };
+
+  if (isLoading)
+    return (
+      <Background>
+        <div className="flex justify-center items-center h-64 min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+        </div>
+      </Background>
+    );
 
   if (quizCompleted) {
     return <QuizResults quizResults={quizResults} />;
@@ -104,40 +114,34 @@ export default function QuizModule() {
       <Navbar />
       <div className="container mx-auto py-16 px-4 min-h-screen flex items-center justify-center">
         <div className="max-w-3xl mx-auto">
-          <QuizProgress
-            currentQuestion={currentQuestionIndex + 1}
-            totalQuestions={quizData.questions.length}
-            progress={progressPercentage}
-          />
-
           <Card
-            className="mt-8 w-[500px] bg-gradient-to-br from-gray-800 to-gray-900 
+            className="mt-8 w-full max-w-lg mx-auto bg-gradient-to-br from-gray-800 to-gray-900 
     border border-gray-700 shadow-lg shadow-cyan-900/10 flex flex-col"
           >
             <CardHeader className="border-b border-gray-700">
-              <CardTitle className="text-2xl text-white">
+              <CardTitle className="text-xl sm:text-2xl text-white">
                 Question {currentQuestionIndex + 1}
               </CardTitle>
             </CardHeader>
-            <CardContent className="py-6">
+            <CardContent className="py-4 sm:py-6">
               <QuestionRenderer
                 question={quizData.questions[currentQuestionIndex]}
                 answer={answers[currentQuestionIndex]}
                 onAnswer={handleAnswer}
               />
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 p-4">
               <Button
                 variant="outline"
                 onClick={handlePreviousQuestion}
                 disabled={currentQuestionIndex === 0}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700 w-full sm:w-auto"
               >
                 <ChevronLeft className="mr-2 h-4 w-4" /> Previous
               </Button>
               <Button
                 onClick={handleNextQuestion}
-                className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400"
+                className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 w-full sm:w-auto"
               >
                 {currentQuestionIndex === quizData.questions.length - 1
                   ? "Finish"
@@ -145,7 +149,7 @@ export default function QuizModule() {
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
-          </Card>
+          </Card>{" "}
         </div>
       </div>
       <Footer />

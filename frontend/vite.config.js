@@ -14,6 +14,5 @@ export default defineConfig({
     host: true, // or '0.0.0.0' to expose to the network
     port: 5173, // or any other port you like
     strictPort: true,
-    allowedHosts: ["3341-182-185-174-56.ngrok-free.app"], // Add your ngrok host here
   },
 });

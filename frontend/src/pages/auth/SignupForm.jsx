@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserIcon, EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
 import FormContainer from "@/components/FormContainer";
 import InputField from "@/components/InputField";
@@ -17,6 +17,11 @@ export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const { handleSignUp } = useAuth();
+  const navigate = useNavigate();
+
+  const navigateToLanding = () => {
+    navigate("/");
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -54,6 +59,7 @@ export default function SignupForm() {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...signupData } = formData;
       await handleSignUp(signupData);
+      navigateToLanding();
     } catch (error) {
       console.error("Signup failed:", error);
     } finally {

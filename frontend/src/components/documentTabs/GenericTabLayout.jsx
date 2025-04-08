@@ -19,16 +19,17 @@ export default function GenericTabLayout({
   showGenerateSummary = true,
 }) {
   const [isGenerating, setIsGenerating] = useState(false);
+  
   const handleGeneration = async () => {
     if (!selectedText && !documentId) return;
     setIsGenerating(true);
     await generateFunction();
     setIsGenerating(false);
   };
-
+  
   return (
-    <TabsContent value={value} className="flex-1 p-4 overflow-y-auto">
-      <Card className="border-zinc-800 shadow-lg">
+    <TabsContent value={value} className="flex-1 w-full p-0 sm:p-2 md:p-4 overflow-hidden">
+      <Card className="border-zinc-800 shadow-lg w-full h-full flex flex-col">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl font-semibold text-white">
@@ -44,7 +45,7 @@ export default function GenericTabLayout({
           </p>
         </CardHeader>
         <Separator className="bg-zinc-800" />
-        <CardContent className="pt-4">
+        <CardContent className="pt-4 flex-1 flex flex-col overflow-hidden">
           {settingsComponent}
           {showGenerateSummary && (
             <Button
@@ -56,7 +57,6 @@ export default function GenericTabLayout({
               {isGenerating ? "Generating..." : "Generate"}
             </Button>
           )}
-
           {redirectToPage && text && !isGenerating && (
             <Button
               variant="outline"
@@ -66,11 +66,14 @@ export default function GenericTabLayout({
               View Full Summary
             </Button>
           )}
-
           <h1 className="pt-5">Length: {text.length} characters</h1>
-          <div className="max-h-[calc(100vh-350px)] mt-5 pb-10 overflow-y-auto">
-            <div className="prose prose-invert max-w-full w-full break-words">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+          <div className="flex-1 w-full mt-3 overflow-hidden">
+            <div className="h-full max-h-[calc(100vh-350px)] overflow-y-auto pr-1">
+              <div className="prose prose-invert max-w-none w-full break-words">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {text}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         </CardContent>

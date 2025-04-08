@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
 import FormContainer from "@/components/FormContainer";
 import InputField from "@/components/InputField";
@@ -17,11 +17,18 @@ export default function LoginForm() {
     setFormData({ ...formData, [id]: value });
   };
 
+  const navigate = useNavigate();
+
+  const navigateToLanding = () => {
+    navigate("/");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       await handleSignIn(formData);
+      navigateToLanding();
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
@@ -87,31 +94,6 @@ export default function LoginForm() {
             </button>
           }
         />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              className="h-4 w-4 rounded bg-gray-700 border-gray-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-gray-800"
-            />
-            <label
-              htmlFor="remember-me"
-              className="ml-2 block text-sm text-gray-300"
-            >
-              Remember me
-            </label>
-          </div>
-          <div className="text-sm">
-            <Link
-              to="/forgot-password"
-              className="text-cyan-400 hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-        </div>
 
         <ThemeButton
           type="submit"

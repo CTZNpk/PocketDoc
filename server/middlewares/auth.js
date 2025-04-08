@@ -5,6 +5,8 @@ const { generateAccessToken } = require("../utils/generateTokens");
 const auth = (req, res, next) => {
   const accessToken = req.cookies.access_token;
   const refreshToken = req.cookies.refresh_token;
+  console.log(accessToken)
+  console.log(refreshToken)
 
   if (accessToken) {
     try {

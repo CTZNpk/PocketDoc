@@ -1,7 +1,18 @@
 import { BookOpen, Brain, FileQuestion } from "lucide-react";
 import FeatureCard from "../FeatureCard";
+import { useNavigate } from "react-router";
 
 export default function FeatureCards() {
+  const navigate = useNavigate();
+
+  const navigateToDocument = () => {
+    navigate("/myDocuments");
+  };
+
+  const navigateToQuiz = () => {
+    navigate("/myQuiz");
+  };
+
   return (
     <div className="py-20 px-4 relative bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
       {/* New Hero Banner */}
@@ -23,21 +34,29 @@ export default function FeatureCards() {
       {/* Feature Cards */}
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            title="Summarize Documents"
-            description="Get the essential points from any document in seconds."
-            icon={<BookOpen className="h-8 w-8 text-cyan-400" />}
-          />
-          <FeatureCard
-            title="Query-Based Summary"
-            description="Ask specific questions and get targeted information."
-            icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
-          />
-          <FeatureCard
-            title="Generate Quiz"
-            description="Create custom quizzes to test your knowledge."
-            icon={<Brain className="h-8 w-8 text-cyan-400" />}
-          />
+          <div onClick={navigateToDocument}>
+            <FeatureCard
+              title="Summarize Documents"
+              description="Get the essential points from any document in seconds."
+              icon={<BookOpen className="h-8 w-8 text-cyan-400" />}
+            />
+          </div>
+
+          <div onClick={navigateToDocument}>
+            <FeatureCard
+              title="Query-Based Summary"
+              description="Ask specific questions and get targeted information."
+              icon={<FileQuestion className="h-8 w-8 text-cyan-400" />}
+            />
+          </div>
+
+          <div onClick={navigateToQuiz}>
+            <FeatureCard
+              title="Generate Quiz"
+              description="Create custom quizzes to test your knowledge."
+              icon={<Brain className="h-8 w-8 text-cyan-400" />}
+            />
+          </div>
         </div>
       </div>
     </div>

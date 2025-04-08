@@ -20,6 +20,7 @@ exports.uploadDocumentController = async (req, res) => {
         userId: userId,
       });
       const saveDoc = await doc.save();
+      console.log("WE ARE HEHREH PA");
       res
         .status(200)
         .json({ message: "Document uploaded successfully", data: saveDoc });

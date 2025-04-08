@@ -15,10 +15,10 @@ exports.generateSummaryFromText = async (req, res) => {
     req.body;
   const form = new FormData();
   form.append("passage", passage);
-  form.append("document_type", documentType);
-  form.append("summary_length", summaryLength);
-  form.append("format_preference", formatPreference);
-  form.append("focus", focus);
+  if (documentType) form.append("document_type", documentType);
+  if (summaryLength) form.append("summary_length", summaryLength);
+  if (formatPreference) form.append("format_preference", formatPreference);
+  if (focus) form.append("focus", focus);
   try {
     const fastApiResponse = await axios.post(
       "http://localhost:8000/summarize/",
@@ -242,7 +242,7 @@ exports.downloadSummaryPdf = async (req, res) => {
         console.error("Error sending PDF:", err);
         res.status(500).json({ message: "Failed to send file" });
       }
-      fs.unlink(filePath, () => { });
+      fs.unlink(filePath, () => {});
     });
   } catch (error) {
     console.error("Error generating PDF:", error);

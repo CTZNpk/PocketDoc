@@ -3,9 +3,14 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, Timer, Trophy } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useNavigate } from "react-router";
 
 export default function QuizResults({ quizResults }) {
   const { evaluation, percentage_score, total_score } = quizResults;
+  const navigate = useNavigate();
+  const navigateToLanding = () => {
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white mt-10">
@@ -87,12 +92,12 @@ export default function QuizResults({ quizResults }) {
                 ))}
               </div>
 
-              <div className="flex justify-center gap-4 pt-8 pb-4">
+              <div
+                className="flex justify-center gap-4 pt-8 pb-4"
+                onClick={navigateToLanding}
+              >
                 <Button className="px-6 py-2 bg-gray-700 hover:bg-gray-600">
                   Back to Dashboard
-                </Button>
-                <Button className="px-6 py-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400">
-                  Try Again
                 </Button>
               </div>
             </div>

@@ -1,7 +1,6 @@
 import { getUser, logoutUser, signIn, signUp } from "../api/authService";
 import userStore from "../store/userStore";
 import { emitToast } from "../utils/emitToast";
-import Cookies from "js-cookie";
 
 const useAuth = () => {
   const { setUser, clearUser, user } = userStore();
@@ -33,10 +32,7 @@ const useAuth = () => {
 
   const fetchUser = async () => {
     try {
-      if (user == null) {
-        const data = await getUser();
-        setUser(data.user);
-      }
+      return user;
     } catch (error) {
       console.log(error);
       emitToast(`Error Fetching User: ${error.response.data.error}`);

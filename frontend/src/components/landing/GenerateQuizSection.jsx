@@ -1,7 +1,12 @@
 import { Brain } from "lucide-react";
 import ThemeButton from "../Button";
+import { useNavigate } from "react-router";
 
 export default function GenerateQuizSection() {
+  const navigate = useNavigate();
+  const navigateToQuiz = () => {
+    navigate("/myQuiz");
+  };
   return (
     <div className="py-24 px-4 relative">
       {/* Background gradient */}
@@ -28,7 +33,10 @@ export default function GenerateQuizSection() {
               questions that reinforce your understanding.
             </p>
 
-            <ThemeButton className="px-8 py-4 rounded-lg text-lg">
+            <ThemeButton
+              className="px-8 py-4 rounded-lg text-lg"
+              onClick={navigateToQuiz}
+            >
               Generate Quiz <Brain className="ml-2 h-5 w-5" />
             </ThemeButton>
           </div>

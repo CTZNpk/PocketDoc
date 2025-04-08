@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useNavigate } from "react-router";
 import { ToastContainer } from "react-toastify";
 import "./index.css";
 import LandingPage from "./pages/landing/LandingPage";
@@ -18,8 +18,16 @@ import Pricing from "./pages/privacy/Pricing";
 import Services from "./pages/services/Services";
 import MySummaries from "./pages/documents/MySummary";
 import MyQuizScreen from "./pages/quiz/myQuiz";
+import AdminDashboard from "./pages/admin/adminDashboard";
+import { setNavigate } from "./utils/navigateFunction";
+import { useEffect } from "react";
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
   return (
     <>
       <Routes>
@@ -40,6 +48,7 @@ function App() {
         <Route path="/quiz/:quizId" element={<QuizModule />} />
         <Route path="/mySummaries" element={<MySummaries />} />
         <Route path="/myQuiz" element={<MyQuizScreen />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
       <ToastContainer />
     </>

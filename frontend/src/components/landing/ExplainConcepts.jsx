@@ -1,7 +1,12 @@
 import { FileQuestion } from "lucide-react";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router";
 
 export default function ExplainConceptsSection() {
+  const navigate = useNavigate();
+  const navigateToDocument = () => {
+    navigate("/myDocuments");
+  };
   return (
     <div className="py-24 px-4 relative">
       {/* Background */}
@@ -32,9 +37,11 @@ export default function ExplainConceptsSection() {
               your pace, with clarity.
             </p>
 
-            <Button className="px-8 py-4 rounded-lg text-lg bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400">
-              Explain This <FileQuestion className="ml-2 h-5 w-5" />
-            </Button>
+            <div onClick={navigateToDocument}>
+              <Button className="px-8 py-4 rounded-lg text-lg bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400">
+                Explain This <FileQuestion className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

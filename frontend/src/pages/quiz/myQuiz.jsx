@@ -88,6 +88,7 @@ function EmptyQuizzesState({ setIsModalOpen }) {
     </div>
   );
 }
+
 function QuizCard({ quiz, index }) {
   const date = new Date().toLocaleDateString("en-US", {
     year: "numeric",

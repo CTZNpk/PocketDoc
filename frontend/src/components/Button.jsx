@@ -7,6 +7,7 @@ export default function ThemeButton({
   isLoading = false,
   disabled = false,
   className = "",
+  onClick,
   ...props
 }) {
   const baseStyles =
@@ -28,6 +29,7 @@ export default function ThemeButton({
       className={`${baseStyles} ${variants[variant]} ${className}`}
       disabled={isLoading || disabled}
       {...props}
+      onClick={onClick}
     >
       {isLoading ? (
         <>

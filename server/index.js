@@ -18,7 +18,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // or your frontend's origin
+    origin: ["http://localhost:5173", "http://192.168.100.54:5173"],
     credentials: true, // <-- allow cookies!
   }),
 );
@@ -38,6 +38,7 @@ mongoose
   .catch((e) => {
     console.log(e);
   });
-app.listen(port, () => {
+
+app.listen(port, "0.0.0.0", () => {
   console.log(`CONNECTED AT PORT ${port}`);
 });

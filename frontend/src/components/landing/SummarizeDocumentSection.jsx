@@ -1,8 +1,14 @@
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import ThemeButton from "../Button";
 import { BookOpen } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function SummarizeDocumentSection() {
+  const navigate = useNavigate();
+  const navigateToSummaries = () => {
+    navigate("/mySummaries");
+  };
+
   return (
     <div className="py-24 px-4 relative">
       {/* Background gradient */}
@@ -23,7 +29,10 @@ export default function SummarizeDocumentSection() {
               only on what matters most to you.
             </p>
 
-            <ThemeButton className="px-8 py-4 rounded-lg text-lg">
+            <ThemeButton
+              className="px-8 py-4 rounded-lg text-lg"
+              onClick={navigateToSummaries}
+            >
               Summarize Documents <BookOpen className="ml-2 h-5 w-5" />
             </ThemeButton>
           </div>
