@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - aiservice
+
+  aiservice:
+    build: ./aiservice
+    ports:
+      - "8000:8000"
