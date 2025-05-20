@@ -21,6 +21,7 @@ import MyQuizScreen from "./pages/quiz/myQuiz";
 import AdminDashboard from "./pages/admin/adminDashboard";
 import { setNavigate } from "./utils/navigateFunction";
 import { useEffect } from "react";
+import ScrollToTop from "./utils/scrollToTop";
 
 function App() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function App() {
   }, [navigate]);
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route index element={<LandingPage />} />
         <Route path="contact" element={<Contact />} />
@@ -50,7 +52,16 @@ function App() {
         <Route path="/myQuiz" element={<MyQuizScreen />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
-      <ToastContainer />
+      <ToastContainer
+        toastClassName={() => "bg-transparent p-0 shadow-none"}
+        bodyClassName={() => "p-0 m-0"}
+        closeOnClick
+        pauseOnHover
+        draggable
+        position="bottom-center"
+        autoClose={2000}
+      />
+
     </>
   );
 }

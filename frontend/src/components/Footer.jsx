@@ -8,9 +8,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+
 
   return (
     <footer className="relative overflow-hidden">
@@ -49,13 +51,14 @@ export default function Footer() {
         <div className="md:flex md:justify-between">
           {/* Brand Section */}
           <div className="mb-10 md:mb-0">
-            <a href="/" className="flex items-center">
-              <img src="/logo.png" alt="PocketDoc Logo" className="h-8 mr-3" />
-              <span className="self-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400">
+            <Link to="/" className="flex items-center">
+              <img src="/logo.png" alt="PocketDoc Logo" className="h-8 mr-3 mb-5" />
+              <span className="self-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400 mb-5">
                 PocketDoc
               </span>
-            </a>
-            <p className="mt-4 text-gray-400 max-w-xs">
+            </Link>
+
+            <p>
               Your AI-powered document assistant for summarizing, querying, and
               creating interactive learning materials.
             </p>
@@ -94,33 +97,34 @@ export default function Footer() {
         <div className="sm:flex sm:items-center sm:justify-between">
           <span className="text-sm text-gray-400">
             © {currentYear}{" "}
-            <a href="/" className="hover:text-cyan-400 transition-colors">
+            <Link to="/" className="hover:text-cyan-400 transition-colors">
               PocketDoc
-            </a>
+            </Link>
             . All Rights Reserved.
           </span>
 
           {/* Bottom Links */}
           <div className="flex flex-wrap gap-4 mt-4 sm:mt-0 text-sm text-gray-400">
-            <a
-              href="/privacy"
+            <Link
+              to="/privacy"
               className="hover:text-cyan-400 transition-colors"
             >
               Privacy Policy
-            </a>
+            </Link>
             <span>•</span>
-            <a href="/terms" className="hover:text-cyan-400 transition-colors">
+            <Link to="/terms" className="hover:text-cyan-400 transition-colors">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
-    </footer>
+    </footer >
   );
 }
 
-// Helper Components
 function FooterLinkGroup({ title, links }) {
+  const navigate = useNavigate();
+
   return (
     <div>
       <h2 className="mb-4 text-sm font-semibold text-white uppercase tracking-wider">
@@ -129,16 +133,16 @@ function FooterLinkGroup({ title, links }) {
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.name}>
-            <a
-              href={link.href}
-              className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center group"
+            <button
+              onClick={() => navigate(link.href)}
+              className="text-left w-full text-gray-400 hover:text-cyan-400 transition-colors flex items-center group bg-transparent border-none p-0 m-0"
             >
               {link.name}
               <ExternalLink
                 size={14}
                 className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
               />
-            </a>
+            </button>
           </li>
         ))}
       </ul>

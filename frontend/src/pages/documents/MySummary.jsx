@@ -19,7 +19,8 @@ export default function MySummaries() {
   useEffect(() => {
     const fetch = async () => {
       const response = await getAllUserSummaries();
-      setSummaries(response);
+      if (response)
+        setSummaries(response);
     };
     fetch();
   }, []);

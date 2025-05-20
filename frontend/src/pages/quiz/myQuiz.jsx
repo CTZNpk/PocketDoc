@@ -20,7 +20,8 @@ export default function MyQuizScreen() {
     const fetch = async () => {
       const response = await getUserQuizzes();
       console.log(response);
-      setQuizzes(response);
+      if (response)
+        setQuizzes(response);
     };
     fetch();
   }, []);
