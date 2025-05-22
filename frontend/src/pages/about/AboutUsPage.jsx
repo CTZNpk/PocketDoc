@@ -14,8 +14,29 @@ import {
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useEffect, useState } from "react";
+import { getDocsAndQuizzesStats } from "@/api/documentService";
 
 export default function AboutUsPage() {
+  const [docsSummarized, setDocsSummarized] = useState("...");
+  const [quizzesGenerated, setQuizzesGenerated] = useState("...");
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const stats = await getDocsAndQuizzesStats();
+        setDocsSummarized(stats.documentsSummarized.toLocaleString()); // format with commas
+        setQuizzesGenerated(stats.quizzesGenerated.toLocaleString());
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+        setDocsSummarized("N/A");
+        setQuizzesGenerated("N/A");
+      }
+    }
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
       <Navbar />
@@ -140,8 +161,14 @@ export default function AboutUsPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <StatCard value="100K+" label="Documents Summarized" />
-              <StatCard value="1M+" label="Quizzes Generated" />
+              <StatCard
+                value={`${docsSummarized}+`}
+                label="Documents Summarized"
+              />
+              <StatCard
+                value={`${quizzesGenerated}+`}
+                label="Quizzes Generated"
+              />
               <StatCard value="95%" label="Quiz Accuracy" />
               <StatCard value="Free" label="Forever Plan Available" />
             </div>

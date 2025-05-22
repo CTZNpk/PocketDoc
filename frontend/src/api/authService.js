@@ -19,3 +19,8 @@ export const logoutUser = async () => {
   const response = await apiClient.post("/user-auth/logout");
   return response.data;
 };
+
+export const subscribeEmail = async(email) => {
+
+  await apiClient.post("/user-auth/subscribe", { 'email': email });
+};

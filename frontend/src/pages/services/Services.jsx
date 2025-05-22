@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown";
 export default function Services() {
   const [input, setInput] = useState("");
   const [summary, setSummary] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { generatePassageSummary } = useSummary();
 
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Services() {
 
   const handleSummaryGeneration = async () => {
     if (!input.trim()) return;
+    setIsLoading(true);
 
     const summary = await generatePassageSummary({
       passage: input.trim(),
@@ -33,6 +35,8 @@ export default function Services() {
       .replace(/^```(?:\w+)?\n/, "")
       .replace(/```$/, "");
     setSummary(cleanedMarkdown);
+
+    setIsLoading(false);
   };
 
   return (
@@ -62,9 +66,12 @@ export default function Services() {
             />
             <button
               onClick={handleSummaryGeneration}
-              className="mt-4 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white px-6 py-2 rounded-md font-medium"
+              disabled={isLoading}
+              className={`mt-4 px-6 py-2 rounded-md font-medium text-white bg-gradient-to-r from-cyan-600 to-cyan-500
+    ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:from-cyan-500 hover:to-cyan-400"}
+  `}
             >
-              Summarize
+              {isLoading ? "Summarizing..." : "Summarize"}
             </button>
           </div>
 
@@ -72,25 +79,13 @@ export default function Services() {
             <label className="block text-sm text-gray-400 mb-2">
               Summary Output
             </label>
-            <ReactMarkdown className="prose prose-invert w-full min-h-[160px] bg-gray-800/60 border border-gray-700 rounded-md p-4 text-gray-300">
-              {summary || "Summary will appear here after clicking summarize."}
-            </ReactMarkdown>
+            <div className="w-full max-h-[300px] overflow-y-auto bg-gray-800/60 border border-gray-700 rounded-md p-4 text-gray-300">
+              <ReactMarkdown className="prose prose-invert">
+                {summary ||
+                  "Summary will appear here after clicking summarize."}
+              </ReactMarkdown>
+            </div>
           </div>
-        </div>
-
-        {/* Login Reminder */}
-        <div className="text-center mb-20">
-          <p className="text-gray-400 text-lg">
-            To access full features like document upload, quiz generation, and
-            advanced summaries, please{" "}
-            <Link
-              href="/login"
-              className="text-cyan-400 underline hover:text-cyan-300"
-            >
-              log in
-            </Link>
-            .
-          </p>
         </div>
 
         {/* Features Section */}

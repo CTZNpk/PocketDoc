@@ -17,6 +17,11 @@ export const uploadUserDoc = async (file, title) => {
   return response.data.data;
 };
 
+export const getDocsAndQuizzesStats = async () => {
+  const response = await apiClient.get(`/admin/stats`);
+  return response.data;
+};
+
 export const getUserDocFromId = async (docId) => {
   const response = await apiClient.get(`/document/${docId}`, {
     responseType: "blob",
@@ -33,4 +38,3 @@ export const generateEmbeddings = async (docId) => {
   const response = await apiClient.get(`/document/${docId}/embed`);
   return response.data;
 };
-

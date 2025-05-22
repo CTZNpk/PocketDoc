@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Github,
   Twitter,
@@ -9,10 +9,28 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
+import { subscribeEmail } from "@/api/authService";
+import { emitToast } from "@/utils/emitToast";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubscribe = async () => {
+    if (!email) return;
+    setIsLoading(true);
+    try {
+      await subscribeEmail(email); // assuming this sends the email to backend
+      setEmail(""); // clear input on success
+      // optionally show success toast
+      setIsLoading(false);
+      emitToast("Subscribed Successfully");
+    } catch (err) {
+      emitToast(err);
+    }
+  };
 
   return (
     <footer className="relative overflow-hidden">
@@ -40,8 +58,14 @@ export default function Footer() {
                 type="email"
                 placeholder="Enter your email"
                 className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-cyan-600 focus:border-transparent outline-none text-white w-full sm:w-64"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <Button className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white">
+              <Button
+                onClick={onSubscribe}
+                disabled={isLoading}
+                className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white"
+              >
                 Subscribe
               </Button>
             </div>
@@ -52,7 +76,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="mb-10 md:mb-0">
             <Link to="/" className="flex items-center">
-              <img src="/logo.png" alt="PocketDoc Logo" className="h-8 mr-3 mb-5" />
+              <img
+                src="/logo.png"
+                alt="PocketDoc Logo"
+                className="h-8 mr-3 mb-5"
+              />
               <span className="self-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-400 mb-5">
                 PocketDoc
               </span>
@@ -118,7 +146,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </footer >
+    </footer>
   );
 }
 
