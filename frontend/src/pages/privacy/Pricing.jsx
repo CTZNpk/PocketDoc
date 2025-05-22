@@ -2,8 +2,10 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function Pricing() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex flex-col">
       <Navbar />
@@ -35,7 +37,10 @@ export default function Pricing() {
               Unlimited access, forever
             </li>
           </ul>
-          <button className="w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white rounded-md font-medium transition">
+          <button
+            onClick={() => navigate("/")}
+            className="w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white rounded-md font-medium transition"
+          >
             Start Using for Free
           </button>
         </div>

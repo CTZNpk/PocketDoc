@@ -56,10 +56,15 @@ export default function SignupForm() {
 
     setIsLoading(true);
     try {
-      // Remove confirmPassword before sending to API
       const { confirmPassword, ...signupData } = formData;
-      await handleSignUp(signupData);
-      navigateToLanding();
+      const response = await handleSignUp(signupData);
+      if (response) {
+        if (response.role == "user") {
+          navigateToLanding();
+        } else {
+          navigate("/admin");
+        }
+      }
     } catch (error) {
       console.error("Signup failed:", error);
     } finally {

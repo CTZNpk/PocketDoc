@@ -1,16 +1,11 @@
 import React from "react";
-import {
-  BarChart,
-  Users,
-  FileText,
-  Files,
-  Book,
-  Settings,
-  LogOut,
-} from "lucide-react";
-import { logoutUser } from "@/api/authService";
+import { BarChart, Users, FileText, Files, Book, Settings, LogOut } from "lucide-react";
+import { useNavigate } from "react-router";
+import useAuth from "@/hooks/useAuth";
 
 export default function Sidebar({ activeTab, setActiveTab }) {
+  const navigate = useNavigate();
+  const { handleLogout } = useAuth();
   return (
     <div className="w-64 bg-gradient-to-b from-gray-900 to-gray-950 border-r border-gray-800 text-white flex flex-col">
       <div className="p-6">
@@ -43,7 +38,10 @@ export default function Sidebar({ activeTab, setActiveTab }) {
         <div className="pt-8 space-y-1">
           <button
             className="flex items-center w-full px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-            onClick={() => logoutUser()}
+            onClick={() => {
+              handleLogout();
+              navigate("/");
+            }}
           >
             <LogOut className="mr-3 text-gray-400" size={18} />
             <span>Logout</span>

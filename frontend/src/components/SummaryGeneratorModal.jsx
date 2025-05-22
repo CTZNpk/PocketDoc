@@ -19,6 +19,7 @@ export default function SummaryGeneratorModal({ onClose }) {
   const [startPage, setStartPage] = useState(1);
   const [endPage, setEndPage] = useState(1);
   const [totalPages, setTotalPages] = useState(100); // static for now
+  const [isLoading, setIsLoading] = useState(false);
 
   const { generateSummaryPages } = useSummary();
   const navigate = useNavigate();

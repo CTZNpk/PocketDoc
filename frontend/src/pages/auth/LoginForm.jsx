@@ -27,8 +27,14 @@ export default function LoginForm() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await handleSignIn(formData);
-      navigateToLanding();
+      const response = await handleSignIn(formData);
+      if (response) {
+        if (response.role == "user") {
+          navigateToLanding();
+        } else {
+          navigate("/admin");
+        }
+      }
     } catch (error) {
       console.error("Login failed:", error);
     } finally {

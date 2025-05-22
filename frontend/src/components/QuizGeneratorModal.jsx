@@ -18,8 +18,10 @@ export default function QuizGeneratorModal({ onClose }) {
   const [answerFormats, setAnswerFormats] = useState(["mcq"]);
   const [questionType, setQuestionType] = useState("mixed");
   const [latestQuizId, setLatestQuizId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleQuizGeneration = async () => {
+    setIsLoading(true);
     const quizId = await generateQuizFromDoc({
       documentId: selectedDocId,
       startPage,
@@ -30,6 +32,7 @@ export default function QuizGeneratorModal({ onClose }) {
 
     addQuiz(quizId);
     setLatestQuizId(quizId);
+    setIsLoading(false);
   };
 
   const navigateToQuiz = () => {
@@ -146,6 +149,7 @@ export default function QuizGeneratorModal({ onClose }) {
           <Button
             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
             onClick={handleQuizGeneration}
+            disabled={isLoading}
           >
             Generate Quiz
           </Button>

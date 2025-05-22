@@ -22,6 +22,7 @@ import AdminDashboard from "./pages/admin/adminDashboard";
 import { setNavigate } from "./utils/navigateFunction";
 import { useEffect } from "react";
 import ScrollToTop from "./utils/scrollToTop";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 function App() {
   const navigate = useNavigate();
@@ -50,7 +51,14 @@ function App() {
         <Route path="/quiz/:quizId" element={<QuizModule />} />
         <Route path="/mySummaries" element={<MySummaries />} />
         <Route path="/myQuiz" element={<MyQuizScreen />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <ToastContainer
         toastClassName={() => "bg-transparent p-0 shadow-none"}
@@ -61,7 +69,6 @@ function App() {
         position="bottom-center"
         autoClose={2000}
       />
-
     </>
   );
 }

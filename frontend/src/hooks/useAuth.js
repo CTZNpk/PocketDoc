@@ -7,8 +7,13 @@ const useAuth = () => {
   const handleSignIn = async (formData) => {
     try {
       const data = await signIn(formData);
-      setUser({ username: data.username });
+      setUser({
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role ?? "user",
+      });
       emitToast("Sign in Successful");
+      return data.user;
     } catch (error) {
       emitToast(`Error Signing In: ${error.response.data.error}`);
     }
@@ -17,8 +22,13 @@ const useAuth = () => {
   const handleSignUp = async (formData) => {
     try {
       const data = await signUp(formData);
-      setUser({ username: data.username });
+      setUser({
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role ?? "user",
+      });
       emitToast("Sign up Successful");
+      return data.user;
     } catch (error) {
       console.log(error);
       emitToast(`Error Signing Up: ${error.response.data.error}`);

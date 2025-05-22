@@ -10,6 +10,8 @@ import AnimateBox from "@/components/AnimateBox";
 import Title from "@/components/Title";
 import QuizGeneratorModal from "@/components/QuizGeneratorModal";
 import useQuiz from "@/hooks/useQuiz";
+import { useNavigate } from "react-router";
+import userStore from "@/store/userStore";
 
 export default function MyQuizScreen() {
   const [quizzes, setQuizzes] = useState([]);
@@ -19,9 +21,7 @@ export default function MyQuizScreen() {
   useEffect(() => {
     const fetch = async () => {
       const response = await getUserQuizzes();
-      console.log(response);
-      if (response)
-        setQuizzes(response);
+      if (response) setQuizzes(response);
     };
     fetch();
   }, []);
@@ -96,11 +96,12 @@ function QuizCard({ quiz, index }) {
     month: "short",
     day: "numeric",
   });
+  const navigate = useNavigate();
 
   return (
     <Card
       className="bg-gray-800 border-gray-700 hover:shadow-lg hover:shadow-cyan-700/10 transition-all duration-300 cursor-pointer"
-      onClick={() => (window.location.href = `/quiz/${quiz.quizId}`)}
+      onClick={() => navigate(`/quiz/${quiz.quizId}`)}
     >
       <div className="relative h-32 bg-gradient-to-br from-cyan-900 to-cyan-700 flex items-center justify-center">
         <div className="text-white font-bold text-3xl">Quiz {index}</div>
